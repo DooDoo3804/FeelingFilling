@@ -1,11 +1,12 @@
 package com.example.billing.config;
 
-import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -22,41 +23,39 @@ import java.util.Map;
 @EnableJpaRepositories(
         entityManagerFactoryRef = "billingEntityManager",
         transactionManagerRef = "billingTransactionManager",
-        basePackages = "com.example.billing.data.repository"
+        basePackages = "com.example.billing.data.billingDB.repository"
 )
 public class BillingDBConfig {
-
-    private final ConfigurationPropertiesAutoConfiguration ConfigurationProperties;
-
-    public BillingDBConfig(ConfigurationPropertiesAutoConfiguration ConfigurationProperties) {
-        this.ConfigurationProperties = ConfigurationProperties;
-    }
-
+    @Primary
     @Bean
-    @ConfigurationProperties("spring.datasource.hikari.bootdb2")
-    public DataSource legacyDataSource() {
+    @ConfigurationProperties(value = "spring.datasource.billing")
+    public DataSource billingDataSource() {
         return DataSourceBuilder.create().build();
     }
 
+    @Primary
     @Bean
-    public PlatformTransactionManager legacyTransactionManager() {
+    public PlatformTransactionManager billingTransactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(legacyEntityManager().getObject());
+        transactionManager.setEntityManagerFactory(billingEntityManager().getObject());
 
         return transactionManager;
     }
 
+    @Primary
     @Bean
-    public LocalContainerEntityManagerFactoryBean legacyEntityManager() {
+    public LocalContainerEntityManagerFactoryBean billingEntityManager() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(legacyDataSource());
-        em.setPackagesToScan("com.jiyoon.model.legacy");
+        em.setDataSource(billingDataSource());
+        em.setPackagesToScan("com.example.billing.data.billingDB.entity");
 
         HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(adapter);
         Map<String, Object> properties = new HashMap<>();
         properties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
         properties.put("hibernate.implicit_naming_strategy", SpringImplicitNamingStrategy.class.getName());
+        properties.put("hibernate.hbm2ddl.auto", "create");
+//        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
         em.setJpaPropertyMap(properties);
 
         return em;
