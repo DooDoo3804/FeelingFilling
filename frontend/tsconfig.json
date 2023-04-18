@@ -1,0 +1,12 @@
+{
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "styled-components-react-native", "@types/react-native"],
+    "baseUrl": "./",
+    "paths": {
+      "@react-navigation/stack": [
+        "node_modules/@react-navigation/stack/lib/typescript/src"
+      ]
+    }
+  }
+}
