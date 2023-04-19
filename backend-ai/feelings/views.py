@@ -24,10 +24,12 @@ def translation_text():
     abs_translator = google.translate(text, dest="en")
     analysis_emition(abs_translator)
 
+    print("----------------------------------------------------------------")
     print("TRANSLATION")
-    "----------------------------------------------------------------"
-    print(abs_translator.text)
-    "----------------------------------------------------------------"
+    print(f"""{text}
+    *****************************************************************
+    {abs_translator.text}""")
+    print("----------------------------------------------------------------")
 
 
 # 감정 분석 함수
@@ -35,10 +37,10 @@ def analysis_emition(translation_result):
     classifier = pipeline("text-classification",
                           model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
     prediction = classifier(translation_result.text)
+    print("----------------------------------------------------------------")
     print("TOTAL PREDICTIONS")
-    "----------------------------------------------------------------"
     print(prediction)
-    "----------------------------------------------------------------"
+    print("----------------------------------------------------------------")
 
     # 최대 감정과 감정 스코어 출력
     max_feeling = ''
@@ -49,10 +51,10 @@ def analysis_emition(translation_result):
             max_feeling = p['label']
             max_score = p['score']
 
+    print("----------------------------------------------------------------")
     print("MAX EMOTION")
-    "----------------------------------------------------------------"
     print(max_feeling, max_score)
-    "----------------------------------------------------------------"
+    print("----------------------------------------------------------------")
 
 
 # GPU 가속 함수
