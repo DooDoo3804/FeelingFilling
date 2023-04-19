@@ -14,6 +14,18 @@ def analysis_voice(request):
     pass
 
 
+# 번역 함수
+def translation_text():
+    google = Translator()
+    text = """
+    왜 이렇게 도라이가 많은거야....
+    """
+
+    abs_translator = google.translate(text, dest="en")
+    analysis_emition(abs_translator.text)
+    print(abs_translator.text)
+
+
 # 감정 분석 함수
 def analysis_emition(translation_result):
     classifier = pipeline("text-classification",
