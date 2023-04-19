@@ -1,6 +1,11 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {
+  ParamListBase,
+  RouteProp,
+  getFocusedRouteNameFromRoute,
+  useNavigation,
+} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
@@ -49,6 +54,20 @@ function TabBarButton() {
 }
 
 const MainTab = (): JSX.Element => {
+  const hideOnScreens = useMemo(() => ['Saving'], []);
+
+  const getTabBarVisibility = (
+    route: RouteProp<ParamListBase, 'HomeStack'>,
+  ) => {
+    const routeName = getFocusedRouteNameFromRoute(route || 'None');
+
+    if (hideOnScreens.includes(routeName || 'None')) {
+      return 'none';
+    } else {
+      return 'flex';
+    }
+  };
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -59,13 +78,14 @@ const MainTab = (): JSX.Element => {
       <Tab.Screen
         name="HomeStack"
         component={HomeStackNavigation}
-        options={{
+        options={({route}) => ({
+          tabBarStyle: {display: getTabBarVisibility(route)},
           title: 'Home',
           headerShown: false,
           tabBarIcon: ({color, size}) => (
             <EntypoIcon name="home" color={color} size={size} />
           ),
-        }}
+        })}
       />
       <Tab.Screen
         name="PersonalStack"
