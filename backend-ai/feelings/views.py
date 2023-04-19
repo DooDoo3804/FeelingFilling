@@ -14,6 +14,25 @@ def analysis_voice(request):
     pass
 
 
+# 감정 분석 함수
+def analysis_emition(translation_result):
+    classifier = pipeline("text-classification",
+                          model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
+    prediction = classifier(translation_result.text)
+    print(prediction)
+
+    # 최대 감정과 감정 스코어 출력
+    max_feeling = ''
+    max_score = 0
+
+    for p in prediction[0]:
+        if p['score'] > max_score:
+            max_feeling = p['label']
+            max_score = p['score']
+    print(max_feeling)
+    print(max_score)
+
+
 # GPU 가속 함수
 def acc_gpu():
     # GPU 사용 가능한지 확인
