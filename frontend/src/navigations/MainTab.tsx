@@ -54,7 +54,7 @@ function TabBarButton() {
 }
 
 const MainTab = (): JSX.Element => {
-  const hideOnScreens = useMemo(() => ['Saving'], []);
+  const hideOnScreens = useMemo(() => ['Saving', 'UserInfo'], []);
 
   const getTabBarVisibility = (
     route: RouteProp<ParamListBase, 'HomeStack'>,
