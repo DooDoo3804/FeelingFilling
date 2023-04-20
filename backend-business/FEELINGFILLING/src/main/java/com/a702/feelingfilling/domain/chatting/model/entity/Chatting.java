@@ -1,5 +1,6 @@
 package com.a702.feelingfilling.domain.chatting.model.entity;
 
+import com.a702.feelingfilling.domain.user.model.entity.User;
 import com.sun.istack.NotNull;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
