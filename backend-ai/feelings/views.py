@@ -43,6 +43,11 @@ def analysis_voice(request):
     pass
 
 
+# 측정된 감정 정도에 따라 적금 금액 계산
+def cal_deposit():
+    pass
+
+
 def req_get_trans():
     config = {
         "diarization": {
