@@ -27,9 +27,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# scheduler 설정
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 10
 SCHEDULER_DEFAULT = True
+
+# endpoint slash 설정
+APPEND_SLASH = False
 
 # Application definition
 
