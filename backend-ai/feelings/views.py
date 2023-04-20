@@ -1,11 +1,16 @@
+import json
+import requests
+import tensorflow as tf
+
+from time import sleep
 from transformers import pipeline
 from googletrans import Translator
 from rest_framework.decorators import api_view
-import tensorflow as tf
-
 
 # 텍스트 번역 api
 # post 요청
+
+
 @api_view(['POST'])
 def analysis_text(request):
     text = request.POST.get("TEXT")
@@ -79,6 +84,25 @@ def acc_gpu():
         except RuntimeError as e:
             # Memory growth must be set before GPUs have been initialized
             print(e)
+
+
+"""
+    인증 요청
+    token의 만료 기간은 6시간입니다.
+    주기적으로 token이 갱신될 수 있도록 /v1/authenticate 을 통해 token을 갱신해야 합니다.
+    갱신은 스케줄링을 통해 작성
+    client_id / client_secret 환경변수로 빼거나 따로 작성!!
+"""
+
+
+def get_jwt():
+    resp = requests.post(
+        'https://openapi.vito.ai/v1/authenticate',
+        data={'client_id': "cnmeuourK_cZS7UMpGwG",
+              'client_secret': "8XHGuP-vT3HJNK0R9zfxeK97eciLUcHF5jPKyhsz"}
+    )
+    resp.raise_for_status()
+    # print(resp.json()['access_token'])
 
 
 acc_gpu()
