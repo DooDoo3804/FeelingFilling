@@ -1,24 +1,29 @@
-from django.shortcuts import render
 from transformers import pipeline
 from googletrans import Translator
+from rest_framework.decorators import api_view
+import tensorflow as tf
 
 
 # 텍스트 번역 api
 # post 요청
+@api_view(['POST'])
 def analysis_text(request):
-    pass
+    text = request.POST.get("TEXT")
+    translation_text(text)
 
 
+# 음성 번역 api
+# post 요청
+@api_view(['POST'])
 def analysis_voice(request):
+    text = request.POST.get("TEXT")
     pass
 
 
 # 번역 함수
-def translation_text():
+def translation_text(text):
     google = Translator()
-    text = """
-    왜 이렇게 도라이가 많은거야....
-    """
+    text = text
 
     abs_translator = google.translate(text, dest="en")
     analysis_emition(abs_translator)
