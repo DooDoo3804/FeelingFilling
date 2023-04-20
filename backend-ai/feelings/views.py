@@ -111,12 +111,15 @@ def get_jwt():
 def schedule_api():
     print("starting update JWT")
     sched = BackgroundScheduler()
-    sched.add_job(get_jwt, 'interval', minutes=2)
+    sched.add_job(get_jwt, 'interval', hours=5, minutes=30)
     try:
         sched.start()
     except Exception as e:
         logging.exception(f"Error in background job: {str(e)}")
 
 
+# 맨 처음 실행
+get_jwt()
+# 스케줄러 api 실행
 schedule_api()
 acc_gpu()
