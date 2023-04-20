@@ -27,6 +27,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# scheduler 설정
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 10
+SCHEDULER_DEFAULT = True
+
+# endpoint slash 설정
+APPEND_SLASH = False
 
 # Application definition
 
@@ -37,11 +44,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
+    'rest_framework',
     'feelings',
 
 
-    
+
 ]
 
 MIDDLEWARE = [
