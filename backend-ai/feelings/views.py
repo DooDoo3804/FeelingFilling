@@ -10,10 +10,11 @@ from rest_framework.decorators import api_view
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
 
+jwt_token = ""
+
+
 # 텍스트 번역 api
 # post 요청
-
-
 @api_view(['POST'])
 def analysis_text(request):
     text = request.POST.get("TEXT")
@@ -26,6 +27,22 @@ def analysis_text(request):
 def analysis_voice(request):
     text = request.POST.get("TEXT")
     pass
+
+
+def req_get_trans():
+    config = {
+        "diarization": {
+            "use_verification": False
+        },
+        "use_multi_channel": False
+    }
+    resp = requests.post(
+        'https://openapi.vito.ai/v1/transcribe',
+        headers={'Authorization': 'bearer ' + jwt_token},
+        data={'config': json.dumps(config)},
+        files={'file': open('sample_3.wav', 'rb')}
+    )
+    resp.raise_for_status()
 
 
 # 번역 함수
@@ -105,6 +122,7 @@ def get_jwt():
               'client_secret': "8XHGuP-vT3HJNK0R9zfxeK97eciLUcHF5jPKyhsz"}
     )
     resp.raise_for_status()
+    jwt_token = resp.json()['access_token']
     print(resp.json()['access_token'])
 
 
