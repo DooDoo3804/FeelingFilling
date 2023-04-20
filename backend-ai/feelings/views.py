@@ -6,6 +6,7 @@ import logging
 from time import sleep
 from transformers import pipeline
 from googletrans import Translator
+from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -17,8 +18,14 @@ jwt_token = ""
 # post 요청
 @api_view(['POST'])
 def analysis_text(request):
-    text = request.POST.get("TEXT")
-    translation_text(text)
+    text = request.data['TEXT']
+    print(text)
+    trans = translation_text(text)
+
+    context = {
+        "trans": trans
+    }
+    return JsonResponse(context, status=200)
 
 
 # 음성 번역 api
@@ -74,6 +81,7 @@ def translation_text(text):
     *****************************************************************
     {abs_translator.text}""")
     print("----------------------------------------------------------------")
+    return abs_translator.text
 
 
 # 감정 분석 함수
