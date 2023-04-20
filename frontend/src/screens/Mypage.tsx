@@ -108,7 +108,7 @@ const Mypage = ({navigation}: {navigation: any}) => {
       </ProfileContainer>
       <HeadingWrapper>
         <Heading>활동 배지</Heading>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Badges')}>
           <SubHeading>더 보기</SubHeading>
         </TouchableOpacity>
       </HeadingWrapper>
