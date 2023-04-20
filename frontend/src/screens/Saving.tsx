@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Text} from 'react-native';
 import styled from 'styled-components/native';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
@@ -37,24 +37,59 @@ const BalanceText = styled.Text`
 `;
 
 const Saving = () => {
-  // 적립 내역 보여주는 화면입니다.
+  const now = new Date();
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth());
+
+  const prevMonth = () => {
+    if (month === 0) {
+      setYear(year - 1);
+      setMonth(11);
+    } else {
+      setMonth(month - 1);
+    }
+  };
+
+  const nextMonth = () => {
+    if (year < now.getFullYear()) {
+      if (month === 11) {
+        setYear(year + 1);
+        setMonth(0);
+      } else {
+        setMonth(month + 1);
+      }
+    } else if (year === now.getFullYear() && month < now.getMonth()) {
+      if (month === 12) {
+        setYear(year + 1);
+        setMonth(0);
+      } else {
+        setMonth(month + 1);
+      }
+    }
+  };
 
   return (
     <SavingWrapper>
       <BalanceWrapper>
         <MonthWrapper>
-          <PrevNextBtn>
+          <PrevNextBtn onPress={() => prevMonth()}>
             <EntypoIcon
               name="chevron-left"
               color={Common.colors.deepGrey}
               size={30}
             />
           </PrevNextBtn>
-          <MonthText>2023년 4월</MonthText>
-          <PrevNextBtn>
+          <MonthText>
+            {year}년 {month + 1}월
+          </MonthText>
+          <PrevNextBtn onPress={() => nextMonth()}>
             <EntypoIcon
               name="chevron-right"
-              color={Common.colors.deepGrey}
+              color={
+                year === now.getFullYear() && month === now.getMonth()
+                  ? Common.colors.basicGrey
+                  : Common.colors.deepGrey
+              }
               size={30}
             />
           </PrevNextBtn>
