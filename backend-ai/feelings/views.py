@@ -43,6 +43,21 @@ def req_get_trans():
         files={'file': open('sample_3.wav', 'rb')}
     )
     resp.raise_for_status()
+    id = resp.json()['id']
+    while True:
+        resp = requests.get(
+            'https://openapi.vito.ai/v1/transcribe/'+id,
+            headers={'Authorization': 'bearer '+jwt_token},
+        )
+        resp.raise_for_status()
+        if resp.json()['status'] == "completed":
+            # 응답이 성공적으로 온 경우
+            break
+        else:
+            # 응답이 오지 않은 경우
+            print(f'Retrying after 0.5 seconds...')
+            sleep(1)
+    print(resp.json())
 
 
 # 번역 함수
