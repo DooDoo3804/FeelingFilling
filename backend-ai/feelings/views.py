@@ -1,11 +1,14 @@
 import json
 import requests
 import tensorflow as tf
+import logging
 
 from time import sleep
 from transformers import pipeline
 from googletrans import Translator
 from rest_framework.decorators import api_view
+from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # 텍스트 번역 api
 # post 요청
@@ -102,8 +105,18 @@ def get_jwt():
               'client_secret': "8XHGuP-vT3HJNK0R9zfxeK97eciLUcHF5jPKyhsz"}
     )
     resp.raise_for_status()
-    # print(resp.json()['access_token'])
+    print(resp.json()['access_token'])
 
 
+def schedule_api():
+    print("starting update JWT")
+    sched = BackgroundScheduler()
+    sched.add_job(get_jwt, 'interval', minutes=2)
+    try:
+        sched.start()
+    except Exception as e:
+        logging.exception(f"Error in background job: {str(e)}")
+
+
+schedule_api()
 acc_gpu()
-translation_text()
