@@ -1,5 +1,7 @@
 import json
 import requests
+import time
+import datetime
 import tensorflow as tf
 import logging
 
@@ -18,13 +20,18 @@ jwt_token = ""
 # post 요청
 @api_view(['POST'])
 def analysis_text(request):
+    start = time.time()
     text = request.data['TEXT']
     print(text)
-    trans = translation_text(text)
+    feeling, score = translation_text(text)
 
     context = {
-        "trans": trans
+        "feeling": feeling,
+        "score": score,
     }
+    end = time.time()
+    due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
+    print(f"소요시간 : {due_time}")
     return JsonResponse(context, status=200)
 
 
@@ -73,7 +80,6 @@ def translation_text(text):
     text = text
 
     abs_translator = google.translate(text, dest="en")
-    analysis_emition(abs_translator)
 
     print("----------------------------------------------------------------")
     print("TRANSLATION")
@@ -81,7 +87,8 @@ def translation_text(text):
     *****************************************************************
     {abs_translator.text}""")
     print("----------------------------------------------------------------")
-    return abs_translator.text
+
+    return analysis_emition(abs_translator)
 
 
 # 감정 분석 함수
@@ -107,6 +114,7 @@ def analysis_emition(translation_result):
     print("MAX EMOTION")
     print(max_feeling, max_score)
     print("----------------------------------------------------------------")
+    return max_feeling, max_score
 
 
 # GPU 가속 함수
