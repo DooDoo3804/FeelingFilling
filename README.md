@@ -10,10 +10,10 @@
 - 피그마 링크: https://www.figma.com/file/eEABkyAEbl7iDol1790TT5/Feeling-Filling?node-id=0%3A1&t=bwdVlsTIfoV1dItB-1
 - PPT 링크: https://www.canva.com/design/DAFgnLYXiCs/J5tPcNr_AKwmEYB_tWDTVA/edit?utm_content=DAFgnLYXiCs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 - ERD (Main server)
-<img src="../docs/erd.png"  width="700" height="370">
+<img src="../docs/img/erd.png"  width="700" height="370">
 
 - ERD (결제 server)
-<img src="../docs/erd-billing.png"  width="700" height="370">
+<img src="../docs/img/erd-billing.png"  width="700" height="370">
 
 - API 설계 문서
 <img src="../docs/img/api.png"  width="700" height="370">
