@@ -61,7 +61,7 @@ const LoginText = styled.Text`
   font-family: 'NotoSansKR-Bold';
 `;
 
-const Landing = () => {
+const Landing = ({navigation}: {navigation: any}) => {
   return (
     <Container>
       <FontLogo source={font_logo} />
@@ -106,7 +106,7 @@ const Landing = () => {
           </SwiperView>
         </Swiper>
       </SwiperConatiner>
-      <LoginBtn>
+      <LoginBtn onPress={() => navigation.navigate('Login')}>
         <KakaoLogo source={kakao_logo} />
         <LoginText>카카오로 시작하기</LoginText>
       </LoginBtn>
