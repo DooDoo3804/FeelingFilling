@@ -2,6 +2,7 @@ package com.example.billing.service;
 
 import com.example.billing.data.dto.KakaoReadyDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,13 @@ public class KakaoPayService {
     static final String admin_Key = "${ADMIN_KEY}"; // 공개 조심! 본인 애플리케이션의 어드민 키를 넣어주세요
     private KakaoReadyDTO kakaoReady;
 
+    @Value("${test}")
+    private final String CID;
+
     public KakaoReadyDTO kakaoPayReady() {
         // 서버로 요청할 Header
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "KakaoAK " + "ad8b8c0f8031b6753789acc3decf76ca");
+        headers.add("Authorization", "KakaoAK " + "");
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
         // 카카오페이 요청 양식
