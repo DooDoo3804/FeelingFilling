@@ -14,8 +14,16 @@ const AuthStackNavigation = () => {
   return (
     <Stack.Navigator initialRouteName="Landing">
       {/* 여기 컴포넌트를 하나씩 추가해서 사용합니다. */}
-      <Stack.Screen name="Landing" component={Landing} />
-      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen
+        name="Landing"
+        component={Landing}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
