@@ -21,7 +21,9 @@ const FontLogo = styled.Image`
   height: 200px;
 `;
 
-const StyledSwiper = styled(Swiper)``;
+const SwiperConatiner = styled.View`
+  height: 150px;
+`;
 
 const SwiperView = styled.View`
   justify-content: center;
@@ -54,17 +56,24 @@ const Landing = () => {
   return (
     <Container>
       <FontLogo source={font_logo} />
-      <StyledSwiper showsButtons={false}>
-        <SwiperView>
-          <SwiperText>Hello Swiper</SwiperText>
-        </SwiperView>
-        <SwiperView>
-          <SwiperText>Beautiful</SwiperText>
-        </SwiperView>
-        <SwiperView>
-          <SwiperText>And simple</SwiperText>
-        </SwiperView>
-      </StyledSwiper>
+      <SwiperConatiner>
+        <Swiper
+          showsButtons={false}
+          autoplay
+          loop
+          autoplayTimeout={3}
+          activeDotColor={Common.colors.selectGrey}>
+          <SwiperView>
+            <SwiperText>Hello Swiper</SwiperText>
+          </SwiperView>
+          <SwiperView>
+            <SwiperText>Beautiful</SwiperText>
+          </SwiperView>
+          <SwiperView>
+            <SwiperText>And simple</SwiperText>
+          </SwiperView>
+        </Swiper>
+      </SwiperConatiner>
       <LoginBtn>
         <KakaoLogo source={kakao_logo} />
         <LoginText>카카오로 시작하기</LoginText>
