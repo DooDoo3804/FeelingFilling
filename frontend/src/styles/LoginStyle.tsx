@@ -63,3 +63,27 @@ export const BtnText = styled.Text<{textColor: string}>`
   font-family: 'NotoSansKR-Bold';
   color: ${(props: any) => props.textColor};
 `;
+
+export const InfoWrapper = styled.View`
+  width: 100%;
+  padding: 0px 30px;
+`;
+
+export const InfoTitle = styled.Text`
+  font-family: 'NotoSansKR-Bold';
+  font-size: 16px;
+  color: ${Common.colors.deepGrey};
+`;
+
+export const TitleContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const NameInput = styled.TextInput`
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: ${Common.colors.backgroundColor01};
+  margin-bottom: 20px;
+`;
