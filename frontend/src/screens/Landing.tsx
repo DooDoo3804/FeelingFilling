@@ -1,10 +1,11 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {Image} from 'react-native';
 import styled from 'styled-components/native';
 import Swiper from 'react-native-swiper';
 
 import {Common} from '../components/Common';
 import font_logo from '../assets/font_logo.png';
+import kakao_logo from '../assets/kakao_logo.png';
 
 const Container = styled.View`
   flex: 1;
@@ -32,12 +33,22 @@ const SwiperText = styled.Text`
 `;
 
 const LoginBtn = styled.TouchableOpacity`
-  background-color: ${Common.colors.emotionColor03};
-  padding: 20px 40px;
+  flex-direction: row;
+  background-color: ${Common.colors.kakao};
+  padding: 10px 30px;
   border-radius: 30px;
+  align-items: center;
 `;
 
-const LoginText = styled.Text``;
+const KakaoLogo = styled.Image`
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+`;
+
+const LoginText = styled.Text`
+  font-family: 'NotoSansKR-Bold';
+`;
 
 const Landing = () => {
   return (
@@ -55,7 +66,8 @@ const Landing = () => {
         </SwiperView>
       </StyledSwiper>
       <LoginBtn>
-        <LoginText>카카오톡으로 시작하기</LoginText>
+        <KakaoLogo source={kakao_logo} />
+        <LoginText>카카오로 시작하기</LoginText>
       </LoginBtn>
     </Container>
   );
