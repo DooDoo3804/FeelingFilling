@@ -1,5 +1,4 @@
 import React from 'react';
-import {Image} from 'react-native';
 import styled from 'styled-components/native';
 import Swiper from 'react-native-swiper';
 import Lottie from 'lottie-react-native';
@@ -7,7 +6,6 @@ import Lottie from 'lottie-react-native';
 import {Common} from '../components/Common';
 import font_logo from '../assets/font_logo.png';
 import kakao_logo from '../assets/kakao_logo.png';
-import landing01 from '../assets/landing_01.json';
 
 const Container = styled.View`
   flex: 1;
