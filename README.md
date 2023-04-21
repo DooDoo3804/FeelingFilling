@@ -16,11 +16,16 @@
 <img src="../docs/erd-billing.png"  width="700" height="370">
 
 - API 설계 문서
-<img src="../docs/api.png"  width="700" height="370">
-<img src="../docs/api2.png"  width="700" height="370">
-<img src="../docs/api3.png"  width="700" height="370">
-<img src="../docs/api4.png"  width="700" height="370">
-<img src="../docs/api5.png"  width="700" height="370">
-<img src="../docs/api6.png"  width="700" height="370">
-<img src="../docs/api7.png"  width="700" height="370">
-<img src="../docs/api8.png"  width="700" height="370">
+<img src="../docs/img/api.png"  width="700" height="370">
+<img src="../docs/img/api2.png"  width="700" height="370">
+<img src="../docs/img/api3.png"  width="700" height="370">
+<img src="../docs/img/api4.png"  width="700" height="370">
+<img src="../docs/img/api5.png"  width="700" height="370">
+<img src="../docs/img/api6.png"  width="700" height="370">
+<img src="../docs/img/api7.png"  width="700" height="370">
+<img src="../docs/img/api8.png"  width="700" height="370">
+
+- API 설계 문서 (결제)
+<img src="../docs/img/Billing1.png"  width="700" height="370">
+<img src="../docs/img/Billing2.png"  width="700" height="370">
+<img src="../docs/img/Billing3.png"  width="700" height="370">
