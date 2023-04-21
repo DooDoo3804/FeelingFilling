@@ -22,3 +22,5 @@
 <img src="../docs/api4.png"  width="700" height="370">
 <img src="../docs/api5.png"  width="700" height="370">
 <img src="../docs/api6.png"  width="700" height="370">
+<img src="../docs/api7.png"  width="700" height="370">
+<img src="../docs/api8.png"  width="700" height="370">
