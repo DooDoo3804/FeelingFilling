@@ -17,3 +17,8 @@
 
 - API 설계 문서
 <img src="../docs/api.png"  width="700" height="370">
+<img src="../docs/api2.png"  width="700" height="370">
+<img src="../docs/api3.png"  width="700" height="370">
+<img src="../docs/api4.png"  width="700" height="370">
+<img src="../docs/api5.png"  width="700" height="370">
+<img src="../docs/api6.png"  width="700" height="370">
