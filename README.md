@@ -16,4 +16,4 @@
 <img src="../docs/erd-billing.png"  width="700" height="370">
 
 - API 설계 문서
-<img src="../docs/erd.png"  width="700" height="370">
+<img src="../docs/api.png"  width="700" height="370">
