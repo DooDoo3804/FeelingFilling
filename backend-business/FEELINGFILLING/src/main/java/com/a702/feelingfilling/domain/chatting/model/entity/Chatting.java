@@ -45,5 +45,5 @@ public class Chatting {
   LocalDateTime chatDate;
   @NotNull
   @ColumnDefault("0")
-  short type;
+  int type;
 }

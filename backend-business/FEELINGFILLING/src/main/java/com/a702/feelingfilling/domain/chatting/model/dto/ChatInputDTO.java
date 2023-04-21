@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ChatInputDTO {
   String content;
-  short type;
+  int type;
 }
