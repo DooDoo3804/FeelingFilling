@@ -16,17 +16,18 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class KakaoPayService {
-    static final String cid = "TCSUBSCRIP"; // 가맹점 테스트 코드
+    @Value(${CID})
+    static final String cid; // 가맹점 테스트 코드
     static final String admin_Key = "${ADMIN_KEY}"; // 공개 조심! 본인 애플리케이션의 어드민 키를 넣어주세요
     private KakaoReadyDTO kakaoReady;
 
-    @Value("${test}")
-    private final String CID;
+    @Value("${KAKAO_ADMIN}")
+    private final String KAKAO_ADMIN;
 
     public KakaoReadyDTO kakaoPayReady() {
         // 서버로 요청할 Header
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "KakaoAK " + "");
+        headers.add("Authorization", "KakaoAK " + KAKAO_ADMIN);
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
         // 카카오페이 요청 양식
