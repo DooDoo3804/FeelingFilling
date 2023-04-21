@@ -20,6 +20,8 @@ interface ICommon {
     selectGrey: string;
     basicGrey: string;
     deepGrey: string;
+
+    kakao: string;
   };
 }
 
@@ -45,5 +47,7 @@ export const Common: ICommon = {
     selectGrey: '#8B8B8B',
     basicGrey: '#D9D9D9',
     deepGrey: '#484848',
+
+    kakao: '#fddc3f',
   },
 };
