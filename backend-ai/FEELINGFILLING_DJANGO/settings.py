@@ -26,6 +26,8 @@ SECRET_KEY = 'django-insecure-q!98vk5=z&h_p1(#eoqnupe%t*z_d+8v=vk546-8^(f3a5tzdy
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['3.38.191.128', '3.38.191.128:8000']
+
 
 # scheduler 설정
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
