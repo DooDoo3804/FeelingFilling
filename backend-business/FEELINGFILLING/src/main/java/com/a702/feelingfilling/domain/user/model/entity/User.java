@@ -1,5 +1,6 @@
 package com.a702.feelingfilling.domain.user.model.entity;
 
+import javax.persistence.Column;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -19,7 +20,9 @@ public class User {
 	String userId;
 	
 	String nickname;
-	
+
+	@Column(name = "id_oauth2")
+	String idOAuth2;
 	String role;
 
 	int minimum;

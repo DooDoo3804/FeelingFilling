@@ -4,6 +4,7 @@
 
 package com.a702.feelingfilling.global.config;
 
+import com.a702.feelingfilling.global.oauth.OAuth2Service;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
