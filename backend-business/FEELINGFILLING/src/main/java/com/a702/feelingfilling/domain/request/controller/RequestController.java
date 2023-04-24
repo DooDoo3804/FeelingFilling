@@ -64,7 +64,8 @@ public class RequestController {
 			
 		}
 		catch (Exception e){
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			status = HttpStatus.BAD_REQUEST;
+			resultMap.put("message", FAIL);
 			logger.error("유저 통계 에러 : {} ",e);
 		}
 		
