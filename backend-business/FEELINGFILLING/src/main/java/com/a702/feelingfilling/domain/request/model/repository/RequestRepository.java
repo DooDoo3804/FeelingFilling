@@ -29,7 +29,8 @@ public interface RequestRepository extends JpaRepository<Request,Integer> {
 	EmotionHighInterface getHighDayWithUserId(Integer userId);
 	
 	//4. 저금 누적액
-	
+	@Query(nativeQuery = true, value = "select ifnull(sum(amount),0) as amount from request where success = 1 and user_id = ?1")
+	int getUserTotal(Integer userId);
 	
 	//전체 사용자 통계
 	//1. 이번 달 저금
