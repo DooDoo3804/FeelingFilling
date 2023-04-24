@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -29,9 +28,11 @@ public class RequestController {
 	private static final String SUCCESS = "success";
 	private static final String FAIL = "fail";
 	private static final String ALREADY_EXIST = "already exists";
+	private static final int burger = 6500;
+	private static final int coffee = 4500;
 	
 	@Autowired
-	RequestService requestService;
+	private RequestService requestService;
 	
 	@ApiOperation(value = "유저 통계", notes = "유저 통계 API", response = Map.class)
 	@GetMapping("/user/{userId}")
@@ -40,20 +41,31 @@ public class RequestController {
 		Map<String, Object> resultMap = new HashMap<>();
 		
 		try{
+			//이번 달 저금
 			List<Stat> stats = requestService.getUserThisMonth(userId);
 			resultMap.put("thisMonth",stats);
 			logger.debug("사용자 이번 달 저금 : ", stats);
 			
+			//이번 달 감정 최고조
 			EmotionHigh emotionHigh = requestService.getEmotionHigh(userId);
 			resultMap.put("emotionHigh",emotionHigh);
 			logger.debug("사용자 이번 달 감정 최고 : ", emotionHigh);
+			
+			//저금 누적액
+			int userTotal = requestService.getUserTotal(userId);
+			resultMap.put("total",userTotal);
+			resultMap.put("coffee", userTotal/coffee);
+			resultMap.put("burger",userTotal/burger);
+			logger.debug("사용자 적금 누적액 : ", userTotal);
+			logger.debug("사용자 적금 누적액/커피값 : ", userTotal/coffee);
+			logger.debug("사용자 적금 누적액/버거값 : ", userTotal/burger);
 			
 			resultMap.put("message", SUCCESS);
 			
 		}
 		catch (Exception e){
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
-			logger.error("이번 달 감정 최고 조회 실패 : {} ",e);
+			logger.error("유저 통계 에러 : {} ",e);
 		}
 		
 		return new ResponseEntity<>(resultMap,status);

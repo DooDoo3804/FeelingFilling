@@ -6,7 +6,9 @@ import com.a702.feelingfilling.domain.request.model.dto.Stat;
 import java.util.List;
 
 public interface RequestService {
-	
+	//개인 통계
 	List<Stat> getUserThisMonth(Integer userId);
 	EmotionHigh getEmotionHigh(Integer userId);
+	int getUserTotal(Integer userId);
+	
 }

@@ -12,7 +12,7 @@ import java.util.List;
 public class RequestServiceImpl implements RequestService{
 	
 	@Autowired
-	RequestRepository requestRepository;
+	private RequestRepository requestRepository;
 	
 	@Override
 	public List<Stat> getUserThisMonth(Integer userId) {
@@ -40,6 +40,11 @@ public class RequestServiceImpl implements RequestService{
 				.hour(hour!=null? hour.getHour():-1)
 				.day(day!=null? convertDay(day.getDay()):"없음")
 				.build();
+	}
+	
+	@Override
+	public int getUserTotal(Integer userId) {
+		return requestRepository.getUserTotal(userId);
 	}
 	
 	public String convertDay(int d){
