@@ -13,7 +13,19 @@ public class RequestServiceImpl implements RequestService{
 	
 	@Autowired
 	RequestRepository requestRepository;
-
+	
+	@Override
+	public List<Stat> getUserThisMonth(Integer userId) {
+		List<StatInterface> statInterface = requestRepository.getUserThisMonth(userId);
+		
+		List<Stat> stats = new ArrayList<>();
+		statInterface.forEach(x->stats.add(Stat.builder()
+				.emotion(x.getEmotion())
+				.count(x.getCount())
+				.amount(x.getAmount())
+				.build()));
+		return stats;
+	}
 	
 	@Override
 	public EmotionHigh getEmotionHigh(Integer userId) {
