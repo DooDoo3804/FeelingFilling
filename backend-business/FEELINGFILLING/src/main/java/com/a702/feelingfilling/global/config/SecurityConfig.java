@@ -4,7 +4,12 @@
 
 package com.a702.feelingfilling.global.config;
 
+import com.a702.feelingfilling.domain.user.model.repository.UserRepository;
+import com.a702.feelingfilling.global.jwt.JwtFilter;
+import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.oauth.OAuth2Service;
+import com.a702.feelingfilling.global.oauth.OAuth2SuccessHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,14 +25,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 // 특정 주소 접근시 권한 및 인증을 위한 어노테이션(secured, pre~~) 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+  @Autowired
   private OAuth2Service oauth2Service;
+  @Autowired
   private OAuth2SuccessHandler oAuth2SuccessHandler;
+  @Autowired
   private JwtTokenService jwtTokenService;
+  @Autowired
   private UserRepository userRepository;
   @Override
   public void configure(WebSecurity web) throws Exception {
     web.ignoring()
-        .antMatchers("**","/token", "/swagger-ui/index.html", "/swagger-ui.html",
+        .antMatchers("/loginForm","/token", "/swagger-ui/index.html", "/swagger-ui.html",
              "/v3/api-docs", "/configuration/ui",
             "/swagger-resources", "/configuration/security",
             "/webjars/**", "/swagger/**","/swagger-resources/**","/swagger-ui/*");

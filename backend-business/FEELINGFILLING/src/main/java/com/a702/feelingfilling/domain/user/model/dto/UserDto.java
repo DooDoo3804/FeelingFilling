@@ -5,7 +5,7 @@ import lombok.Builder;
 
 @Builder
 public class UserDto {
-	String userId;
+	long userId;
 	String nickname;
 	int minimum;
 	int maximum;

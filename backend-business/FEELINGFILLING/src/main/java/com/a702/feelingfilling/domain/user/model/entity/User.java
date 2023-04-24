@@ -1,6 +1,8 @@
 package com.a702.feelingfilling.domain.user.model.entity;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -15,9 +17,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class User {
-	
+
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
-	String userId;
+	Integer userId;
 	
 	String nickname;
 

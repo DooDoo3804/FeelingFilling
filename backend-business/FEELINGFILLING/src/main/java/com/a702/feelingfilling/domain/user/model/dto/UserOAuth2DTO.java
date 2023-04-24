@@ -17,11 +17,10 @@ public class UserOAuth2DTO {
   private long id;
   private String idOAuth2;
   private String name;
-  private String token;
   private String img;
   private String role;
 
-  public UserOAuth2DTO toDTO(OAuth2User oAuth2User){
+  public static UserOAuth2DTO toDTO(OAuth2User oAuth2User){
     Map attributes = oAuth2User.getAttributes();
     return UserOAuth2DTO.builder()
         .idOAuth2((String)attributes.get("idOnly"))
