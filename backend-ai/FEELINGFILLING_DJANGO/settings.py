@@ -90,8 +90,12 @@ WSGI_APPLICATION = 'FEELINGFILLING_DJANGO.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': "feelingfilling",
+        "USER": "root",
+        "PASSWORD": "mammoth77",
+        "HOST": "3.38.191.128",
+        "PORT": '3306'
     }
 }
 
