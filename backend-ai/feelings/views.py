@@ -39,7 +39,7 @@ def analysis_text(request):
 # post 요청
 @api_view(['POST'])
 def analysis_voice(request):
-    voice = request.data.get
+    voice = request.FILES.get('file')
     print(voice)
 
     config = {
