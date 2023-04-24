@@ -39,22 +39,9 @@ def analysis_text(request):
 # post 요청
 @api_view(['POST'])
 def analysis_voice(request):
-    text = request.POST.get
-    print(text)
-    voice = request.data.get
+    voice = request.data.get["file"]
     print(voice)
-    context = {
-        "fake" : 1
-    }
-    return JsonResponse(context, status=200)
 
-
-# 측정된 감정 정도에 따라 적금 금액 계산
-def cal_deposit():
-    pass
-
-
-def req_get_trans():
     config = {
         "diarization": {
             "use_verification": False
@@ -65,7 +52,7 @@ def req_get_trans():
         'https://openapi.vito.ai/v1/transcribe',
         headers={'Authorization': 'bearer ' + jwt_token},
         data={'config': json.dumps(config)},
-        files={'file': open('sample_3.wav', 'rb')}
+        files={'file': open(voice, 'rb')}
     )
     resp.raise_for_status()
     id = resp.json()['id']
@@ -80,9 +67,20 @@ def req_get_trans():
             break
         else:
             # 응답이 오지 않은 경우
-            print(f'Retrying after 0.5 seconds...')
+            print(f'Retrying after 1 seconds...')
             sleep(1)
     print(resp.json())
+
+    context = {
+        "trans" : resp.json()
+    }
+
+    return JsonResponse(context, status=200)
+
+
+# 측정된 감정 정도에 따라 적금 금액 계산
+def cal_deposit():
+    pass
 
 
 # 번역 함수
