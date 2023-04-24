@@ -2,3 +2,8 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://k8a702.p.ssafy.io:3306/feelingfilling?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: mammoth77
