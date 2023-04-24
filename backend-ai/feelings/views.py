@@ -48,12 +48,14 @@ def analysis_voice(request):
             },
             "use_multi_channel": False
         }
+        print(jwt_token)
         resp = requests.post(
             'https://openapi.vito.ai/v1/transcribe',
             headers={'Authorization': 'bearer ' + jwt_token},
             data={'config': json.dumps(config)},
             files={'file': (voice.name, voice.read())},
         )
+        print(jwt_token)
         resp.raise_for_status()
         id = resp.json()['id']
         while True:
