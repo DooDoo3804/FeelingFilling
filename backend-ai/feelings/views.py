@@ -43,6 +43,10 @@ def analysis_voice(request):
     print(text)
     voice = request.data.get
     print(voice)
+    context = {
+        "fake" : 1
+    }
+    return JsonResponse(context, status=200)
 
 
 # 측정된 감정 정도에 따라 적금 금액 계산
