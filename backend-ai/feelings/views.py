@@ -39,8 +39,10 @@ def analysis_text(request):
 # post 요청
 @api_view(['POST'])
 def analysis_voice(request):
-    text = request.POST.get("TEXT")
-    pass
+    text = request.POST.get
+    print(text)
+    voice = request.data.get
+    print(voice)
 
 
 # 측정된 감정 정도에 따라 적금 금액 계산
