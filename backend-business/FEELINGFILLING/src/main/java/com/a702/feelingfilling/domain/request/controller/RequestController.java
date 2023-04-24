@@ -40,6 +40,9 @@ public class RequestController {
 		Map<String, Object> resultMap = new HashMap<>();
 		
 		try{
+			List<Stat> stats = requestService.getUserThisMonth(userId);
+			resultMap.put("thisMonth",stats);
+			logger.debug("사용자 이번 달 저금 : ", stats);
 			
 			EmotionHigh emotionHigh = requestService.getEmotionHigh(userId);
 			resultMap.put("emotionHigh",emotionHigh);
