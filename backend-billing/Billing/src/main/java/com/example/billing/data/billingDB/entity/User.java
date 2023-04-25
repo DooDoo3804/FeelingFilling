@@ -1,19 +1,25 @@
 package com.example.billing.data.billingDB.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @Entity
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int userId;
 
-    @Column(name = "service_name")
     private String serviceName;
 
-    @Column(name = "service+user_id")
     private int serviceUserId;
+
+    private String sid;
+
+    private Long point;
 }
