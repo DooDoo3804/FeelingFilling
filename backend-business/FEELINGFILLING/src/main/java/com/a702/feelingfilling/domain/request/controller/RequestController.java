@@ -1,6 +1,7 @@
 package com.a702.feelingfilling.domain.request.controller;
 
 import com.a702.feelingfilling.domain.request.model.dto.EmotionHigh;
+import com.a702.feelingfilling.domain.request.model.dto.Month;
 import com.a702.feelingfilling.domain.request.model.dto.Stat;
 import com.a702.feelingfilling.domain.request.service.RequestService;
 import io.swagger.annotations.Api;
@@ -45,6 +46,11 @@ public class RequestController {
 			List<Stat> stats = requestService.getUserThisMonth(userId);
 			resultMap.put("thisMonth",stats);
 			logger.debug("사용자 이번 달 저금 : ", stats);
+			
+			//월별 추이
+			List<Month> months = requestService.getUserMonths(userId);
+			resultMap.put("userMonths",months);
+			logger.debug("사용자 월별 추이", months);
 			
 			//이번 달 감정 최고조
 			EmotionHigh emotionHigh = requestService.getEmotionHigh(userId);
