@@ -46,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (jwtTokenService.getType(accessToken).equals("access")) {
           //토큰이 엑세스 토큰인지 먼저 확인한 후,
           //토큰에서 지금 접속한 사용자 정보 꺼내기 시도
-          long id = jwtTokenService.getUserId(accessToken);
+          int id = jwtTokenService.getUserId(accessToken);
           String nickName = jwtTokenService.getUserNickName(accessToken);
           String role = jwtTokenService.getUserRole(
               accessToken); //토큰에 role을 담았는데, role이 변하는 기능을 넣으면 DB에서 조회한 값을 넣는게 맞는듯

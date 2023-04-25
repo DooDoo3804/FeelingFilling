@@ -30,7 +30,7 @@ public class JwtTokenService {
   }//Base64로 인코딩
 
   //토큰 생성 메서드
-  public String generateAccessJwt(long userId, String nickName, String role) {
+  public String generateAccessJwt(int userId, String nickName, String role) {
     long tokenPeriod = 1000L * 60L * 1000L; //인증토큰의 만료시간 5분
     Claims claims = Jwts.claims();
     claims.put("role", role);
@@ -46,7 +46,7 @@ public class JwtTokenService {
         .compact();
   }
 
-  public String generateRefreshJwt(long userId, String nickName, String role) {
+  public String generateRefreshJwt(int userId, String nickName, String role) {
     long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L; //Refresh토큰 만료 3주
     Claims claims = Jwts.claims();
     claims.put("userId", userId);
@@ -70,7 +70,7 @@ public class JwtTokenService {
   }
 
 
-  public JwtTokens generateToken(long userId, String nickName, String role) {
+  public JwtTokens generateToken(int userId, String nickName, String role) {
 
     return new JwtTokens(
         generateAccessJwt(userId, nickName, role),
@@ -98,7 +98,7 @@ public class JwtTokenService {
   public JwtTokens refreshAccessToken(String refreshToken) {
     try{
       //리프레쉬 토큰에 담긴 사용자 정보
-      long id = getUserId(refreshToken);
+      int id = getUserId(refreshToken);
       log.info("요청한 사용자 id : {}",id);
 //      User user = userRepository.findById(id);
 //      String refreshTokenInDB = user.getRefreshToken();
@@ -115,7 +115,7 @@ public class JwtTokenService {
     }
   }
 
-  public long getUserId(String token) {
+  public int getUserId(String token) {
     return Integer.parseInt(
         Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("userId")
             .toString());

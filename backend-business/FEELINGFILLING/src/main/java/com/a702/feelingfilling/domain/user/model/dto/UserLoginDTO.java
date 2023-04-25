@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 @Builder
 @ToString
 public class UserLoginDTO {
-  private long id;
+  private int id;
   private String nickname;
   private String role;
 }
