@@ -12,6 +12,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
+from .models import React, Chatting
 
 jwt_token = ""
 
@@ -31,6 +32,11 @@ def analysis_text(request):
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
+    
+    # 테이블에 저장
+    chatting = chatting.objects().get(user_id = user)
+    react = React( chatting_id = chatting, content = text, emotion = feeling, amount = 1818)
+    react.save()
     return JsonResponse(context, status=200)
 
 
@@ -39,37 +45,40 @@ def analysis_text(request):
 @api_view(['POST'])
 def analysis_voice(request):
     start = time.time()
-    voice = request.FILES.get('file')
-    if voice is not None:
-        config = {
-            "diarization": {
-                "use_verification": False
-            },
-            "use_multi_channel": False
-        }
-        resp = requests.post(
-            'https://openapi.vito.ai/v1/transcribe',
-            headers={'Authorization': 'bearer ' + jwt_token},
-            data={'config': json.dumps(config)},
-            files={'file': (voice.name, voice.read())},
-        )
-        resp.raise_for_status()
-        id = resp.json()['id']
-        while True:
-            resp = requests.get(
-                'https://openapi.vito.ai/v1/transcribe/'+id,
-                headers={'Authorization': 'bearer '+jwt_token},
+    try:
+        voice = request.FILES.get('file')
+        if voice is not None:
+            config = {
+                "diarization": {
+                    "use_verification": False
+                },
+                "use_multi_channel": False
+            }
+            resp = requests.post(
+                'https://openapi.vito.ai/v1/transcribe',
+                headers={'Authorization': 'bearer ' + jwt_token},
+                data={'config': json.dumps(config)},
+                files={'file': (voice.name, voice.read())},
             )
             resp.raise_for_status()
-            if resp.json()['status'] == "completed":
-                # 응답이 성공적으로 온 경우
-                break
-            else:
-                # 응답이 오지 않은 경우
-                print(f'Retrying after 1 seconds...')
-                sleep(1)
-        print(resp.json())
-    else : print("파일 없음!")
+            id = resp.json()['id']
+            while True:
+                resp = requests.get(
+                    'https://openapi.vito.ai/v1/transcribe/'+id,
+                    headers={'Authorization': 'bearer '+jwt_token},
+                )
+                resp.raise_for_status()
+                if resp.json()['status'] == "completed":
+                    # 응답이 성공적으로 온 경우
+                    break
+                else:
+                    # 응답이 오지 않은 경우 1촣 재요청
+                    print(f'Retrying after 1 seconds...')
+                    sleep(1)
+            print(resp.json())
+        else : print("파일 없음!")
+    except Exception as e:
+        print(e)
 
     feeling, score = translation_text( resp.json()) 
     context = {
@@ -150,6 +159,14 @@ def acc_gpu():
             print(e)
 
 
+# 초기에 모델을 받는데 시간이 오래걸림 // 초기 세팅 함수
+def init_setting():
+    get_jwt()
+    classifier = pipeline("text-classification",
+                          model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
+    classifier("")
+
+
 """
     인증 요청
     token의 만료 기간은 6시간입니다.
@@ -183,7 +200,9 @@ def schedule_api():
 
 
 # 맨 처음 실행
-get_jwt()
+init_setting()
+
 # 스케줄러 api 실행
 schedule_api()
+
 acc_gpu()
