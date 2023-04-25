@@ -22,7 +22,6 @@ jwt_token = ""
 def analysis_text(request):
     start = time.time()
     text = request.data['TEXT']
-    print(text)
     feeling, score = translation_text(text)
 
     context = {
