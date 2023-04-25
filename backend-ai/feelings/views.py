@@ -30,7 +30,7 @@ def analysis_text(request):
     chatting = Chatting(user = user, content = text, chat_date = datetime.datetime.now(), type = 1)
     chatting.save()
 
-    feeling, score = translation_text(text)
+    feeling, score, trans = translation_text(text)
 
     context = {
         "feeling": feeling,
@@ -38,11 +38,17 @@ def analysis_text(request):
     }
     end = time.time()
     
-    # react 데이터 저장
-    react = React(chatting = chatting, content = text, emotion = feeling, amount = 181818)
+    # react 데이터 저장 (GPT 답변)
+    react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = 181818)
     react.save()
 
-    # 
+    # request 데이터 저장 (success 받아와야 함)
+    request = Request(user = user, content = text, request_time = datetime.datetime.now(),
+                      translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                      amount = 181818, success = 1)
+    request.save()
+
+
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
     return JsonResponse(context, status=200)
@@ -144,7 +150,7 @@ def analysis_emition(translation_result):
     print("MAX EMOTION")
     print(max_feeling, max_score)
     print("----------------------------------------------------------------")
-    return max_feeling, max_score
+    return max_feeling, max_score, translation_result.text
 
 
 # GPU 가속 함수
