@@ -39,37 +39,40 @@ def analysis_text(request):
 @api_view(['POST'])
 def analysis_voice(request):
     start = time.time()
-    voice = request.FILES.get('file')
-    if voice is not None:
-        config = {
-            "diarization": {
-                "use_verification": False
-            },
-            "use_multi_channel": False
-        }
-        resp = requests.post(
-            'https://openapi.vito.ai/v1/transcribe',
-            headers={'Authorization': 'bearer ' + jwt_token},
-            data={'config': json.dumps(config)},
-            files={'file': (voice.name, voice.read())},
-        )
-        resp.raise_for_status()
-        id = resp.json()['id']
-        while True:
-            resp = requests.get(
-                'https://openapi.vito.ai/v1/transcribe/'+id,
-                headers={'Authorization': 'bearer '+jwt_token},
+    try:
+        voice = request.FILES.get('file')
+        if voice is not None:
+            config = {
+                "diarization": {
+                    "use_verification": False
+                },
+                "use_multi_channel": False
+            }
+            resp = requests.post(
+                'https://openapi.vito.ai/v1/transcribe',
+                headers={'Authorization': 'bearer ' + jwt_token},
+                data={'config': json.dumps(config)},
+                files={'file': (voice.name, voice.read())},
             )
             resp.raise_for_status()
-            if resp.json()['status'] == "completed":
-                # 응답이 성공적으로 온 경우
-                break
-            else:
-                # 응답이 오지 않은 경우
-                print(f'Retrying after 1 seconds...')
-                sleep(1)
-        print(resp.json())
-    else : print("파일 없음!")
+            id = resp.json()['id']
+            while True:
+                resp = requests.get(
+                    'https://openapi.vito.ai/v1/transcribe/'+id,
+                    headers={'Authorization': 'bearer '+jwt_token},
+                )
+                resp.raise_for_status()
+                if resp.json()['status'] == "completed":
+                    # 응답이 성공적으로 온 경우
+                    break
+                else:
+                    # 응답이 오지 않은 경우 1촣 재요청
+                    print(f'Retrying after 1 seconds...')
+                    sleep(1)
+            print(resp.json())
+        else : print("파일 없음!")
+    except Exception as e:
+        print(e)
 
     feeling, score = translation_text( resp.json()) 
     context = {
