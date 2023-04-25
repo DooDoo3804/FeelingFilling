@@ -42,36 +42,38 @@ def analysis_voice(request):
     print(jwt_token)
     voice = request.FILES.get('file')
     print(voice)
-    config = {
-        "diarization": {
-            "use_verification": False
-        },
-        "use_multi_channel": False
-    }
-    print(jwt_token)
-    resp = requests.post(
-        'https://openapi.vito.ai/v1/transcribe',
-        headers={'Authorization': 'bearer ' + jwt_token},
-        data={'config': json.dumps(config)},
-        files={'file': (voice.name, voice.read())},
-    )
-    print(jwt_token)
-    resp.raise_for_status()
-    id = resp.json()['id']
-    while True:
-        resp = requests.get(
-            'https://openapi.vito.ai/v1/transcribe/'+id,
-            headers={'Authorization': 'bearer '+jwt_token},
+    if voice is not None:
+        config = {
+            "diarization": {
+                "use_verification": False
+            },
+            "use_multi_channel": False
+        }
+        print(jwt_token)
+        resp = requests.post(
+            'https://openapi.vito.ai/v1/transcribe',
+            headers={'Authorization': 'bearer ' + jwt_token},
+            data={'config': json.dumps(config)},
+            files={'file': (voice.name, voice.read())},
         )
+        print(jwt_token)
         resp.raise_for_status()
-        if resp.json()['status'] == "completed":
-            # 응답이 성공적으로 온 경우
-            break
-        else:
-            # 응답이 오지 않은 경우
-            print(f'Retrying after 1 seconds...')
-            sleep(1)
-    print(resp.json())
+        id = resp.json()['id']
+        while True:
+            resp = requests.get(
+                'https://openapi.vito.ai/v1/transcribe/'+id,
+                headers={'Authorization': 'bearer '+jwt_token},
+            )
+            resp.raise_for_status()
+            if resp.json()['status'] == "completed":
+                # 응답이 성공적으로 온 경우
+                break
+            else:
+                # 응답이 오지 않은 경우
+                print(f'Retrying after 1 seconds...')
+                sleep(1)
+        print(resp.json())
+    else : print("파일 없음!")
 
     context = {
         "trans" : resp.json()
@@ -158,6 +160,7 @@ def acc_gpu():
 
 
 def get_jwt():
+    global jwt_token
     print("start schd")
     resp = requests.post(
         'https://openapi.vito.ai/v1/authenticate',
@@ -180,7 +183,7 @@ def schedule_api():
 
 
 # 맨 처음 실행
-# get_jwt()
+get_jwt()
 # 스케줄러 api 실행
 schedule_api()
 acc_gpu()
