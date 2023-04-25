@@ -16,15 +16,30 @@ public class RequestServiceImpl implements RequestService{
 	
 	@Override
 	public List<Stat> getUserThisMonth(Integer userId) {
-		List<StatInterface> statInterface = requestRepository.getUserThisMonth(userId);
+		List<StatInterface> statInterfaces = requestRepository.getUserThisMonth(userId);
 		
 		List<Stat> stats = new ArrayList<>();
-		statInterface.forEach(x->stats.add(Stat.builder()
+		statInterfaces.forEach(x->stats.add(Stat.builder()
 				.emotion(x.getEmotion())
 				.count(x.getCount())
 				.amount(x.getAmount())
 				.build()));
 		return stats;
+	}
+	
+	@Override
+	public List<Month> getUserMonths(Integer userId) {
+		List<MonthInterface> monthInterfaces = requestRepository.getUserMonths(userId);
+		
+		List<Month> months = new ArrayList<>();
+		
+		monthInterfaces.forEach(x->months.add(Month.builder()
+				.emotion(x.getEmotion())
+				.month(x.getMonth())
+				.amount(x.getAmount())
+				.build()));
+		
+		return months;
 	}
 	
 	@Override
