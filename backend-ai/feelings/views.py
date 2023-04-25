@@ -12,7 +12,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
-from .models import React, Chatting
+from .models import React, Chatting, Request, User
 
 jwt_token = ""
 
@@ -21,22 +21,36 @@ jwt_token = ""
 # post 요청
 @api_view(['POST'])
 def analysis_text(request):
+    # 받아온 text 데이터
     start = time.time()
     text = request.data['TEXT']
-    feeling, score = translation_text(text)
+    
+    # chatting 저장
+    user = User.objects.get(user_id = 1)
+    chatting = Chatting(user = user, content = text, chat_date = datetime.datetime.now(), type = 1)
+    chatting.save()
+
+    feeling, score, trans = translation_text(text)
 
     context = {
         "feeling": feeling,
         "score": score,
     }
     end = time.time()
+    
+    # react 데이터 저장 (GPT 답변)
+    react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = 181818)
+    react.save()
+
+    # request 데이터 저장 (success 받아와야 함)
+    request = Request(user = user, content = text, request_time = datetime.datetime.now(),
+                      translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                      amount = 181818, success = 1)
+    request.save()
+
+
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-    
-    # 테이블에 저장
-    chatting = chatting.objects().get(user_id = user)
-    react = React( chatting_id = chatting, content = text, emotion = feeling, amount = 1818)
-    react.save()
     return JsonResponse(context, status=200)
 
 
@@ -136,7 +150,7 @@ def analysis_emition(translation_result):
     print("MAX EMOTION")
     print(max_feeling, max_score)
     print("----------------------------------------------------------------")
-    return max_feeling, max_score
+    return max_feeling, max_score, translation_result.text
 
 
 # GPU 가속 함수
