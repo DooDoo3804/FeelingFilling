@@ -12,7 +12,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
-from .models import React, Chatting
+from .models import React, Chatting, Request, User
 
 jwt_token = ""
 
@@ -21,8 +21,15 @@ jwt_token = ""
 # post 요청
 @api_view(['POST'])
 def analysis_text(request):
+    # 받아온 text 데이터
     start = time.time()
     text = request.data['TEXT']
+    
+    # chatting 저장
+    user = User.objects.get(user_id = 1)
+    chatting = Chatting(user = user, content = text, chat_date = datetime.datetime.now(), type = 1)
+    chatting.save()
+
     feeling, score = translation_text(text)
 
     context = {
@@ -32,11 +39,7 @@ def analysis_text(request):
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-    
-    # 테이블에 저장
-    chatting = chatting.objects().get(user_id = user)
-    react = React( chatting_id = chatting, content = text, emotion = feeling, amount = 1818)
-    react.save()
+
     return JsonResponse(context, status=200)
 
 
