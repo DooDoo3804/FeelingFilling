@@ -37,9 +37,14 @@ def analysis_text(request):
         "score": score,
     }
     end = time.time()
+    
+    # react 데이터 저장
+    react = React(chatting = chatting, content = text, emotion = feeling, amount = 181818)
+    react.save()
+
+    # 
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-
     return JsonResponse(context, status=200)
 
 
