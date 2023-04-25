@@ -36,6 +36,9 @@ public interface RequestRepository extends JpaRepository<Request,Integer> {
 	
 	//전체 사용자 통계
 	//1. 이번 달 저금
+	@Query(nativeQuery = true, value = "select emotion, ifnull(sum(amount),0) as amount from request where success = 1 and extract(year_month from request_time) = extract(year_month from now()) group by emotion")
+	List<StatInterface> getThisMonth();
+	
 	//2. 전날 저금 추이
 	//3. 이번 달 감정왕
 	//4. 저금 누적액
