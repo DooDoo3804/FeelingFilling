@@ -17,10 +17,8 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
 
-
-
 jwt:
-  secret: makemoneyfromyouremotion
+  secret: makemoneyfromyouremotionandfeelbetter
   jackson:
     serialization:
       fail-on-empty-beans: false

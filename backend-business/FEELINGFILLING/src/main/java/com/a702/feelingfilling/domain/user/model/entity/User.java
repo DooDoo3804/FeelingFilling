@@ -1,5 +1,7 @@
 package com.a702.feelingfilling.domain.user.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sun.istack.NotNull;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +10,9 @@ import lombok.*;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Getter
@@ -20,6 +25,7 @@ public class User {
 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
+	@Column(name = "user_id")
 	Integer userId;
 	
 	String nickname;
@@ -28,10 +34,15 @@ public class User {
 	String idOAuth2;
 	String role;
 
+	@NotNull
+	@ColumnDefault("0")
 	int minimum;
-	
+
+	@NotNull
+	@ColumnDefault("0")
 	int maximum;
-	
+
+	@NotNull
 	LocalDateTime join_date;
 	
 }
