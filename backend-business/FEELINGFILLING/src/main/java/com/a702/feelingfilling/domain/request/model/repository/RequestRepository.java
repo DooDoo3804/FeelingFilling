@@ -1,6 +1,7 @@
 package com.a702.feelingfilling.domain.request.model.repository;
 
 import com.a702.feelingfilling.domain.request.model.dto.EmotionHighInterface;
+import com.a702.feelingfilling.domain.request.model.dto.MonthInterface;
 import com.a702.feelingfilling.domain.request.model.dto.StatInterface;
 import com.a702.feelingfilling.domain.request.model.entity.Request;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,7 +19,8 @@ public interface RequestRepository extends JpaRepository<Request,Integer> {
 	List<StatInterface> getUserThisMonth(Integer userId);
 	
 	//2. 월별 추이
-	
+	@Query(nativeQuery = true, value = "select emotion, month(request_time) as month, sum(amount) as amount from request where success = 1 and user_id = ?1 and request_time>=date_sub(now(), interval 1 year) group by emotion, month(request_time) order by emotion, month(request_time)")
+	List<MonthInterface> getUserMonths(Integer userId);
 	
 	//3. 이번 달 감정 최고조
 	@Query(nativeQuery = true, value = "select day(request_time) as date from request where success = 1 and user_id = ?1 and extract(year_month from request_time) = extract(year_month from now()) group by day(request_time) order by count(amount) desc limit 1")
