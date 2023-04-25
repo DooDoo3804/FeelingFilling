@@ -150,6 +150,14 @@ def acc_gpu():
             print(e)
 
 
+# 초기에 모델을 받는데 시간이 오래걸림 // 초기 세팅 함수
+def init_setting():
+    get_jwt()
+    classifier = pipeline("text-classification",
+                          model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
+    classifier("")
+
+
 """
     인증 요청
     token의 만료 기간은 6시간입니다.
@@ -183,7 +191,9 @@ def schedule_api():
 
 
 # 맨 처음 실행
-get_jwt()
+init_setting()
+
 # 스케줄러 api 실행
 schedule_api()
+
 acc_gpu()
