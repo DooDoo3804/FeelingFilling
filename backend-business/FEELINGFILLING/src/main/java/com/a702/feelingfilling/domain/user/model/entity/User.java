@@ -22,27 +22,33 @@ import org.springframework.data.annotation.CreatedDate;
 @NoArgsConstructor
 @Builder
 public class User {
-
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	@Column(name = "user_id")
 	Integer userId;
-	
 	String nickname;
-
 	@Column(name = "id_oauth2")
 	String idOAuth2;
 	String role;
-
 	@NotNull
 	@ColumnDefault("0")
 	int minimum;
-
 	@NotNull
 	@ColumnDefault("0")
 	int maximum;
-
 	@NotNull
 	LocalDateTime join_date;
-	
+
+	public void updateRange(int max, int min){
+		this.maximum = max;
+		this.minimum = min;
+	}
+
+	public void updateJoinDate(){
+		this.join_date = LocalDateTime.now();
+	}
+	public void updateRole(String role){
+		this.role = role;
+	}
+
 }

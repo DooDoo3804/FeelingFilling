@@ -51,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);//토큰 기반 인증을 위해 세션 생성x
 
     http.authorizeRequests()
-        .antMatchers()
+        .antMatchers("**")
         .permitAll() //모두 사용가능한 페이지 설정
         //.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
         //.antMatchers("/admin/**").access("hasRole('ROLE_ADMIN') and hasRole('ROLE_USER')")
@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     http.oauth2Login()//OAuth2 로그인 방식을 사용
         .loginPage(
-            "http://k8a702.p.ssafy.io") //Oauth로그인 페이지 설정, 로그인 안되어있으면 기본 login으로 가는데 그 주소를 loginForm으로 바꿔줌
+            "http://k8a702.p.ssafy.io/login") //Oauth로그인 페이지 설정, 로그인 안되어있으면 기본 login으로 가는데 그 주소를 loginForm으로 바꿔줌
         .authorizationEndpoint()
         .and()
         .userInfoEndpoint() //로그인된 사용자 정보
