@@ -12,6 +12,7 @@ type FetchData<T> = {
 export const useAxiosWithRefreshToken = <T>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  request_config: JSON | null = null,
 ): FetchData<T> => {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<AxiosError | null>(null);
@@ -45,6 +46,7 @@ export const useAxiosWithRefreshToken = <T>(
       try {
         const config = {
           headers: {Authorization: `Bearer ${accessToken}`},
+          body: request_config,
         };
         const res: AxiosResponse<T> = await axios.request<T>({
           url,
@@ -69,6 +71,7 @@ export const useAxiosWithRefreshToken = <T>(
               headers: {
                 Authorization: `Bearer ${refreshRes.data.access_token}`,
               },
+              body: request_config,
             };
             const newRes: AxiosResponse<T> = await axios.request<T>({
               url,
@@ -82,7 +85,7 @@ export const useAxiosWithRefreshToken = <T>(
             setData(newRes.data);
           } catch (refreshErr: any) {
             setError(refreshErr);
-            // 로그아웃 시키기
+            // 로그인 구현되면 로그아웃 시키기
           }
         } else {
           setError(err);
@@ -98,5 +101,4 @@ export const useAxiosWithRefreshToken = <T>(
 
 // 다음과 같이 import하여 사용
 // import { useAxioswithRfToken } from './useAxioswithRfToken';
-
-// const { data, error } = useFetch(url, method);
+// const { data, error } = useFetch(url, method, null);
