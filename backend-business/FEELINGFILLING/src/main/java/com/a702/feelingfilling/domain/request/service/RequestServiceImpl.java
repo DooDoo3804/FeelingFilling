@@ -62,6 +62,18 @@ public class RequestServiceImpl implements RequestService{
 		return requestRepository.getUserTotal(userId);
 	}
 	
+	@Override
+	public List<Stat> getThisMonth() {
+		List<StatInterface> statInterfaces = requestRepository.getThisMonth();
+		
+		List<Stat> stats = new ArrayList<>();
+		statInterfaces.forEach(x-> stats.add(Stat.builder()
+				.emotion(x.getEmotion())
+				.amount(x.getAmount())
+				.build()));
+		return stats;
+	}
+	
 	public String convertDay(int d){
 		String[] day = new String[]{"월","화","수","목","금","토","일"};
 		

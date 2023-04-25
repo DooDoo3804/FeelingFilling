@@ -44,7 +44,7 @@ public class RequestController {
 		try{
 			//이번 달 저금
 			List<Stat> stats = requestService.getUserThisMonth(userId);
-			resultMap.put("thisMonth",stats);
+			resultMap.put("userThisMonth",stats);
 			logger.debug("사용자 이번 달 저금 : ", stats);
 			
 			//월별 추이
@@ -65,6 +65,28 @@ public class RequestController {
 			logger.debug("사용자 적금 누적액 : ", userTotal);
 			logger.debug("사용자 적금 누적액/커피값 : ", userTotal/coffee);
 			logger.debug("사용자 적금 누적액/버거값 : ", userTotal/burger);
+			
+			resultMap.put("message", SUCCESS);
+			
+		}
+		catch (Exception e){
+			status = HttpStatus.BAD_REQUEST;
+			resultMap.put("message", FAIL);
+			logger.error("유저 통계 에러 : {} ",e);
+		}
+		
+		return new ResponseEntity<>(resultMap,status);
+	}	@ApiOperation(value = "전체 통계", notes = "전체 통계 API", response = Map.class)
+	@GetMapping("/all")
+	public ResponseEntity<?> getTotalStat(){
+		HttpStatus status = HttpStatus.OK;
+		Map<String, Object> resultMap = new HashMap<>();
+		
+		try{
+			//이번 달 저금
+			List<Stat> stats = requestService.getThisMonth();
+			resultMap.put("totalThisMonth",stats);
+			logger.debug("전체 사용자 이번 달 저금 : ", stats);
 			
 			resultMap.put("message", SUCCESS);
 			
