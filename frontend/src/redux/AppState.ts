@@ -10,6 +10,6 @@ export type User = {
 
 export type AppState = {
   loggedIn: boolean;
-  loggedUser: User;
+  loggedUser: User | null;
   inProgress: boolean;
 };

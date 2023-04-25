@@ -3,14 +3,7 @@ import type {LoginActions, ToggleProgressAction, TokenAction} from './actions';
 
 const initialState: AppState = {
   loggedIn: false,
-  loggedUser: {
-    name: '',
-    id: -1,
-    min_money: -1,
-    max_money: -1,
-    refresh_token: '',
-    access_token: '',
-  },
+  loggedUser: null,
   inProgress: false,
 };
 
@@ -22,11 +15,9 @@ export const rootReducer = (
 ) => {
   switch (action.type) {
     case 'login':
-      // ...
-      return state;
+      return {...state, loggedIn: true, loggedUser: state.loggedUser};
     case 'logout':
-      // ...
-      return state;
+      return {...state, loggedIn: false, loggedUser: null};
     case 'set_progress':
       return {...state, inProgress: action.inProgress};
     case 'set_accesstoken':
