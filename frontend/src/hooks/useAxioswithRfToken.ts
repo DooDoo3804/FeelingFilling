@@ -102,3 +102,4 @@ export const useAxiosWithRefreshToken = <T>(
 // 다음과 같이 import하여 사용
 // import { useAxioswithRfToken } from './useAxioswithRfToken';
 // const { data, error } = useFetch(url, method, null);
+// redux에서 loggedIn 가져와서 로그인 상태인지 먼저 확인하고 사용해주세요.
