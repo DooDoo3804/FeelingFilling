@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {Common} from '../components/Common';
 
 export const Container = styled.View`
@@ -8,6 +9,12 @@ export const Container = styled.View`
   justify-content: space-evenly;
   align-items: center;
   padding: 10px;
+`;
+
+export const KeyboardContainer = styled(TouchableWithoutFeedback)`
+  flex: 1;
+  width: 100%;
+  height: 100%;
 `;
 
 export const FontLogo = styled.Image`
@@ -86,4 +93,10 @@ export const NameInput = styled.TextInput`
   border-radius: 20px;
   background-color: ${Common.colors.backgroundColor01};
   margin-bottom: 20px;
+`;
+
+export const SliderContainer = styled.View`
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 `;
