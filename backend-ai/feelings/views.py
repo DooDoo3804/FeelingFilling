@@ -39,9 +39,8 @@ def analysis_text(request):
 # post 요청
 @api_view(['POST'])
 def analysis_voice(request):
-    print(jwt_token)
+    start = time.time()
     voice = request.FILES.get('file')
-    print(voice)
     if voice is not None:
         config = {
             "diarization": {
@@ -49,14 +48,12 @@ def analysis_voice(request):
             },
             "use_multi_channel": False
         }
-        print(jwt_token)
         resp = requests.post(
             'https://openapi.vito.ai/v1/transcribe',
             headers={'Authorization': 'bearer ' + jwt_token},
             data={'config': json.dumps(config)},
             files={'file': (voice.name, voice.read())},
         )
-        print(jwt_token)
         resp.raise_for_status()
         id = resp.json()['id']
         while True:
@@ -75,10 +72,14 @@ def analysis_voice(request):
         print(resp.json())
     else : print("파일 없음!")
 
+    feeling, score = translation_text( resp.json()) 
     context = {
-        "trans" : resp.json()
+        "feeling": feeling,
+        "score": score,
     }
-
+    end = time.time()
+    due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
+    print(f"소요시간 : {due_time}")
     return JsonResponse(context, status=200)
 
 
