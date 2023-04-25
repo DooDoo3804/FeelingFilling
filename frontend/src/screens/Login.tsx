@@ -1,8 +1,13 @@
 import React from 'react';
-import {Text} from 'react-native';
+import {Text, Button} from 'react-native';
 
-const Login = () => {
-  return <Text>Login</Text>;
+const Login = ({navigation}: {navigation: any}) => {
+  return (
+    <>
+      <Text>Login</Text>
+      <Button title="move" onPress={() => navigation.navigate('SignUp')} />
+    </>
+  );
 };
 
 export default Login;
