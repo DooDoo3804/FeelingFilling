@@ -2,6 +2,7 @@
   "extends": "@tsconfig/react-native/tsconfig.json",
   "compilerOptions": {
     "types": ["jest", "styled-components-react-native", "@types/react-native"],
+    "typeRoots": ["./node_modules/@types", "@types"],
     "baseUrl": "./",
     "paths": {
       "@react-navigation/stack": [

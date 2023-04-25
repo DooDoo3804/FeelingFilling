@@ -9,6 +9,10 @@ interface ICommon {
     chatColor01: string;
     chatColor02: string;
     chatColor03: string;
+    sendingChatColor01: string;
+    receivedChatColor01: string;
+    receivedChatColor02: string;
+    receivedChatColor03: string;
 
     subColor01: string;
     subColor02: string;
@@ -22,6 +26,9 @@ interface ICommon {
     deepGrey: string;
 
     kakao: string;
+    lightGrey: string;
+
+    recordingRed: string;
   };
 }
 
@@ -36,6 +43,10 @@ export const Common: ICommon = {
     chatColor01: '#FFD0C2',
     chatColor02: '#FFF2DD',
     chatColor03: '#DBDFE9',
+    sendingChatColor01: '#EDEDED',
+    receivedChatColor01: '#BF2B00',
+    receivedChatColor02: '#D38200',
+    receivedChatColor03: '#3E57A1',
 
     subColor01: '#BBBFD7',
     subColor02: '#908EDF',
@@ -49,5 +60,8 @@ export const Common: ICommon = {
     deepGrey: '#484848',
 
     kakao: '#fddc3f',
+    lightGrey: '#F1F1F1',
+
+    recordingRed: '#FF4733',
   },
 };
