@@ -1,91 +1,24 @@
 import React, {useState} from 'react';
-import styled from 'styled-components/native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import {Common} from '../components/Common';
 
 import emo_happy from '../assets/emo_happy.png';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Common} from '../components/Common';
 
-const Container = styled.View`
-  flex: 1;
-  background-color: ${Common.colors.white01};
-  padding: 12px;
-`;
-
-const Heading = styled.Text`
-  font-family: 'NotoSansKR-Bold';
-  font-size: 20px;
-  margin: 5px 0px;
-  margin-left: 15px;
-  color: ${Common.colors.deepGrey};
-`;
-
-const ProfileContainer = styled.TouchableOpacity`
-  flex-direction: row;
-  background-color: ${Common.colors.subColor04};
-  border-radius: 20px;
-  padding: 20px;
-  justify-content: space-between;
-  align-items: center;
-  elevation: 5;
-`;
-
-const ProfileWrapper = styled.View`
-  flex-direction: row;
-`;
-
-const EmotionImage = styled.Image`
-  width: 60px;
-  height: 60px;
-`;
-
-const HeadingWrapper = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  margin-top: 20px;
-  align-items: center;
-`;
-
-const SubHeading = styled.Text`
-  font-family: 'NotoSansKR-Bold';
-  margin-right: 15px;
-  font-size: 15px;
-  color: ${Common.colors.selectGrey};
-`;
-
-const BadgeContainer = styled.View`
-  flex-direction: row;
-  height: 80px;
-  padding: 0px 10px;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const NoBadge = styled.Text`
-  font-family: 'NotoSansKR-Regular';
-  margin-left: 15px;
-  font-size: 15px;
-  color: ${Common.colors.selectGrey};
-`;
-
-const PlainText = styled.Text`
-  font-family: 'NotoSansKR-Regular';
-  margin-left: 15px;
-  font-size: 15px;
-  color: ${Common.colors.deepGrey};
-`;
-
-const MenuList = styled.View`
-  margin: 0px 15px;
-  margin-top: 15px;
-  padding-top: 25px;
-  border-top-width: 1px;
-  border-top-color: ${Common.colors.basicGrey};
-`;
-
-const SingleMenu = styled.TouchableOpacity`
-  padding: 5px 0px;
-`;
+import {
+  Container,
+  Heading,
+  ProfileContainer,
+  ProfileWrapper,
+  EmotionImage,
+  HeadingWrapper,
+  SubHeading,
+  BadgeContainer,
+  NoBadge,
+  MenuList,
+  SingleMenu,
+  PlainText,
+} from '../styles/MypageStyle';
 
 const Mypage = ({navigation}: {navigation: any}) => {
   const [badges, setBadges] = useState();
