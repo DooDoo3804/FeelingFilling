@@ -102,7 +102,7 @@ export const SingleMenu = styled.TouchableOpacity`
 
 export const SingleBadgeContainer = styled.View`
   width: 33.3333%;
-  height: 200px;
+  height: 230px;
   padding: 5px;
   padding-top: 20px;
   align-items: center;

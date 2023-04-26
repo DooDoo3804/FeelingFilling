@@ -51,7 +51,7 @@ const badgeList = [
     src: angry03,
     name: '분노의 화신',
     description:
-      '분노를 통해 1,000번 저금했어요. 핸드폰... 아직 안 부서진 거 맞죠?',
+      '분노를 통해 1,000번 저금했는데... 핸드폰 아직 안 부서진 거 맞죠?',
   },
   {
     src: gloomy01,
@@ -107,7 +107,7 @@ const badgeList = [
 ];
 
 const Badges = () => {
-  const [badges, setBadges] = useState([0, 2, 3, 5, 6, 8, 9]);
+  const [badges, setBadges] = useState([0, 2, 3, 4, 5, 6, 8, 9]);
 
   return (
     <BadgePageContainer>
