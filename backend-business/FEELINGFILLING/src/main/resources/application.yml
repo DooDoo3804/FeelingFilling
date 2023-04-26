@@ -2,8 +2,24 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  profiles:
+    include: oauth
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://k8a702.p.ssafy.io:3306/feelingfilling?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: root
     password: mammoth77
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+
+jwt:
+  secret: makemoneyfromyouremotionandfeelbetter
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
