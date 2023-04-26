@@ -92,6 +92,31 @@ def analysis_voice(request):
     except Exception as e:
         print(e)
 
+
+    # chatting 저장
+    user = User.objects.get(user_id = 1)
+    chatting = Chatting(user = user, content = resp.json(), chat_date = datetime.datetime.now(), type = 1)
+    chatting.save()
+
+    # 번역 요청
+    feeling, score, trans = translation_text(resp.json())
+
+    # 적금 금액 계산
+    amount = cal_deposit(score)
+
+    # react 데이터 저장 (GPT 답변)
+    react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
+    react.save()
+
+    # request 데이터 저장 (success 받아와야 함)
+    request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
+                      translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                      amount = amount, success = 1)
+    request.save()
+
+    end = time.time()
+    due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
+    print(f"소요시간 : {due_time}")
     return HttpResponse(status=201)
 
 
@@ -99,9 +124,8 @@ def analysis_voice(request):
 def cal_deposit(score):
     user= User.objects.get(user_id = 1)
     min, max = user.minimum, user.maximum
-
-
-    return 0
+    amount = round((max - min + 1) * score)
+    return amount
 
 
 # 번역 함수
