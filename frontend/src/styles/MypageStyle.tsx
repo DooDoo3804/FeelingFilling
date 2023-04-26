@@ -117,7 +117,6 @@ export const BadgeTitle = styled.Text`
   font-family: 'NotoSansKR-Bold';
   color: ${Common.colors.deepGrey};
   text-align: center;
-  word-break: normal;
   margin: 5px 0px;
 `;
 
