@@ -37,23 +37,30 @@ def analysis_text(request):
     react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     react.save()
 
-    # request 데이터 저장 (success 받아와야 함)
-    request = Request(user = user, content = text, request_time = datetime.datetime.now(),
-                      translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
-                      amount = amount, success = 1)
-    request.save()
-
-    # req_billing(amount, user_id))
+    success = req_billing(amount, 1)
+    if success:
+        # request 데이터 저장 (success 받아와야 함)
+        request = Request(user = user, content = text, request_time = datetime.datetime.now(),
+                        translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                        amount = amount, success = 1)
+        request.save()
+        context = {
+            "react" : "GPT 답변",
+            "emotion" : feeling,
+            "amount" : amount,
+            "success" : success
+        }
+    else :
+        context = {
+            "react" : 0,
+            "emotion" : 0,
+            "amount" : 0,
+            "success" : success
+        }
 
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-    context = {
-        "react" : "GPT 답변",
-        "emotion" : feeling,
-        "amount" : amount,
-        "success" : 1
-    }
     return JsonResponse(context, status = 201)
 
 
@@ -141,6 +148,7 @@ def cal_deposit(score):
     amount = round((max - min + 1) * (score-0.333333))
     return amount
 
+# GPT // ChatBot react 생성 함수
 def make_react():
     pass
 
