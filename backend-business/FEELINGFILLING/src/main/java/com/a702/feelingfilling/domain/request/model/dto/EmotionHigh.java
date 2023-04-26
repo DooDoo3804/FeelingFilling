@@ -1,7 +1,14 @@
 package com.a702.feelingfilling.domain.request.model.dto;
 
+import lombok.*;
+
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmotionHigh {
-	int day;
+	int date;
 	int hour;
-	int weekday;
+	String day;
 }
