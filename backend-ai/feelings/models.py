@@ -8,75 +8,6 @@
 from django.db import models
 
 
-class Badge(models.Model):
-    userbadgeid = models.AutoField(db_column='UserBadgeId', primary_key=True)  # Field name made lowercase.
-    achieveddate = models.DateTimeField(db_column='achievedDate', blank=True, null=True)  # Field name made lowercase.
-    badgeid = models.IntegerField(db_column='badgeId')  # Field name made lowercase.
-    user_user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    user_userid = models.CharField(db_column='user_userId', max_length=255, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'Badge'
-
-
-class Chatting(models.Model):
-    chatting_id = models.AutoField(primary_key=True)
-    chat_date = models.DateTimeField(blank=True, null=True)
-    content = models.CharField(max_length=255, blank=True, null=True)
-    type = models.SmallIntegerField()
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'Chatting'
-
-
-class React(models.Model):
-    react_id = models.AutoField(primary_key=True)
-    amount = models.IntegerField()
-    content = models.CharField(max_length=255, blank=True, null=True)
-    emotion = models.CharField(max_length=255, blank=True, null=True)
-    chatting = models.ForeignKey(Chatting, models.DO_NOTHING, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'React'
-
-
-class Request(models.Model):
-    requestid = models.AutoField(db_column='requestId', primary_key=True)  # Field name made lowercase.
-    amount = models.IntegerField()
-    content = models.CharField(max_length=255, blank=True, null=True)
-    emotion = models.CharField(max_length=255, blank=True, null=True)
-    intensity = models.FloatField(blank=True, null=True)
-    react = models.CharField(max_length=255, blank=True, null=True)
-    requesttime = models.DateTimeField(db_column='requestTime', blank=True, null=True)  # Field name made lowercase.
-    success = models.TextField()  # This field type is a guess.
-    translation = models.CharField(max_length=255, blank=True, null=True)
-    user_user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    user_userid = models.CharField(db_column='user_userId', max_length=255, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'Request'
-
-
-class User(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    id_oauth2 = models.CharField(max_length=255, blank=True, null=True)
-    join_date = models.DateTimeField(blank=True, null=True)
-    maximum = models.IntegerField()
-    minimum = models.IntegerField()
-    nickname = models.CharField(max_length=255, blank=True, null=True)
-    role = models.CharField(max_length=255, blank=True, null=True)
-    userid = models.CharField(db_column='userId', max_length=255)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'User'
-
-
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 
@@ -146,6 +77,18 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
+class Chatting(models.Model):
+    chatting_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('User', models.DO_NOTHING)
+    content = models.TextField()
+    chat_date = models.DateTimeField()
+    type = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'chatting'
+
+
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)
@@ -191,14 +134,57 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
+class React(models.Model):
+    react_id = models.AutoField(primary_key=True)
+    chatting = models.ForeignKey(Chatting, models.DO_NOTHING)
+    content = models.CharField(max_length=200)
+    emotion = models.CharField(max_length=20)
+    amount = models.PositiveIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'react'
+
+
 class Report(models.Model):
     report_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, models.DO_NOTHING)
+    user = models.ForeignKey('User', models.DO_NOTHING)
     content = models.CharField(max_length=200)
 
     class Meta:
         managed = False
         db_table = 'report'
+
+
+class Request(models.Model):
+    request_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('User', models.DO_NOTHING)
+    content = models.TextField()
+    request_time = models.DateTimeField()
+    translation = models.TextField()
+    react = models.CharField(max_length=200, blank=True, null=True)
+    emotion = models.CharField(max_length=20, blank=True, null=True)
+    intensity = models.FloatField(blank=True, null=True)
+    amount = models.PositiveIntegerField(blank=True, null=True)
+    success = models.PositiveIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'request'
+
+
+class User(models.Model):
+    user_id = models.PositiveIntegerField(primary_key=True)
+    id_oauth2 = models.CharField(max_length=20)
+    nickname = models.CharField(max_length=20)
+    role = models.CharField(max_length=20)
+    minimum = models.IntegerField()
+    maximum = models.IntegerField()
+    join_date = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'user'
 
 
 class UserBadge(models.Model):
