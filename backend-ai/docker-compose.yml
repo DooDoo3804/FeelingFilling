@@ -3,10 +3,12 @@ services:
 
   django:
     container_name: django
-    build: .
-    dockerfile: ./Dockerfile
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     environment:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      SERVER_MODE: prod
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
     # command: python manage.py runserver 0.0.0.0:8000 --noreload
     ports:
       - "8000:8000"
