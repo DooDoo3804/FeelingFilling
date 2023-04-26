@@ -31,27 +31,22 @@ def analysis_text(request):
     chatting.save()
 
     feeling, score, trans = translation_text(text)
+    amount = cal_deposit(score)
 
-    context = {
-        "feeling": feeling,
-        "score": score,
-    }
-    end = time.time()
-    
     # react 데이터 저장 (GPT 답변)
-    react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = 181818)
+    react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     react.save()
 
     # request 데이터 저장 (success 받아와야 함)
     request = Request(user = user, content = text, request_time = datetime.datetime.now(),
                       translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
-                      amount = 181818, success = 1)
+                      amount = amount, success = 1)
     request.save()
 
-
+    end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-    return JsonResponse(context, status=200)
+    return HttpResponse(status=201)
 
 
 # 음성 번역 api
@@ -60,6 +55,7 @@ def analysis_text(request):
 def analysis_voice(request):
     start = time.time()
     try:
+        # 파일 받기
         voice = request.FILES.get('file')
         if voice is not None:
             config = {
@@ -68,6 +64,7 @@ def analysis_voice(request):
                 },
                 "use_multi_channel": False
             }
+            # 파일 TTS 요청
             resp = requests.post(
                 'https://openapi.vito.ai/v1/transcribe',
                 headers={'Authorization': 'bearer ' + jwt_token},
@@ -76,6 +73,7 @@ def analysis_voice(request):
             )
             resp.raise_for_status()
             id = resp.json()['id']
+            # TTS 결과값 받기
             while True:
                 resp = requests.get(
                     'https://openapi.vito.ai/v1/transcribe/'+id,
@@ -94,21 +92,49 @@ def analysis_voice(request):
     except Exception as e:
         print(e)
 
-    feeling, score = translation_text( resp.json()) 
-    context = {
-        "feeling": feeling,
-        "score": score,
-    }
+
+    # chatting 저장
+    user = User.objects.get(user_id = 1)
+    chatting = Chatting(user = user, content = resp.json(), chat_date = datetime.datetime.now(), type = 1)
+    chatting.save()
+
+    # 번역 요청
+    feeling, score, trans = translation_text(resp.json())
+
+    # 적금 금액 계산
+    amount = cal_deposit(score)
+
+    # react 데이터 저장 (GPT 답변)
+    react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
+    react.save()
+
+    # request 데이터 저장 (success 받아와야 함)
+    request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
+                      translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                      amount = amount, success = 1)
+    request.save()
+
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-    return JsonResponse(context, status=200)
+    context = {
+        "react" : "GPT 답변",
+        "emotion" : feeling,
+        "amount" : amount,
+        "success" : 1
+    }
+    return JsonResponse(context, status = 201)
 
 
 # 측정된 감정 정도에 따라 적금 금액 계산
-def cal_deposit():
-    pass
+def cal_deposit(score):
+    user= User.objects.get(user_id = 1)
+    min, max = user.minimum, user.maximum
+    amount = round((max - min + 1) * score)
+    return amount
 
+def make_react():
+    pass
 
 # 번역 함수
 def translation_text(text):
@@ -183,7 +209,7 @@ def init_setting():
 
 """
     인증 요청
-    token의 만료 기간은 6시간입니다.
+    token의 만료 기간은 6시간
     주기적으로 token이 갱신될 수 있도록 /v1/authenticate 을 통해 token을 갱신해야 합니다.
     갱신은 스케줄링을 통해 작성
     client_id / client_secret 환경변수로 빼거나 따로 작성!!
@@ -219,4 +245,5 @@ init_setting()
 # 스케줄러 api 실행
 schedule_api()
 
+# gpu 가속 함수 추가
 acc_gpu()
