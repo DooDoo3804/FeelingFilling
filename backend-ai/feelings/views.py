@@ -127,6 +127,8 @@ def cal_deposit(score):
     amount = round((max - min + 1) * score)
     return amount
 
+def make_react():
+    pass
 
 # 번역 함수
 def translation_text(text):
@@ -201,7 +203,7 @@ def init_setting():
 
 """
     인증 요청
-    token의 만료 기간은 6시간입니다.
+    token의 만료 기간은 6시간
     주기적으로 token이 갱신될 수 있도록 /v1/authenticate 을 통해 token을 갱신해야 합니다.
     갱신은 스케줄링을 통해 작성
     client_id / client_secret 환경변수로 빼거나 따로 작성!!
@@ -237,4 +239,5 @@ init_setting()
 # 스케줄러 api 실행
 schedule_api()
 
+# gpu 가속 함수 추가
 acc_gpu()
