@@ -43,6 +43,8 @@ def analysis_text(request):
                       amount = amount, success = 1)
     request.save()
 
+    # req_billing(amount, user_id))
+
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
@@ -203,25 +205,22 @@ def analysis_emition(translation_result):
     return max_feeling, max_score, translation_result.text
 
 
-# GPU 가속 함수
-def acc_gpu():
-    # GPU 사용 가능한지 확인
-    print("GPU is", "available" if tf.config.list_physical_devices(
-        "GPU") else "NOT AVAILABLE")
-    # GPU 가속 활성화
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    if gpus:
-        try:
-            # Currently, memory growth needs to be the same across GPUs
-            for gpu in gpus:
-                tf.config.experimental.set_memory_growth(gpu, True)
-            logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-            print(len(gpus), "Physical GPUs,", len(
-                logical_gpus), "Logical GPUs")
-        except RuntimeError as e:
-            # Memory growth must be set before GPUs have been initialized
-            print(e)
+def req_billing(amount, user_id):
+    # token / user_id / service_name / amount
 
+    # resp = requests.post(
+    #     'http://3.38.191.128:',
+    #     data={
+    #         'client_id': "cnmeuourK_cZS7UMpGwG",
+    #         'user_id': user_id,
+    #         'service_name': "FeelingFilling",
+    #           'amount': amount
+    #           }
+    # )
+
+
+    success = 1
+    return success
 
 # 초기에 모델을 받는데 시간이 오래걸림 // 초기 세팅 함수
 def init_setting():
@@ -268,6 +267,3 @@ init_setting()
 
 # 스케줄러 api 실행
 schedule_api()
-
-# gpu 가속 함수 추가
-acc_gpu()
