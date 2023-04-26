@@ -36,11 +36,17 @@ public class BillingController {
 
     @GetMapping("/subscription/success")
     public ResponseEntity<Map<String,Object>> approveSubscription(int orderId,String pg_token){
-        System.out.println("들어옴 + "+orderId+"/"+pg_token);
         KakaoApproveDTO kakaoApproveDTO= kakaoPayService.kakaoPayApprove(orderId, pg_token);
         Map<String, Object> map = new HashMap<>();
 
         map.put("kakao", kakaoApproveDTO);
         return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @PostMapping("/subscription")
+    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserDTO serviceUserDTO, @RequestParam int amount){
+       kakaoPayService.kakaoPaySubscription(serviceUserDTO, amount);
+
+       return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -19,6 +19,7 @@ public class KakaoApproveDTO {
     private String payload; // 결제 승인 요청에 대해 저장 값, 요청 시 전달 내용
 }
 
+@Data
 class Amount {
 
     private int total; // 총 결제 금액

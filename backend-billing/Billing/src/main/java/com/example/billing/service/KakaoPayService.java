@@ -5,10 +5,8 @@ import com.example.billing.data.billingDB.entity.KakaoOrder;
 import com.example.billing.data.billingDB.entity.User;
 import com.example.billing.data.billingDB.repository.ActionRepository;
 import com.example.billing.data.billingDB.repository.KakaoOrderRepository;
-import com.example.billing.data.dto.KakaoApproveDTO;
-import com.example.billing.data.dto.KakaoOrderDTO;
-import com.example.billing.data.dto.KakaoReadyDTO;
-import com.example.billing.data.dto.UserDTO;
+import com.example.billing.data.billingDB.repository.UserRepository;
+import com.example.billing.data.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -32,6 +30,9 @@ public class KakaoPayService {
     private String KAKAO_ADMIN_KEY;
 
     private final KakaoOrderRepository kakaoOrderRepository;
+    private final ActionRepository actionRepository;
+
+    private final UserRepository userRepository;
 
     public KakaoReadyDTO kakaoPayReady(UserDTO userDTO) {
         User user = User.builder()
@@ -108,7 +109,54 @@ public class KakaoPayService {
         kakaoOrder.getUser().setSid(kakaoApproveDTO.getSid());
         Action action = new Action();
         action.setAid(kakaoApproveDTO.getAid());
+        actionRepository.save(action);
+
         kakaoOrder.getActions().add(action);
         return kakaoApproveDTO;
+    }
+
+    public void kakaoPaySubscription(ServiceUserDTO serviceUserDTO, int amount){
+        User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
+
+        KakaoOrder newOrder = KakaoOrder.builder()
+                .user(user)
+                .build();
+
+        //id를 db에서 받아온다.
+        newOrder = kakaoOrderRepository.save(newOrder);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);
+        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        // 카카오페이 요청 양식
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("cid", cid);
+        parameters.add("sid", user.getSid());
+        parameters.add("partner_order_id", String.valueOf(newOrder.getOrderId()));
+        parameters.add("partner_user_id", String.valueOf(newOrder.getUser().getUserId()));
+        parameters.add("quantity", "1");
+        parameters.add("total_amount", String.valueOf(amount));
+        parameters.add("tax_free_amount", "0");
+
+        // 파라미터, 헤더
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
+
+        // 외부에 보낼 url
+        RestTemplate restTemplate = new RestTemplate();
+
+        kakaoApproveDTO = restTemplate.postForObject(
+                "https://kapi.kakao.com/v1/payment/subscription",
+                requestEntity,
+                KakaoApproveDTO.class);
+
+        Action action = new Action();
+        action.setAid(kakaoApproveDTO.getAid());
+        actionRepository.save(action);
+
+        newOrder.getActions().add(action);
+
+        System.out.println(kakaoApproveDTO);
+
     }
 }
