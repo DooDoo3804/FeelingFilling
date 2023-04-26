@@ -43,7 +43,7 @@ def analysis_text(request):
                       amount = amount, success = 1)
     request.save()
 
-    # req_billing(amount, user_id))
+    req_billing(amount, 1)
 
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
@@ -141,6 +141,7 @@ def cal_deposit(score):
     amount = round((max - min + 1) * (score-0.333333))
     return amount
 
+# GPT // ChatBot react 생성 함수
 def make_react():
     pass
 
