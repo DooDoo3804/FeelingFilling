@@ -172,11 +172,28 @@ def analysis_emition(translation_result):
     # 최대 감정과 감정 스코어 출력
     max_feeling = ''
     max_score = 0
-
+    # joy sadness anger
+    feelings = [0, 0, 0]
     for p in prediction[0]:
-        if p['score'] > max_score:
-            max_feeling = p['label']
+        score = p['score']
+        feeling = p['label']
+        
+        # 각 감정을 서비스 기준에 맞게 재집계
+        if (feeling == "love" or feeling == "joy") : feelings[0] += score
+        elif (feeling == "sadness") : feelings[1] += score
+        elif (feeling == "angeer") : feelings[2] += score
+        elif (feeling == "fear") :
+            feelings[1] += score * 0.35
+            feelings[2] += score * 0.65
+        elif (feeling == "surprise") :
+            feelings[1] += score * 0.5
+            feelings[2] += score * 0.5
+
+        # max 감정과 스코어 추출
+        if score > max_score:
+            max_feeling = feeling
             max_score = p['score']
+
 
     print("----------------------------------------------------------------")
     print("MAX EMOTION")
