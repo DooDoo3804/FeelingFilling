@@ -43,6 +43,8 @@ def analysis_text(request):
                       amount = amount, success = 1)
     request.save()
 
+    # req_billing(amount, user_id))
+
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
@@ -202,6 +204,23 @@ def analysis_emition(translation_result):
     print("----------------------------------------------------------------")
     return max_feeling, max_score, translation_result.text
 
+
+def req_billing(amount, user_id):
+    # token / user_id / service_name / amount
+
+    # resp = requests.post(
+    #     'http://3.38.191.128:',
+    #     data={
+    #         'client_id': "cnmeuourK_cZS7UMpGwG",
+    #         'user_id': user_id,
+    #         'service_name': "FeelingFilling",
+    #           'amount': amount
+    #           }
+    # )
+
+
+    success = 1
+    return success
 
 # 초기에 모델을 받는데 시간이 오래걸림 // 초기 세팅 함수
 def init_setting():
