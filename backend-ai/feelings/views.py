@@ -123,21 +123,39 @@ def analysis_voice(request):
     react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     react.save()
 
-    # request 데이터 저장 (success 받아와야 함)
-    request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                      translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
-                      amount = amount, success = 1)
-    request.save()
+    # billing 요청
+    success = req_billing(amount, 1)
+    
+    # 성공한 경우
+    if (success) :
+        # request 데이터 저장 (success 받아와야 함)
+        request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
+                        translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                        amount = amount, success = success)
+        request.save()
+        context = {
+            "react" : "GPT 답변",
+            "emotion" : feeling,
+            "amount" : amount,
+            "success" : success
+        }
+    # 실패한 경우
+    else :
+        request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
+                translation = trans, react = "GPT 답변", emotion = "", intensity = 0,
+                amount = 0, success = success)
+        request.save()
+        context = {
+            "react" : 0,
+            "emotion" : 0,
+            "amount" : 0,
+            "success" : success
+        }
+
 
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-    context = {
-        "react" : "GPT 답변",
-        "emotion" : feeling,
-        "amount" : amount,
-        "success" : 1
-    }
     return JsonResponse(context, status = 201)
 
 
