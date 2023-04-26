@@ -136,7 +136,7 @@ def analysis_voice(request):
 def cal_deposit(score):
     user= User.objects.get(user_id = 1)
     min, max = user.minimum, user.maximum
-    amount = round((max - min + 1) * score)
+    amount = round((max - min + 1) * (score-0.333333))
     return amount
 
 def make_react():
@@ -160,7 +160,8 @@ def translation_text(text):
 
 
 # 감정 분석 함수
-def analysis_emition(translation_result):
+def analysis_emition(translation_result): 
+    # 번역
     classifier = pipeline("text-classification",
                           model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
     prediction = classifier(translation_result.text)
