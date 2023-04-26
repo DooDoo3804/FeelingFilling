@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BadgeRepository extends JpaRepository<Badge, Integer> {
-	Badge findByBadgeId(int badgeId);
+	Badge findByUser_UserId(int userId);
 }

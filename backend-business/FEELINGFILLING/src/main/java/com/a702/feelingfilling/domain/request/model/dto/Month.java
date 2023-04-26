@@ -7,8 +7,8 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class Stat {
+public class Month {
 	String emotion;
+	int month;
 	int amount;
-	int count;
 }
