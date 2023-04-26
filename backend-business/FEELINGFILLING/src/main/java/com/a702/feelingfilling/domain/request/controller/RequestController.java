@@ -3,6 +3,7 @@ package com.a702.feelingfilling.domain.request.controller;
 import com.a702.feelingfilling.domain.request.model.dto.EmotionHigh;
 import com.a702.feelingfilling.domain.request.model.dto.Month;
 import com.a702.feelingfilling.domain.request.model.dto.Stat;
+import com.a702.feelingfilling.domain.request.model.dto.Yesterday;
 import com.a702.feelingfilling.domain.request.service.RequestService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -85,8 +86,23 @@ public class RequestController {
 		try{
 			//이번 달 저금
 			List<Stat> stats = requestService.getThisMonth();
-			resultMap.put("totalThisMonth",stats);
+			resultMap.put("totalThisMonth", stats);
 			logger.debug("전체 사용자 이번 달 저금 : ", stats);
+			
+			//전날 추이
+			List<Yesterday> yesterday = requestService.getYesterday();
+			resultMap.put("yesterday",yesterday);
+			logger.debug("전날 추이 : ", yesterday);
+			
+			//이번 달 감정왕
+			Stat emotionKing = requestService.getEmotionKing();
+			resultMap.put("emotionKing", emotionKing);
+			logger.debug("이번 달 감정왕 : ", emotionKing);
+			
+			//전체 사용자 누적 적금액
+			List<Stat> total = requestService.getTotal();
+			resultMap.put("total", total);
+			logger.debug("전체 사용자 누적 적금액 : ", total);
 			
 			resultMap.put("message", SUCCESS);
 			
@@ -94,7 +110,7 @@ public class RequestController {
 		catch (Exception e){
 			status = HttpStatus.BAD_REQUEST;
 			resultMap.put("message", FAIL);
-			logger.error("유저 통계 에러 : {} ",e);
+			logger.error("전체 사용자 통계 에러 : {} ",e);
 		}
 		
 		return new ResponseEntity<>(resultMap,status);
