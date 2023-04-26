@@ -29,16 +29,17 @@ public class JwtFilter extends OncePerRequestFilter {
   @Override
   public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain chain) throws IOException, ServletException {
-    String accessToken = request.getHeader("Auth");
+    String accessToken = request.getHeader("Authorization");
     log.info("AccessToken from request header : " + accessToken);
 
-    if (accessToken == null) {
+    if (accessToken == null||!accessToken.startsWith("Bearer")) {
       //토큰이 없으면
       log.info("토큰이 없습니다.");
       chain.doFilter(request, response);
       //로그인 페이지로 넘어갈거임
     } else {
       //토큰이 있으면 검증을 시도
+      accessToken = accessToken.replace("Bearer ","");
       try {
         jwtTokenService.verifyToken(accessToken);
         //토큰 검증이 통과했다면
