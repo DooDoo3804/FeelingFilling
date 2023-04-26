@@ -5,6 +5,7 @@ import com.sun.istack.NotNull;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Table;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -21,6 +22,7 @@ import org.springframework.data.annotation.CreatedDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "user")
 public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
