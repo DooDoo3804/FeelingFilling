@@ -1,22 +1,23 @@
 package com.example.billing.data.billingDB.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.Nullable;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-public class Transaction {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class KakaoOrder extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int orderId;
 
-    @Column(nullable = false)
-    private int tid;
+    private String tid;
 
     @ManyToOne
     @JoinColumn(name = "userId")
@@ -24,6 +25,5 @@ public class Transaction {
 
     @OneToMany
     @JoinColumn(name = "orderId")
-    @Column(nullable = false)
-    private List<Request> request;
+    private List<Action> actions = new LinkedList<>();
 }

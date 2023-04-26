@@ -11,8 +11,7 @@ import javax.persistence.Id;
 @Entity
 @Setter
 @Getter
-public class Request {
+public class Action extends BaseEntity{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int requestId;
+    private String aid;
 }

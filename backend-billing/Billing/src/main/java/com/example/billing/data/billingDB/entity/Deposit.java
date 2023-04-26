@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 @Entity
 @Getter
 @Setter
-public class Deposit {
+public class Deposit extends BaseEntity{
 
     @Id
     private int depositId;
