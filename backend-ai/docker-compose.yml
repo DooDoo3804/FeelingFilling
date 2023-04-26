@@ -2,9 +2,9 @@ version: "3.7"
 
 services:
   django:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    build: .
+      # context: .
+      # dockerfile: ./Dockerfile
     container_name: django
     environment:
       SERVER_MODE: prod

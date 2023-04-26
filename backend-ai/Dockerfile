@@ -1,12 +1,12 @@
-FROM python:3
+FROM python:3.11
 WORKDIR .
 
 ## Install packages
-COPY requirements.txt ./
 RUN apt-get update && apt-get install -y supervisor
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
-# RUN pip install -r requirements.txt
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
 ## Copy all src files
 COPY . .
