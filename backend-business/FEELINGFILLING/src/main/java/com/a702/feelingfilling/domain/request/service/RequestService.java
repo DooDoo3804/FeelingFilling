@@ -1,9 +1,6 @@
 package com.a702.feelingfilling.domain.request.service;
 
-import com.a702.feelingfilling.domain.request.model.dto.Day;
-import com.a702.feelingfilling.domain.request.model.dto.EmotionHigh;
-import com.a702.feelingfilling.domain.request.model.dto.Month;
-import com.a702.feelingfilling.domain.request.model.dto.Stat;
+import com.a702.feelingfilling.domain.request.model.dto.*;
 
 import java.util.List;
 
@@ -16,5 +13,8 @@ public interface RequestService {
 	
 	//전체 통계
 	List<Stat> getThisMonth();
+	List<Yesterday> getYesterday();
+	Stat getEmotionKing();
+	List<Stat> getTotal();
 	
 }

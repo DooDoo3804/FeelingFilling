@@ -19,7 +19,7 @@ public class RequestServiceImpl implements RequestService{
 		List<StatInterface> statInterfaces = requestRepository.getUserThisMonth(userId);
 		
 		List<Stat> stats = new ArrayList<>();
-		statInterfaces.forEach(x->stats.add(Stat.builder()
+		statInterfaces.forEach(x -> stats.add(Stat.builder()
 				.emotion(x.getEmotion())
 				.count(x.getCount())
 				.amount(x.getAmount())
@@ -33,7 +33,7 @@ public class RequestServiceImpl implements RequestService{
 		
 		List<Month> months = new ArrayList<>();
 		
-		monthInterfaces.forEach(x->months.add(Month.builder()
+		monthInterfaces.forEach(x -> months.add(Month.builder()
 				.emotion(x.getEmotion())
 				.month(x.getMonth())
 				.amount(x.getAmount())
@@ -51,9 +51,9 @@ public class RequestServiceImpl implements RequestService{
 		
 		
 		return EmotionHigh.builder()
-				.date(date!=null? date.getDate():0)
-				.hour(hour!=null? hour.getHour():-1)
-				.day(day!=null? convertDay(day.getDay()):"없음")
+				.date(date != null ? date.getDate() : 0)
+				.hour(hour != null ? hour.getHour() : -1)
+				.day(day != null ? convertDay(day.getDay()) : "없음")
 				.build();
 	}
 	
@@ -67,10 +67,49 @@ public class RequestServiceImpl implements RequestService{
 		List<StatInterface> statInterfaces = requestRepository.getThisMonth();
 		
 		List<Stat> stats = new ArrayList<>();
-		statInterfaces.forEach(x-> stats.add(Stat.builder()
+		statInterfaces.forEach(x -> stats.add(Stat.builder()
 				.emotion(x.getEmotion())
 				.amount(x.getAmount())
 				.build()));
+		return stats;
+	}
+	
+	@Override
+	public List<Yesterday> getYesterday() {
+		List<YesterdayInterface> yesteredayInterfaces = requestRepository.getYesterday();
+		
+		List<Yesterday> yesterday = new ArrayList<>();
+		
+		yesteredayInterfaces.forEach(x -> yesterday.add(Yesterday.builder()
+				.emotion(x.getEmotion())
+				.hour(x.getHour())
+				.amount(x.getAmount())
+				.build()));
+		
+		return yesterday;
+	}
+	
+	@Override
+	public Stat getEmotionKing() {
+		StatInterface statInterface = requestRepository.getEmotionKing();
+		
+		return Stat.builder()
+				.amount(statInterface != null? statInterface.getAmount():0)
+				.count(statInterface != null? statInterface.getCount() : 0)
+				.build();
+	}
+	
+	@Override
+	public List<Stat> getTotal() {
+		List<StatInterface> statInterfaces = requestRepository.getTotal();
+		
+		List<Stat> stats = new ArrayList<>();
+		
+		statInterfaces.forEach(x -> stats.add(Stat.builder()
+				.emotion(x.getEmotion())
+				.amount(x.getAmount())
+				.build()));
+		
 		return stats;
 	}
 	
