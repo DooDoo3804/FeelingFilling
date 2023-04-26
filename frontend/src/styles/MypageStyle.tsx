@@ -7,6 +7,24 @@ export const Container = styled.View`
   padding: 12px;
 `;
 
+export const BadgePageContainer = styled.View`
+  flex: 1;
+  width: 100%;
+  background-color: ${Common.colors.backgroundColor01};
+`;
+
+export const BadgePageWrapper = styled.ScrollView`
+  flex: 1;
+  width: 100%;
+`;
+
+export const BadgePageContent = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  padding-bottom: 30px;
+`;
+
 export const Heading = styled.Text`
   font-family: 'NotoSansKR-Bold';
   font-size: 20px;
@@ -80,4 +98,29 @@ export const MenuList = styled.View`
 
 export const SingleMenu = styled.TouchableOpacity`
   padding: 5px 0px;
+`;
+
+export const SingleBadgeContainer = styled.View`
+  width: 33.3333%;
+  height: 200px;
+  padding: 5px;
+  padding-top: 20px;
+  align-items: center;
+`;
+
+export const BadgeImage = styled.Image`
+  width: 70px;
+  height: 70px;
+`;
+
+export const BadgeTitle = styled.Text`
+  font-family: 'NotoSansKR-Bold';
+  color: ${Common.colors.deepGrey};
+  text-align: center;
+  word-break: normal;
+  margin: 5px 0px;
+`;
+
+export const BadgeDescription = styled.Text`
+  text-align: center;
 `;
