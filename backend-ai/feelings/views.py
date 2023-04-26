@@ -125,7 +125,7 @@ def analysis_voice(request):
 
     # billing 요청
     success = req_billing(amount, 1)
-    
+
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
@@ -247,6 +247,15 @@ def req_billing(amount, user_id):
 
     success = 1
     return success
+
+# def decode_jwt(access_token):
+#     return jwt.decode(
+#         access_token,
+#         SECRET_KEY,
+#         algorithms=[JWT_ALGORITHM],
+#         issuer="Redux Todo Web Backend",
+#         options={"verify_aud": False},
+#     )
 
 # 초기에 모델을 받는데 시간이 오래걸림 // 초기 세팅 함수
 def init_setting():
