@@ -2,10 +2,10 @@ version: "3.7"
 
 services:
   django:
-    container_name: "django"
     build:
       context: .
       dockerfile: ./Dockerfile
+    container_name: django
     environment:
       SERVER_MODE: prod
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
