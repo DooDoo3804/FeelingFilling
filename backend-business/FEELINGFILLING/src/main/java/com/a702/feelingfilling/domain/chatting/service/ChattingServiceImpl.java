@@ -28,7 +28,8 @@ public class ChattingServiceImpl implements ChattingService {
           .content(chatInputDTO.getContent())
           .build();
       chattingRepository.save(newChat);
-      return
+      return null;
+      //------------수정필요--------------
     }catch (Exception e){
       throw e;
     }
@@ -47,6 +48,6 @@ public class ChattingServiceImpl implements ChattingService {
   public List<ChattingDTO> getChatList(){
 
 
-
+    return null;
   }
 }//ChattingServiceImpl

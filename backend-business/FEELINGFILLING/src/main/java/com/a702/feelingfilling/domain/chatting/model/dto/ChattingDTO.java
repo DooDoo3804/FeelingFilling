@@ -28,9 +28,8 @@ public class ChattingDTO {
           .content(entity.getContent())
           .chatDate(entity.getChatDate())
           .type(entity.getType())
-          .mood(entity.get)
-          .amount()
           .build();
+      //--------------수정 필요----------------
     }
     else{
       return ChattingDTO.builder()
