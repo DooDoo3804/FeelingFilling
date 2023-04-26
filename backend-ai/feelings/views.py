@@ -136,7 +136,7 @@ def analysis_voice(request):
 def cal_deposit(score):
     user= User.objects.get(user_id = 1)
     min, max = user.minimum, user.maximum
-    amount = round((max - min + 1) * score)
+    amount = round((max - min + 1) * (score-0.333333))
     return amount
 
 def make_react():
@@ -160,7 +160,8 @@ def translation_text(text):
 
 
 # 감정 분석 함수
-def analysis_emition(translation_result):
+def analysis_emition(translation_result): 
+    # 번역
     classifier = pipeline("text-classification",
                           model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
     prediction = classifier(translation_result.text)
@@ -173,10 +174,27 @@ def analysis_emition(translation_result):
     max_feeling = ''
     max_score = 0
 
+    scores = [0, 0, 0]
+    feelings = ["joy", "sadness", "anger"]
+
     for p in prediction[0]:
-        if p['score'] > max_score:
-            max_feeling = p['label']
-            max_score = p['score']
+        score = p['score']
+        feeling = p['label']
+        
+        # 각 감정을 서비스 기준에 맞게 재집계
+        if (feeling == "love" or feeling == "joy") : scores[0] += score
+        elif (feeling == "sadness") : scores[1] += score
+        elif (feeling == "angeer") : scores[2] += score
+        elif (feeling == "fear") :
+            scores[1] += score * 0.35
+            scores[2] += score * 0.65
+        elif (feeling == "surprise") :
+            scores[1] += score * 0.5
+            scores[2] += score * 0.5
+
+    # max 감정과 스코어 추출
+    max_score = max(scores)
+    max_feeling = feelings[scores.index(max(scores))]
 
     print("----------------------------------------------------------------")
     print("MAX EMOTION")
