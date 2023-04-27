@@ -140,7 +140,7 @@ def analysis_voice(request):
     """
         chatting 저장
     """
-    user = User.objects.get(user_id = 1)
+    user = User.objects.get(user_id = user_id)
     result = insert_chatting(text)
     print(result)
 
@@ -162,9 +162,8 @@ def analysis_voice(request):
     # chatting에 react도 저장해야함??
     """
         billing 요청
-        return 0 // 1
     """
-    success = req_billing(amount, 1)
+    success = req_billing(token, amount, user_id)
 
     # 성공한 경우
     if (success) :
@@ -207,9 +206,11 @@ def cal_deposit(score):
     print(amount)
     return amount
 
+
 # GPT // ChatBot react 생성 함수
 def make_react():
     pass
+
 
 # chatting에 insert 함수
 def insert_chatting(text):
@@ -229,6 +230,7 @@ def insert_chatting(text):
     # for post in posts.find():
     #     print(post)
     return result
+
 
 # 번역 함수
 def translation_text(text):
@@ -305,6 +307,7 @@ def req_billing(token, amount, user_id):
     )
     success = 1
     return success
+
 
 # jwt decode 함수
 def decode_jwt_token(access_token):
