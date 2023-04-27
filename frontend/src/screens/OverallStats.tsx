@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import Lottie from 'lottie-react-native';
 import {
+  VictoryAxis,
   VictoryChart,
   VictoryLabel,
+  VictoryLine,
   VictoryPie,
   VictoryScatter,
 } from 'victory-native';
@@ -134,7 +136,7 @@ const OverallStats = () => {
             }
           />
           <TitleText>전날 저금 추이</TitleText>
-          {totalStatisticsData.length > 0 ? (
+          {prevTotal.length > 0 ? (
             <VictoryChart
               height={250}
               style={{
@@ -164,7 +166,7 @@ const OverallStats = () => {
                 tickFormat={t => priceConverter(`${t}`)}
               />
               <VictoryLine
-                data={totalStatisticsData[0]}
+                data={prevTotal[0]}
                 x="month"
                 y="amount"
                 interpolation="natural"
@@ -177,7 +179,7 @@ const OverallStats = () => {
                 }}
               />
               <VictoryLine
-                data={totalStatisticsData[1]}
+                data={prevTotal[1]}
                 x="month"
                 y="amount"
                 interpolation="natural"
@@ -190,7 +192,7 @@ const OverallStats = () => {
                 }}
               />
               <VictoryLine
-                data={totalStatisticsData[2]}
+                data={prevTotal[2]}
                 x="month"
                 y="amount"
                 interpolation="natural"
