@@ -3,10 +3,12 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {RangeSlider} from '@sharcoux/slider';
 
 import {Common} from '../components/Common';
+import font_logo from '../assets/font_logo.png';
 import kakao_logo from '../assets/kakao_logo.png';
 
 import {
   Container,
+  FontLogo,
   KakaoLogo,
   BtnText,
   ColorBtn,
@@ -17,7 +19,7 @@ import {
   TitleContainer,
 } from '../styles/LoginStyle';
 
-const UserInfo = () => {
+const SignUp = () => {
   const [nickname, setNickname] = useState<string>('');
   const [nameError, setNameError] = useState<boolean>(false);
   const [multiSliderValue, setMultiSliderValue] = useState<number[]>([
@@ -38,6 +40,7 @@ const UserInfo = () => {
 
   return (
     <Container>
+      <FontLogo source={font_logo} />
       <InfoWrapper>
         <TitleContainer>
           <InfoTitle>닉네임</InfoTitle>
@@ -79,10 +82,10 @@ const UserInfo = () => {
 
       <ColorBtn color={Common.colors.kakao}>
         <KakaoLogo source={kakao_logo} />
-        <BtnText textColor={Common.colors.deepGrey}>결제 정보 수정</BtnText>
+        <BtnText textColor={Common.colors.deepGrey}>결제 등록하기</BtnText>
       </ColorBtn>
     </Container>
   );
 };
 
-export default UserInfo;
+export default SignUp;

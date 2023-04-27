@@ -4,10 +4,12 @@ export type User = {
   id: number;
   min_money: number;
   max_money: number;
+  refresh_token: string;
+  access_token: string;
 };
 
 export type AppState = {
   loggedIn: boolean;
-  loggedUser: User;
+  loggedUser: User | null;
   inProgress: boolean;
 };
