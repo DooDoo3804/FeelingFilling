@@ -2,6 +2,9 @@ import React, {useState, useEffect} from 'react';
 import {
   Container,
   TitleText,
+  LottieContainer1,
+  LottieContainer2,
+  //
   ThisMonthSavingContainer,
   ThisMonthSavingTitleContainer,
   ThisMonthSavingBodyContainer,
@@ -19,36 +22,104 @@ import {
   ThisMonthEmotionContainer,
   ThisMonthEmotionTitleContainer,
   ThisMonthEmotionBodyContainer,
+  BestDateContainer,
+  BestDateSmileContainer,
+  BestDateText,
+  BestSamllContainer,
+  BestHourContainer,
+  BestHourLottie,
+  BestHourText,
+  BestDayContainer,
+  BestDayLottie,
+  BestDayText,
   //
   CumulativeAmountContainer,
   CumulativeAmountTitleContainer,
   CumulativeAmountBodyContainer,
+  AmountHeadingContainer,
+  AmountHeadingLottieContainer,
+  AmountHeadingTextContainer,
+  AmountHeadingText1,
+  AmountHeadingText2,
+  AmountCoffeeContainer,
+  AmountCoffeeLottieContainer,
+  AmountCoffeeTextContainer,
+  AmountBurgerContainer,
+  AmountBurgerLottieContainer,
+  AmountBurgerTextContainer,
+  AmountText1,
+  AmountText2,
 } from '../styles/PersonalStatsStyle';
-// import Lottie from 'lottie-react-native';
-import {VictoryChart, VictoryBar} from 'victory-native';
+import Lottie from 'lottie-react-native';
+import {
+  VictoryChart,
+  VictoryBar,
+  VictoryLine,
+  VictoryAxis,
+} from 'victory-native';
 import {Common} from '../components/Common';
 import EmoAngry from '../assets/emo_angry.png';
 import EmoHappy from '../assets/emo_happy.png';
 import EmoSad from '../assets/emo_sad.png';
+import LinearGradient from 'react-native-linear-gradient';
 
-interface DataType {
+interface ThisMonthSavingDataType {
   emotion: string;
-  totalCnt: number;
-  totalPrice: number;
+  cnt: number;
+  amount: number;
+}
+
+interface TotalStatisticsDataType {
+  emotion: string;
+  month: number;
+  amount: number;
 }
 
 const PersonalStats = () => {
-  const [data, setData] = useState<DataType[]>([]);
+  const [thisMonthSavingData, setThisMonthSavingData] = useState<
+    ThisMonthSavingDataType[]
+  >([]);
+  const [totalStatisticsData, setTotalStatisticsData] = useState<
+    TotalStatisticsDataType[][]
+  >([]);
+
   useEffect(() => {
-    const datas: DataType[] = [
-      {emotion: 'sad', totalCnt: 2, totalPrice: 30000},
-      {emotion: 'angry', totalCnt: 13, totalPrice: 80820},
-      {emotion: 'joy', totalCnt: 5, totalPrice: 10000},
+    const thisMonthData: ThisMonthSavingDataType[] = [
+      {emotion: 'sad', cnt: 2, amount: 40000},
+      {emotion: 'angry', cnt: 13, amount: 100820},
+      {emotion: 'joy', cnt: 5, amount: 60000},
     ];
-    const sortedData = datas.sort(function (a, b) {
-      return b.totalPrice - a.totalPrice;
+    const sortedThisMonthData = thisMonthData.sort(function (a, b) {
+      return b.amount - a.amount;
     });
-    setData(sortedData);
+    setThisMonthSavingData(sortedThisMonthData);
+    const userMonths: TotalStatisticsDataType[][] = [
+      [
+        {emotion: 'angry', month: 2, amount: 100000},
+        {emotion: 'angry', month: 3, amount: 324000},
+        {emotion: 'angry', month: 4, amount: 8000},
+        {emotion: 'angry', month: 5, amount: 23000},
+        {emotion: 'angry', month: 6, amount: 423400},
+        {emotion: 'angry', month: 7, amount: 3000},
+      ],
+      [
+        {emotion: 'sad', month: 2, amount: 405345},
+        {emotion: 'sad', month: 3, amount: 3345},
+        {emotion: 'sad', month: 4, amount: 83462},
+        {emotion: 'sad', month: 5, amount: 2356},
+        {emotion: 'sad', month: 6, amount: 42450},
+        {emotion: 'sad', month: 7, amount: 300454},
+      ],
+      [
+        {emotion: 'joy', month: 2, amount: 2400},
+        {emotion: 'joy', month: 3, amount: 64000},
+        {emotion: 'joy', month: 4, amount: 444000},
+        {emotion: 'joy', month: 5, amount: 40000},
+        {emotion: 'joy', month: 6, amount: 5400},
+        {emotion: 'joy', month: 7, amount: 3000},
+      ],
+    ];
+    setTotalStatisticsData(userMonths);
   }, []);
 
   const priceConverter = (price: string) => {
@@ -60,15 +131,18 @@ const PersonalStats = () => {
       <ThisMonthSavingContainer>
         <ThisMonthSavingTitleContainer>
           <TitleText>이번 달 저금</TitleText>
+          <LottieContainer1>
+            <Lottie source={require('../assets/coin.json')} autoPlay loop />
+          </LottieContainer1>
         </ThisMonthSavingTitleContainer>
         <ThisMonthSavingBodyContainer>
-          {data.length > 0 ? (
+          {thisMonthSavingData.length > 0 ? (
             <>
               <VictoryBar
-                data={data}
+                data={thisMonthSavingData}
                 x="emotion"
-                y="totalPrice"
-                sortKey="totalPrice"
+                y="amount"
+                sortKey="amount"
                 sortOrder="ascending"
                 cornerRadius={{top: 2, bottom: 2}}
                 style={{
@@ -81,45 +155,45 @@ const PersonalStats = () => {
                         : datum.emotion === 'joy'
                         ? Common.colors.emotionColor02
                         : Common.colors.emotionColor03,
-                    width: 15, // 막대 두께
+                    width: 13, // 막대 두께
                   },
                 }}
                 horizontal={true}
                 padding={{top: 30, bottom: 180, left: 10, right: 220}}
-                labels={({datum}) => `${datum.totalCnt}회`}
+                labels={({datum}) => `${datum.cnt}회`}
               />
               <ThisMonthSavingPrice1>
-                {priceConverter(data[0].totalPrice + '')} 원
+                {priceConverter(thisMonthSavingData[0].amount + '')} 원
               </ThisMonthSavingPrice1>
               <ThisMonthSavingEmotion1
                 source={
-                  data[0].emotion === 'angry'
+                  thisMonthSavingData[0].emotion === 'angry'
                     ? EmoAngry
-                    : data[0].emotion === 'joy'
+                    : thisMonthSavingData[0].emotion === 'joy'
                     ? EmoHappy
                     : EmoSad
                 }
               />
               <ThisMonthSavingPrice2>
-                {priceConverter(data[1].totalPrice + '')} 원
+                {priceConverter(thisMonthSavingData[1].amount + '')} 원
               </ThisMonthSavingPrice2>
               <ThisMonthSavingEmotion2
                 source={
-                  data[1].emotion === 'angry'
+                  thisMonthSavingData[1].emotion === 'angry'
                     ? EmoAngry
-                    : data[1].emotion === 'joy'
+                    : thisMonthSavingData[1].emotion === 'joy'
                     ? EmoHappy
                     : EmoSad
                 }
               />
               <ThisMonthSavingPrice3>
-                {priceConverter(data[2].totalPrice + '')} 원
+                {priceConverter(thisMonthSavingData[2].amount + '')} 원
               </ThisMonthSavingPrice3>
               <ThisMonthSavingEmotion3
                 source={
-                  data[2].emotion === 'angry'
+                  thisMonthSavingData[2].emotion === 'angry'
                     ? EmoAngry
-                    : data[2].emotion === 'joy'
+                    : thisMonthSavingData[2].emotion === 'joy'
                     ? EmoHappy
                     : EmoSad
                 }
@@ -133,29 +207,183 @@ const PersonalStats = () => {
       <TotalStatisticsContainer>
         <TotalStatisticsTitleContainer>
           <TitleText>월별 추이</TitleText>
+          <LottieContainer2>
+            <Lottie
+              source={require('../assets/chart-grow-up.json')}
+              autoPlay
+              loop
+            />
+          </LottieContainer2>
         </TotalStatisticsTitleContainer>
         <TotalStatisticsBodyContainer>
-          <VictoryChart>
-            <VictoryBar
-              data={data}
-              x="emotion"
-              y="totalPrice"
-              horizontal={true}
-            />
-          </VictoryChart>
+          {totalStatisticsData.length > 0 ? (
+            <VictoryChart
+              height={250}
+              style={{
+                background: {fill: '#F9F9F9'},
+              }}
+              domainPadding={{x: 5, y: 5}}
+              padding={{top: 1, bottom: 30, left: 70, right: 50}}>
+              <VictoryAxis
+                style={{
+                  axis: {stroke: ''},
+                  tickLabels: {
+                    fontSize: 14,
+                    fill: Common.colors.selectGrey,
+                  },
+                }}
+                tickFormat={month => `${month}월`}
+              />
+              <VictoryAxis
+                dependentAxis
+                style={{
+                  axis: {stroke: ''},
+                  tickLabels: {
+                    fontSize: 12,
+                    fill: Common.colors.selectGrey,
+                  },
+                }}
+                tickFormat={t => priceConverter(`${t}`)}
+              />
+              <VictoryLine
+                data={totalStatisticsData[0]}
+                x="month"
+                y="amount"
+                interpolation="natural"
+                style={{
+                  data: {
+                    stroke: Common.colors.emotionColor01,
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                  },
+                }}
+              />
+              <VictoryLine
+                data={totalStatisticsData[1]}
+                x="month"
+                y="amount"
+                interpolation="natural"
+                style={{
+                  data: {
+                    stroke: Common.colors.emotionColor02,
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                  },
+                }}
+              />
+              <VictoryLine
+                data={totalStatisticsData[2]}
+                x="month"
+                y="amount"
+                interpolation="natural"
+                style={{
+                  data: {
+                    stroke: Common.colors.emotionColor03,
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                  },
+                }}
+              />
+            </VictoryChart>
+          ) : (
+            ''
+          )}
         </TotalStatisticsBodyContainer>
       </TotalStatisticsContainer>
       <ThisMonthEmotionContainer>
         <ThisMonthEmotionTitleContainer>
           <TitleText>이번 달, 감정 최고조는?</TitleText>
         </ThisMonthEmotionTitleContainer>
-        <ThisMonthEmotionBodyContainer></ThisMonthEmotionBodyContainer>
+        <ThisMonthEmotionBodyContainer>
+          <BestDateContainer>
+            <BestDateSmileContainer>
+              <LinearGradient
+                colors={['#FFB53F', '#FFF1DA']}
+                // eslint-disable-next-line react-native/no-inline-styles
+                style={{width: 100, height: 100, borderRadius: 50}}>
+                <Lottie
+                  source={require('../assets/emotion-changing.json')}
+                  autoPlay
+                  loop
+                />
+              </LinearGradient>
+            </BestDateSmileContainer>
+            <BestDateText>15일</BestDateText>
+          </BestDateContainer>
+          <BestSamllContainer>
+            <BestHourContainer>
+              <BestHourLottie>
+                <Lottie
+                  source={require('../assets/sunny.json')}
+                  autoPlay
+                  loop
+                />
+              </BestHourLottie>
+              <BestHourText>A.M 11</BestHourText>
+            </BestHourContainer>
+            <BestDayContainer>
+              <BestDayLottie>
+                <Lottie
+                  source={require('../assets/calendar-days.json')}
+                  autoPlay
+                  loop
+                />
+              </BestDayLottie>
+              <BestDayText>월요일</BestDayText>
+            </BestDayContainer>
+          </BestSamllContainer>
+        </ThisMonthEmotionBodyContainer>
       </ThisMonthEmotionContainer>
       <CumulativeAmountContainer>
         <CumulativeAmountTitleContainer>
           <TitleText>저금 누적액</TitleText>
+          <LottieContainer1>
+            <Lottie source={require('../assets/coin.json')} autoPlay loop />
+          </LottieContainer1>
         </CumulativeAmountTitleContainer>
-        <CumulativeAmountBodyContainer></CumulativeAmountBodyContainer>
+        <CumulativeAmountBodyContainer>
+          <AmountHeadingContainer>
+            <AmountHeadingLottieContainer>
+              <Lottie
+                source={require('../assets/making-money.json')}
+                autoPlay
+                loop
+              />
+            </AmountHeadingLottieContainer>
+            <AmountHeadingTextContainer>
+              <AmountHeadingText1>나의 누적 저금</AmountHeadingText1>
+              <AmountHeadingText2>
+                {priceConverter(1328100 + '')} 원
+              </AmountHeadingText2>
+            </AmountHeadingTextContainer>
+          </AmountHeadingContainer>
+          <AmountCoffeeContainer>
+            <AmountCoffeeLottieContainer>
+              <Lottie
+                source={require('../assets/hot-smiling-coffee-good-morning.json')}
+                autoPlay
+                loop
+              />
+            </AmountCoffeeLottieContainer>
+            <AmountCoffeeTextContainer>
+              <AmountText1>STARBUCKS 아메리카노</AmountText1>
+              <AmountText2>295 잔</AmountText2>
+            </AmountCoffeeTextContainer>
+          </AmountCoffeeContainer>
+          <AmountBurgerContainer>
+            <AmountBurgerLottieContainer>
+              <Lottie
+                source={require('../assets/hamburger.json')}
+                autoPlay
+                loop
+              />
+            </AmountBurgerLottieContainer>
+            <AmountBurgerTextContainer>
+              <AmountText1>McDonald's 빅맥</AmountText1>
+              <AmountText2>255 개</AmountText2>
+            </AmountBurgerTextContainer>
+          </AmountBurgerContainer>
+        </CumulativeAmountBodyContainer>
       </CumulativeAmountContainer>
     </Container>
   );
