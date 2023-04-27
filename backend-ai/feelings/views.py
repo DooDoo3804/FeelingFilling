@@ -38,7 +38,7 @@ def analysis_text(request):
     feeling, score, trans = translation_text(text)
 
     """
-        적금 그액 계산
+        적금 금액 계산
     """
     amount = cal_deposit(score)
 
