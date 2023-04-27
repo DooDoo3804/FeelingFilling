@@ -38,7 +38,7 @@ def analysis_text(request):
         chatting 저장
     """
     user = User.objects.get(user_id = 1)
-    user = User.objects.get(user_id = user_id)
+    # user = User.objects.get(user_id = user_id)
     result = insert_chatting(text)
     print(result)
 
