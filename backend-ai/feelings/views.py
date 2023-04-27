@@ -163,6 +163,7 @@ def cal_deposit(score):
     user= User.objects.get(user_id = 1)
     min, max = user.minimum, user.maximum
     amount = round((max - min + 1) * (score-0.333333))
+    print(amount)
     return amount
 
 # GPT // ChatBot react 생성 함수
@@ -211,7 +212,7 @@ def analysis_emition(translation_result):
         # 각 감정을 서비스 기준에 맞게 재집계
         if (feeling == "love" or feeling == "joy") : scores[0] += score
         elif (feeling == "sadness") : scores[1] += score
-        elif (feeling == "angeer") : scores[2] += score
+        elif (feeling == "anger") : scores[2] += score
         elif (feeling == "fear") :
             scores[1] += score * 0.35
             scores[2] += score * 0.65
