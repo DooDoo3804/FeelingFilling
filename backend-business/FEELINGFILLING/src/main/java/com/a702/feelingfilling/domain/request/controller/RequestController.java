@@ -37,7 +37,7 @@ public class RequestController {
 	private RequestService requestService;
 	
 	@ApiOperation(value = "전체 통계", notes = "전체 통계 API", response = Map.class)
-	@GetMapping("/all")
+	@GetMapping("/total")
 	public ResponseEntity<?> getTotalStat(){
 		HttpStatus status = HttpStatus.OK;
 		Map<String, Object> resultMap = new HashMap<>();
