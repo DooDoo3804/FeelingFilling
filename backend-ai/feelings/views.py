@@ -2,7 +2,6 @@ import json
 import requests
 import time
 import datetime
-import tensorflow as tf
 import logging
 
 from time import sleep
