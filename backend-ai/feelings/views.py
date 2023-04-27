@@ -32,7 +32,7 @@ def analysis_text(request):
     #         # jwt 검증 실패시 예외 처리
     #         return HttpResponse(status=401, content='Authentication failed')
     
-    text = request.data['TEXT']
+    text = request.data['text']
     
     """
         chatting 저장
