@@ -305,13 +305,14 @@ def analysis_emition(translation_result):
 # Billing에 요청 함수
 def req_billing(token, amount, user_id):
     headers = { 'Authorization' : 'Bearer' + token}
+    params = {'amount' : amount}
     resp = requests.post(
         'http://3.38.191.128:8080/billing/subscription',
         headers=headers,
+        params=params,
         data={
             'serviceUserId': user_id,
             'serviceName': "FeelingFilling",
-            'amount': amount
         }
     )
     success = 1
