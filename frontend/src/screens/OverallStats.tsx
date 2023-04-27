@@ -21,14 +21,46 @@ import {
 } from '../styles/OverallStatsStyle';
 import {useAxios} from '../hooks/useAxios';
 
+interface monthTotalType {
+  emotion: string;
+  amount: number;
+  x: number;
+  y: number;
+}
+
+interface prevTotalType {
+  emotion: string;
+  amount: number;
+}
+
+interface emotionKingType {
+  count: number;
+  amount: number;
+}
+
+interface totalMoneyType {
+  // emotion: string;
+  // amount: number;
+  x: number;
+  y: number;
+  label: string;
+}
+
 const OverallStats = () => {
-  const [monthTotal, setMonthTotal] = useState([
-    {emotion: 'happy', amount: '1', x: 2, y: 0},
-    {emotion: 'sad', amount: '1', x: 0, y: 0},
-    {emotion: 'angry', amount: '1', x: 1, y: 1},
+  const [monthTotal, setMonthTotal] = useState<monthTotalType[]>([
+    {emotion: 'happy', amount: 1, x: 2, y: 0},
+    {emotion: 'sad', amount: 1, x: 0, y: 0},
+    {emotion: 'angry', amount: 1, x: 1, y: 1},
   ]);
 
-  const [totalMoney, setTotalMoney] = useState([
+  const [prevTotal, setPrevTotal] = useState<prevTotalType[][]>([[]]);
+
+  const [emotionKing, setEmotionKing] = useState<emotionKingType>({
+    count: 0,
+    amount: 0,
+  });
+
+  const [totalMoney, setTotalMoney] = useState<totalMoneyType[]>([
     {x: 1, y: 5, label: 'asdfasdfd원'},
     {x: 2, y: 5, label: 'asdfasdfd원'},
     {x: 3, y: 5, label: 'asdfasdfd원'},
@@ -48,9 +80,9 @@ const OverallStats = () => {
 
   useEffect(() => {
     setMonthTotal([
-      {emotion: 'anger', amount: '218342300', x: 1, y: 1},
-      {emotion: 'joy', amount: '10156730', x: 2, y: 0},
-      {emotion: 'sadness', amount: '5134820', x: 0, y: 0.2},
+      {emotion: 'anger', amount: 218342300, x: 1, y: 1},
+      {emotion: 'joy', amount: 10156730, x: 2, y: 0},
+      {emotion: 'sadness', amount: 5134820, x: 0, y: 0.2},
     ]);
 
     setTotalMoney([
@@ -102,7 +134,78 @@ const OverallStats = () => {
             }
           />
           <TitleText>전날 저금 추이</TitleText>
-          {/* 차트 */}
+          {totalStatisticsData.length > 0 ? (
+            <VictoryChart
+              height={250}
+              style={{
+                background: {fill: '#F9F9F9'},
+              }}
+              domainPadding={{x: 5, y: 5}}
+              padding={{top: 1, bottom: 30, left: 70, right: 50}}>
+              <VictoryAxis
+                style={{
+                  axis: {stroke: ''},
+                  tickLabels: {
+                    fontSize: 14,
+                    fill: Common.colors.selectGrey,
+                  },
+                }}
+                tickFormat={month => `${month}월`}
+              />
+              <VictoryAxis
+                dependentAxis
+                style={{
+                  axis: {stroke: ''},
+                  tickLabels: {
+                    fontSize: 12,
+                    fill: Common.colors.selectGrey,
+                  },
+                }}
+                tickFormat={t => priceConverter(`${t}`)}
+              />
+              <VictoryLine
+                data={totalStatisticsData[0]}
+                x="month"
+                y="amount"
+                interpolation="natural"
+                style={{
+                  data: {
+                    stroke: Common.colors.emotionColor01,
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                  },
+                }}
+              />
+              <VictoryLine
+                data={totalStatisticsData[1]}
+                x="month"
+                y="amount"
+                interpolation="natural"
+                style={{
+                  data: {
+                    stroke: Common.colors.emotionColor02,
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                  },
+                }}
+              />
+              <VictoryLine
+                data={totalStatisticsData[2]}
+                x="month"
+                y="amount"
+                interpolation="natural"
+                style={{
+                  data: {
+                    stroke: Common.colors.emotionColor03,
+                    strokeWidth: 2,
+                    strokeLinecap: 'round',
+                  },
+                }}
+              />
+            </VictoryChart>
+          ) : (
+            ''
+          )}
           <EmoKingContainer>
             <TextWrapper>
               <EmoKingText>
