@@ -78,7 +78,9 @@ public class RequestController {
 		}
 		
 		return new ResponseEntity<>(resultMap,status);
-	}	@ApiOperation(value = "전체 통계", notes = "전체 통계 API", response = Map.class)
+	}	
+	
+	@ApiOperation(value = "전체 통계", notes = "전체 통계 API", response = Map.class)
 	@GetMapping("/all")
 	public ResponseEntity<?> getTotalStat(){
 		HttpStatus status = HttpStatus.OK;
