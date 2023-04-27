@@ -7,7 +7,7 @@ import java.util.List;
 public interface RequestService {
 	//개인 통계
 	List<Stat> getUserThisMonth(Integer userId);
-	List<Month> getUserMonths(Integer userId);
+	Month[][] getUserMonths(Integer userId);
 	EmotionHigh getEmotionHigh(Integer userId);
 	int getUserTotal(Integer userId);
 	
