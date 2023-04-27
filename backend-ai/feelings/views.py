@@ -3,7 +3,9 @@ import requests
 import time
 import datetime
 import logging
+import jwt
 
+from ..FEELINGFILLING_DJANGO import settings
 from pymongo import MongoClient
 from time import sleep
 from transformers import pipeline
@@ -294,19 +296,18 @@ def req_billing(amount, user_id):
     #           'amount': amount
     #           }
     # )
-
-
     success = 1
     return success
 
-# def decode_jwt(access_token):
-#     return jwt.decode(
-#         access_token,
-#         SECRET_KEY,
-#         algorithms=[JWT_ALGORITHM],
-#         issuer="Redux Todo Web Backend",
-#         options={"verify_aud": False},
-#     )
+# jwt decode 함수
+def decode_jwt(access_token):
+    return jwt.decode(
+        access_token,
+        settings.SECRET_KEY,
+        algorithms=['HS256'],
+        issuer="Redux Todo Web Backend",
+        options={"verify_aud": False},
+    )
 
 # 초기에 모델을 받는데 시간이 오래걸림 // 초기 세팅 함수
 def init_setting():
