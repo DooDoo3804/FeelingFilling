@@ -50,7 +50,7 @@ public class RequestServiceImpl implements RequestService{
 		
 		int i = 0;
 		int j;
-
+		
 		for(MonthInterface monthInterface: monthInterfaces){
 			while(i<3 && !monthInterface.getEmotion().equals(emotion[i]))i++;
 			j = getInd(now,monthInterface.getMonth());
@@ -101,16 +101,36 @@ public class RequestServiceImpl implements RequestService{
 	}
 	
 	@Override
-	public List<Yesterday> getYesterday() {
-		List<YesterdayInterface> yesteredayInterfaces = requestRepository.getYesterday();
+	public Yesterday[][] getYesterday() {
+		List<YesterdayInterface> yesterdayInterfaces = requestRepository.getYesterday();
 		
-		List<Yesterday> yesterday = new ArrayList<>();
+		int now = LocalDateTime.now().getMonthValue();
 		
-		yesteredayInterfaces.forEach(x -> yesterday.add(Yesterday.builder()
-				.emotion(x.getEmotion())
-				.hour(x.getHour())
-				.amount(x.getAmount())
-				.build()));
+		Yesterday[][] yesterday = new Yesterday[3][24];
+		for(int i = 23;i>=0;i--) {
+			for(int j = 0;j<3;j++){
+				yesterday[j][i] = Yesterday.builder()
+						.hour(i)
+						.amount(0)
+						.build();
+			}
+		}
+		
+		int i = 0;
+		int j;
+		
+		for(YesterdayInterface yesterdayInterface: yesterdayInterfaces){
+			while(i<3 && !yesterdayInterface.getEmotion().equals(emotion[i]))i++;
+			yesterday[i][yesterdayInterface.getHour()].setEmotion(yesterdayInterface.getEmotion());
+			yesterday[i][yesterdayInterface.getHour()].setAmount(yesterdayInterface.getAmount());
+		}
+//		List<Yesterday> yesterday = new ArrayList<>();
+//
+//		yesterdayInterfaces.forEach(x -> yesterday.add(Yesterday.builder()
+//				.emotion(x.getEmotion())
+//				.hour(x.getHour())
+//				.amount(x.getAmount())
+//				.build()));
 		
 		return yesterday;
 	}
