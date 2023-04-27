@@ -9,4 +9,4 @@ FROM adoptopenjdk/openjdk11:jdk-11.0.10_9-alpine
 COPY --from=builder /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar","/app.jar"]
+CMD ["java", "-jar", "./build/libs/billing.jar"]
