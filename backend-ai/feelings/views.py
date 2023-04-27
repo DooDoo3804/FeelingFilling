@@ -28,6 +28,9 @@ def analysis_text(request):
     """
         chatting 저장
     """
+    user = User.objects.get(user_id = 1)
+    insert_chatting()
+    
     # MongoDB 클라이언트 생성
     client = MongoClient('mongodb://3.38.191.128:27017/')
     # 데이터베이스 선택
@@ -45,17 +48,27 @@ def analysis_text(request):
     # for post in posts.find():
     #     print(post)
 
-    user = User.objects.get(user_id = 1)
-    chatting = Chatting(user = user, content = text, chat_date = datetime.datetime.now(), type = 1)
-    chatting.save()
-
+    """
+        번역 요청
+    """
     feeling, score, trans = translation_text(text)
+
+    """
+        적금 그액 계산
+    """
     amount = cal_deposit(score)
 
-    # react 데이터 저장 (GPT 답변)
-    react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
-    react.save()
+    """
+        react 데이터 저장 (GPT 답변)
+        일단 주석
+    """
+    # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
+    # react.save()
 
+    """
+        billing 요청
+        0 // 1
+    """
     success = req_billing(amount, 1)
     if success:
         # request 데이터 저장 (success 받아와야 함)
@@ -88,6 +101,9 @@ def analysis_text(request):
 @api_view(['POST'])
 def analysis_voice(request):
     start = time.time()
+    """
+        STT 요청
+    """
     try:
         # 파일 받기
         voice = request.FILES.get('file')
@@ -122,27 +138,53 @@ def analysis_voice(request):
                     print(f'Retrying after 1 seconds...')
                     sleep(1)
             print(resp.json())
+            
         else : print("파일 없음!")
     except Exception as e:
         print(e)
+    text = resp.json()
 
-
-    # chatting 저장
+    """
+        chatting 저장
+    """
     user = User.objects.get(user_id = 1)
-    chatting = Chatting(user = user, content = resp.json(), chat_date = datetime.datetime.now(), type = 1)
-    chatting.save()
+    # MongoDB 클라이언트 생성
+    client = MongoClient('mongodb://3.38.191.128:27017/')
+    # 데이터베이스 선택
+    db = client['feelingfilling']
+    # 컬렉션 선택
+    collection = db['chatting']
+    # 문서 생성
+    chat = {"user": 1, "text": text, "date": datetime.datetime.now()}
+    # 문서 삽입
+    result = collection.insert_one(chat)
+    print(result)
+    # # 단일 문서 조회
+    # post = posts.find_one({"author": "Mike"})
+    # # 다중 문서 조회
+    # for post in posts.find():
+    #     print(post)
 
-    # 번역 요청
+    """
+        번역 요청
+    """
     feeling, score, trans = translation_text(resp.json())
 
-    # 적금 금액 계산
+    """
+        적금 금액 계산
+    """
     amount = cal_deposit(score)
-
-    # react 데이터 저장 (GPT 답변)
-    react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
-    react.save()
-
-    # billing 요청
+    
+    """
+        react 데이터 저장 (GPT 답변)
+    """
+    # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
+    # react.save()
+    # chatting에 react도 저장해야함??
+    """
+        billing 요청
+        return 0 // 1
+    """
     success = req_billing(amount, 1)
 
     # 성공한 경우
@@ -189,6 +231,9 @@ def cal_deposit(score):
 # GPT // ChatBot react 생성 함수
 def make_react():
     pass
+
+def insert_chatting():
+
 
 # 번역 함수
 def translation_text(text):
