@@ -29,7 +29,7 @@ def analysis_text(request):
         chatting 저장
     """
     user = User.objects.get(user_id = 1)
-    result = insert_chatting()
+    result = insert_chatting(text)
     print(result)
 
     """
@@ -132,22 +132,8 @@ def analysis_voice(request):
         chatting 저장
     """
     user = User.objects.get(user_id = 1)
-    # MongoDB 클라이언트 생성
-    client = MongoClient('mongodb://3.38.191.128:27017/')
-    # 데이터베이스 선택
-    db = client['feelingfilling']
-    # 컬렉션 선택
-    collection = db['chatting']
-    # 문서 생성
-    chat = {"user": 1, "text": text, "date": datetime.datetime.now()}
-    # 문서 삽입
-    result = collection.insert_one(chat)
+    result = insert_chatting(text)
     print(result)
-    # # 단일 문서 조회
-    # post = posts.find_one({"author": "Mike"})
-    # # 다중 문서 조회
-    # for post in posts.find():
-    #     print(post)
 
     """
         번역 요청
