@@ -291,18 +291,18 @@ def analysis_emition(translation_result):
     return max_feeling, max_score, translation_result.text
 
 
-def req_billing(amount, user_id):
-    # token / user_id / service_name / amount
-
-    # resp = requests.post(
-    #     'http://3.38.191.128:',
-    #     data={
-    #         'client_id': "cnmeuourK_cZS7UMpGwG",
-    #         'user_id': user_id,
-    #         'service_name': "FeelingFilling",
-    #           'amount': amount
-    #           }
-    # )
+# Billing에 요청 함수
+def req_billing(token, amount, user_id):
+    headers = { 'Authorization' : 'Bearer' + token}
+    resp = requests.post(
+        'http://3.38.191.128:8080/billing/subscription',
+        headers=headers,
+        data={
+            'serviceUserId': user_id,
+            'serviceName': "FeelingFilling",
+            'amount': amount
+        }
+    )
     success = 1
     return success
 
