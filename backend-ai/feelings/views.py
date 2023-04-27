@@ -25,12 +25,20 @@ jwt_token = ""
 def analysis_text(request):
     # 받아온 text 데이터
     start = time.time()
+    # 토큰 decode해서 userid 추출
+    # token = request.headers.get('Authorization').split(' ')[1]
+    # user_id = decode_jwt_token(token)
+    # if not user_id:
+    #         # jwt 검증 실패시 예외 처리
+    #         return HttpResponse(status=401, content='Authentication failed')
+    
     text = request.data['TEXT']
     
     """
         chatting 저장
     """
     user = User.objects.get(user_id = 1)
+    # user = User.objects.get(user_id = user_id)
     result = insert_chatting(text)
     print(result)
 
@@ -56,6 +64,7 @@ def analysis_text(request):
         0 // 1
     """
     success = req_billing(amount, 1)
+    # success = req_billing(token, amount, user_id)
     if success:
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = text, request_time = datetime.datetime.now(),
