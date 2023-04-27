@@ -5,7 +5,7 @@ import datetime
 import logging
 import jwt
 
-from ..FEELINGFILLING_DJANGO import settings
+from FEELINGFILLING_DJANGO import settings
 from pymongo import MongoClient
 from time import sleep
 from transformers import pipeline
