@@ -15,11 +15,12 @@ public class Withdrawal extends BaseEntity{
     @Id
     private int withdrawalId;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
-
     private String withdrawalMethod;
 
     private int withdrawalAmount;
+
+    public Withdrawal(String withdrawalMethod, int withdrawalAmount){
+        this.withdrawalMethod = withdrawalMethod;
+        this.withdrawalAmount = withdrawalAmount;
+    }
 }

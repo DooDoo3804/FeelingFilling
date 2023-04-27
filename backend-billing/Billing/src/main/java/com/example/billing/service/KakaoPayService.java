@@ -1,11 +1,7 @@
 package com.example.billing.service;
 
-import com.example.billing.data.billingDB.entity.Action;
-import com.example.billing.data.billingDB.entity.KakaoOrder;
-import com.example.billing.data.billingDB.entity.User;
-import com.example.billing.data.billingDB.repository.ActionRepository;
-import com.example.billing.data.billingDB.repository.KakaoOrderRepository;
-import com.example.billing.data.billingDB.repository.UserRepository;
+import com.example.billing.data.billingDB.entity.*;
+import com.example.billing.data.billingDB.repository.*;
 import com.example.billing.data.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +13,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +30,10 @@ public class KakaoPayService {
     private final ActionRepository actionRepository;
 
     private final UserRepository userRepository;
+
+    private final DepositRepository depositRepository;
+
+    private final WithdrawalRepository withdrawalRepository;
 
     public KakaoReadyDTO kakaoPayReady(UserDTO userDTO) {
         User user = User.builder()
@@ -118,9 +119,8 @@ public class KakaoPayService {
     public void kakaoPaySubscription(ServiceUserDTO serviceUserDTO, int amount){
         User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
 
-        KakaoOrder newOrder = KakaoOrder.builder()
-                .user(user)
-                .build();
+        KakaoOrder newOrder = new KakaoOrder();
+        newOrder.setUser(user);
 
         //id를 db에서 받아온다.
         newOrder = kakaoOrderRepository.save(newOrder);
@@ -150,13 +150,18 @@ public class KakaoPayService {
                 requestEntity,
                 KakaoApproveDTO.class);
 
+        newOrder.setTid(kakaoApproveDTO.getTid());
         Action action = new Action();
         action.setAid(kakaoApproveDTO.getAid());
-        actionRepository.save(action);
+        action = actionRepository.save(action);
 
-        newOrder.getActions().add(action);
+        //lazyloading 때문에 먼저 호출한 후 set을 적용해야 한다..
+        List<Action> actions = newOrder.getActions();
+        actions.add(action);
+        user.setPoint(user.getPoint() + amount);
 
-        System.out.println(kakaoApproveDTO);
-
+        Deposit newDeposit = new Deposit("KakaoPay", amount);
+        newDeposit = depositRepository.save(newDeposit);
+        user.getDeposit().add(newDeposit);
     }
 }

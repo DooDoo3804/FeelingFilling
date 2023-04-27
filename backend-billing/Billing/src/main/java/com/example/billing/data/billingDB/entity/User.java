@@ -3,6 +3,8 @@ package com.example.billing.data.billingDB.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,5 +23,13 @@ public class User extends BaseEntity {
 
     private String sid;
 
-    private Long point;
+    private long point;
+
+    @OneToMany
+    @JoinColumn(name = "userId")
+    private List<Deposit> deposit = new LinkedList<>();
+
+    @OneToMany
+    @JoinColumn(name = "userId")
+    private List<Withdrawal> withdrawals = new LinkedList<>();
 }

@@ -16,11 +16,12 @@ public class Deposit extends BaseEntity{
     @Id
     private int depositId;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
-
     private String depositMethod;
 
     private int depositAmount;
+
+    public Deposit(String depositMethod, int depositAmount){
+        this.depositMethod = depositMethod;
+        this.depositAmount  = depositAmount;
+    }
 }
