@@ -3,7 +3,9 @@ import requests
 import time
 import datetime
 import logging
+import jwt
 
+from ..FEELINGFILLING_DJANGO import settings
 from pymongo import MongoClient
 from time import sleep
 from transformers import pipeline
@@ -85,6 +87,13 @@ def analysis_text(request):
 @api_view(['POST'])
 def analysis_voice(request):
     start = time.time()
+    # 토큰 decode해서 userid 추출
+    token = request.headers.get('Authorization').split(' ')[1]
+    user_id = decode_jwt_token(token)
+    if not user_id:
+            # jwt 검증 실패시 예외 처리
+            return HttpResponse(status=401, content='Authentication failed')
+    
     """
         STT 요청
     """
@@ -131,7 +140,7 @@ def analysis_voice(request):
     """
         chatting 저장
     """
-    user = User.objects.get(user_id = 1)
+    user = User.objects.get(user_id = user_id)
     result = insert_chatting(text)
     print(result)
 
@@ -153,9 +162,8 @@ def analysis_voice(request):
     # chatting에 react도 저장해야함??
     """
         billing 요청
-        return 0 // 1
     """
-    success = req_billing(amount, 1)
+    success = req_billing(token, amount, user_id)
 
     # 성공한 경우
     if (success) :
@@ -198,9 +206,11 @@ def cal_deposit(score):
     print(amount)
     return amount
 
+
 # GPT // ChatBot react 생성 함수
 def make_react():
     pass
+
 
 # chatting에 insert 함수
 def insert_chatting(text):
@@ -220,6 +230,7 @@ def insert_chatting(text):
     # for post in posts.find():
     #     print(post)
     return result
+
 
 # 번역 함수
 def translation_text(text):
@@ -282,31 +293,35 @@ def analysis_emition(translation_result):
     return max_feeling, max_score, translation_result.text
 
 
-def req_billing(amount, user_id):
-    # token / user_id / service_name / amount
-
-    # resp = requests.post(
-    #     'http://3.38.191.128:',
-    #     data={
-    #         'client_id': "cnmeuourK_cZS7UMpGwG",
-    #         'user_id': user_id,
-    #         'service_name': "FeelingFilling",
-    #           'amount': amount
-    #           }
-    # )
-
-
+# Billing에 요청 함수
+def req_billing(token, amount, user_id):
+    headers = { 'Authorization' : 'Bearer' + token}
+    resp = requests.post(
+        'http://3.38.191.128:8080/billing/subscription',
+        headers=headers,
+        data={
+            'serviceUserId': user_id,
+            'serviceName': "FeelingFilling",
+            'amount': amount
+        }
+    )
     success = 1
     return success
 
-# def decode_jwt(access_token):
-#     return jwt.decode(
-#         access_token,
-#         SECRET_KEY,
-#         algorithms=[JWT_ALGORITHM],
-#         issuer="Redux Todo Web Backend",
-#         options={"verify_aud": False},
-#     )
+
+# jwt decode 함수
+def decode_jwt_token(access_token):
+    try:
+        decoded_token = jwt.decode(access_token, settings.JWT_SECRET, algorithms=['HS256'])
+        user_id = decoded_token.get('user_id')
+        return user_id
+    except jwt.ExpiredSignatureError:
+        # 토큰이 만료되었을 때 예외 처리
+        return HttpResponse(status=401, content='Expired token')
+    except jwt.InvalidTokenError:
+        # 토큰이 올바르지 않을 때 예외 처리
+        return HttpResponse(status=401, content='Invalid token')
+
 
 # 초기에 모델을 받는데 시간이 오래걸림 // 초기 세팅 함수
 def init_setting():
@@ -317,6 +332,7 @@ def init_setting():
 
 
 """
+    STT JWT TOKEN
     인증 요청
     token의 만료 기간은 6시간
     주기적으로 token이 갱신될 수 있도록 /v1/authenticate 을 통해 token을 갱신해야 합니다.
