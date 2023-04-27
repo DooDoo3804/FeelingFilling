@@ -25,18 +25,20 @@ def analysis_text(request):
     start = time.time()
     text = request.data['TEXT']
     
-    # chatting 저장
+    """
+        chatting 저장
+    """
     # MongoDB 클라이언트 생성
     client = MongoClient('mongodb://3.38.191.128:27017/')
     # 데이터베이스 선택
-    db = client.feelingfillng
+    db = client['feelingfilling']
     # 컬렉션 선택
-    collection = db.chatting
-    # # 문서 생성
-    # post = {"author": "Mike", "text": "My first blog post!", "tags": ["mongodb", "python", "pymongo"], "date": datetime.datetime.utcnow()}
-    # # 문서 삽입
-    # posts = db.posts
-    # post_id = posts.insert_one(post).inserted_id
+    collection = db['chatting']
+    # 문서 생성
+    chat = {"user": 1, "text": text, "date": datetime.datetime.now()}
+    # 문서 삽입
+    result = collection.insert_one(chat)
+    print(result)
     # # 단일 문서 조회
     # post = posts.find_one({"author": "Mike"})
     # # 다중 문서 조회
