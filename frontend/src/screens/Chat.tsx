@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {Common} from '../components/Common';
 import FontawesomeIcon5 from 'react-native-vector-icons/FontAwesome5';
-import Timeout from 'node';
 import {
   Container,
   ChatSectionContainer,
@@ -21,6 +20,7 @@ import {
   InputBtn,
   MsgTimeSection,
   RecordinBtnRedSection,
+  RecordStopBtnSection,
   RecordingBar,
   RecordingBarDisable,
   RecordingBtn,
@@ -42,18 +42,28 @@ import {
   ChatMoneyPngContainer,
   ReceivePriceSection,
   EmotionPngContainer,
+  LottieContainer,
+  PlayButton,
+  RecordingDisplayView,
 } from '../styles/ChatStyle';
+import Lottie from 'lottie-react-native';
+
+/////// png
 import ChatMoneyPng from '../assets/chat_money.png';
 import EmoAngry from '../assets/emo_angry.png';
 import EmoSad from '../assets/emo_sad.png';
 import EmoHappy from '../assets/emo_happy.png';
 LogBox.ignoreAllLogs();
 
-//////////////////////////////////////////////////////
-
+/////// recording, file
 import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'rn-fetch-blob';
+
+let sendingText: string = '';
+export const clickSave = () => {
+  console.log(sendingText + '적금혀');
+};
 
 const Chat = () => {
   const [text, setText] = useState<string>('');
@@ -61,21 +71,43 @@ const Chat = () => {
 
   const [isRecordStart, setIsRecordStart] = useState<boolean>(false);
   const [isClickRecordModal, setIsClickRecordModal] = useState<boolean>(false);
-
-  const [seconds, setSeconds] = useState(0);
-
-  const intervalRef = useRef<NodeJS.Timeout>();
-  const scrollViewRef = useRef<any>(null); // ScrollView ref 선언
   const audioRecorder = useRef<AudioRecorderPlayer>();
 
-  const [recordUri, setRecordUri] = useState<string>('');
+  const scrollViewRef = useRef<any>(null); // ScrollView ref 선언
 
+  // file uploading 관련 상수
+  const [recordUri, setRecordUri] = useState<string>('');
   const dirs = RNFetchBlob.fs.dirs;
   const path = Platform.select({
     ios: 'sound.m4a',
     android: `${dirs.CacheDir}/sound.mp4`,
   });
 
+  // recording time, play time 관련 상수
+  const [recordDuration, setRecordDuration] = useState({
+    recordSecs: 0,
+    recordTime: '00:00:00',
+  });
+
+  const [playerDuration, setPlayerDuration] = useState({
+    currentPositionSec: 0,
+    currentDurationSec: 0,
+    playTime: '00:00:00',
+    duration: '00:00:00',
+  });
+
+  // 처음 페이지 마운팅시 scroll은 가장 최근 대화로
+  useEffect(() => {
+    scrollViewRef.current.scrollToEnd({animated: true});
+  }, []);
+
+  // 처음 페이지 마운팅시 recorder 객체를 생성
+  useEffect(() => {
+    audioRecorder.current = new AudioRecorderPlayer();
+    checkRecord();
+  }, []);
+
+  // 권한 상태 check
   const checkRecord = async () => {
     try {
       const result = await request(PERMISSIONS.IOS.SPEECH_RECOGNITION);
@@ -86,11 +118,7 @@ const Chat = () => {
     }
   };
 
-  useEffect(() => {
-    audioRecorder.current = new AudioRecorderPlayer();
-    checkRecord();
-  }, []);
-
+  // 같은 rec 버튼을 눌렀을 때 상태에 따라 start or stop
   const audioToggle = () => {
     if (isRecordStart) {
       onStopRecord();
@@ -99,44 +127,59 @@ const Chat = () => {
     }
   };
 
+  // 녹음 시작
   const onStartRecord = async () => {
+    setRecordDuration({...recordDuration, recordSecs: 0});
+    setPlayerDuration({
+      ...playerDuration,
+      currentPositionSec: 0,
+      currentDurationSec: 0,
+      playTime: '00:00:00',
+      duration: '00:00:00',
+    });
     audioRecorder.current = new AudioRecorderPlayer();
     if (audioRecorder.current) {
+      setIsRecordStart(true); // 녹음 시작 state
+      // 실제 녹음 시작
       const uri = await audioRecorder.current.startRecorder(path);
+      const audioRecorderPlayer = audioRecorder.current;
+      audioRecorder.current.addRecordBackListener(e => {
+        setRecordDuration({
+          ...recordDuration,
+          recordSecs: e.currentPosition,
+          recordTime: audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)),
+        });
+      });
       setRecordUri(uri);
       console.log(uri);
-      setIsRecordStart(true);
-      setSeconds(0);
-      // timer
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      intervalRef.current = setInterval(() => {
-        setSeconds(prevTime => prevTime + 1);
-      }, 1000);
     }
   };
 
+  // 녹음 중지
   const onStopRecord = async () => {
     if (audioRecorder.current) {
       setIsRecordStart(false);
       await audioRecorder.current.stopRecorder();
     }
+    audioRecorder.current?.removeRecordBackListener();
   };
 
+  // 재생
   const soundStart = async () => {
     console.log('onStartPlay');
-    const msg = await audioRecorder.current?.startPlayer();
-    console.log(msg);
-    if (audioRecorder.current) {
-      uploadFile();
-    }
+    const audioRecorderPlayer: any = audioRecorder.current;
+    await audioRecorder.current?.startPlayer();
+    audioRecorder.current?.addPlayBackListener(e => {
+      setPlayerDuration({
+        currentPositionSec: e.currentPosition,
+        currentDurationSec: e.duration,
+        playTime: audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)),
+        duration: audioRecorderPlayer.mmssss(Math.floor(e.duration)),
+      });
+    });
   };
 
-  const pausePlay = async () => {
-    await audioRecorder.current?.stopPlayer();
-  };
-
+  // 녹음 파일 uploading
   const uploadFile = async () => {
     const formData = new FormData();
     formData.append('file', {
@@ -272,11 +315,11 @@ const Chat = () => {
         const el = chat[i];
         let nextChat = '';
         if (i < chat.length - 1 && chat[i + 1].chatDate.length > 5) {
-          nextChat = timeConverter(chat[i + 1].chatDate);
+          nextChat = chatTimeConverter(chat[i + 1].chatDate);
         }
         // 유저가 보낸 채팅
         if (Number(el.type) === 0) {
-          const convertedChatDate = timeConverter(el.chatDate);
+          const convertedChatDate = chatTimeConverter(el.chatDate);
           result.push(
             <SendingChatContainer key={el.chattingId}>
               {convertedChatDate === nextChat ? (
@@ -288,7 +331,7 @@ const Chat = () => {
             </SendingChatContainer>,
           );
         } else if (Number(el.type) === 1) {
-          const convertedChatDate = timeConverter(el.chatDate);
+          const convertedChatDate = chatTimeConverter(el.chatDate);
           result.push(
             <SendingChatContainer key={el.chattingId}>
               {convertedChatDate === nextChat ? (
@@ -375,7 +418,7 @@ const Chat = () => {
     return price.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
-  const timeConverter = (time: string) => {
+  const chatTimeConverter = (time: string) => {
     //chatDate: '2023-04-21T16:34:30.388',
     const times = time.split('T');
     let hour = Number(times[1].substring(0, 2));
@@ -424,26 +467,6 @@ const Chat = () => {
     }
   };
 
-  useEffect(() => {
-    scrollViewRef.current.scrollToEnd({animated: true});
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  });
-
-  const convertSecondsToTime = (second: number): string => {
-    const minutes = Math.floor(second / 60);
-    const remainingSeconds = second % 60;
-    const minutesStr = String(minutes).padStart(2, '0');
-    const secondsStr = String(remainingSeconds).padStart(2, '0');
-    return `${minutesStr}:${secondsStr}`;
-  };
-
   return (
     <Container>
       <TouchableWithoutFeedback onPress={() => handleTextingKeyDismiss()}>
@@ -460,32 +483,105 @@ const Chat = () => {
             onTouchStart={() => {
               if (!isRecordStart) {
                 setIsClickRecordModal(false);
+                setIsRecordStart(false);
+                setRecordUri('');
+                setRecordDuration({...recordDuration, recordSecs: 0});
+                setPlayerDuration({
+                  ...playerDuration,
+                  currentPositionSec: 0,
+                  currentDurationSec: 0,
+                  playTime: '00:00:00',
+                  duration: '00:00:00',
+                });
               }
             }}
           />
           <RecordingSection>
             <RecordingTitleText>음성메세지</RecordingTitleText>
             {isRecordStart ? (
-              <RecordingBar>
-                <RecordingTimer>{convertSecondsToTime(seconds)}</RecordingTimer>
+              // 녹음중
+              <RecordingBar
+                onTouchEnd={() => {
+                  if (!isRecordStart) {
+                    soundStart();
+                  }
+                }}>
+                <RecordingDisplayView />
+                <LottieContainer>
+                  <Lottie
+                    source={require('../assets/recording.json')}
+                    autoPlay
+                    loop
+                  />
+                </LottieContainer>
+                <RecordingTimer>
+                  {recordDuration.recordTime.substring(0, 5)}
+                </RecordingTimer>
               </RecordingBar>
+            ) : recordUri.length > 5 ? (
+              // 녹음 완료
+              // 플레이
+              playerDuration.currentDurationSec < recordDuration.recordSecs ? (
+                <RecordingBar>
+                  <PlayButton
+                    onTouchStart={() => {
+                      soundStart();
+                    }}>
+                    <FontawesomeIcon5
+                      name="play"
+                      color={Common.colors.deepGrey}
+                      size={20}
+                    />
+                  </PlayButton>
+                  <RecordingTimer>
+                    {recordDuration.recordTime.substring(0, 5)}
+                  </RecordingTimer>
+                </RecordingBar>
+              ) : (
+                // 플레이 하고 있지 않음
+                <RecordingBar>
+                  <PlayButton
+                    onTouchStart={() => {
+                      soundStart();
+                    }}>
+                    <FontawesomeIcon5
+                      name="play"
+                      color={Common.colors.deepGrey}
+                      size={20}
+                    />
+                  </PlayButton>
+                  <RecordingTimer>
+                    {playerDuration.playTime.substring(0, 5)}
+                  </RecordingTimer>
+                </RecordingBar>
+              )
             ) : (
+              // 녹음 전
               <RecordingBarDisable>
                 <RecordingTimerDisable>00:00</RecordingTimerDisable>
               </RecordingBarDisable>
             )}
             <RecordingBtnSection>
               <DisplayNone />
-              <RecordingBtn
-                onTouchStart={() => {
-                  audioToggle();
-                }}>
-                <RecordinBtnRedSection />
-              </RecordingBtn>
+              {isRecordStart ? (
+                <RecordingBtn
+                  onTouchStart={() => {
+                    audioToggle();
+                  }}>
+                  <RecordStopBtnSection />
+                </RecordingBtn>
+              ) : (
+                <RecordingBtn
+                  onTouchStart={() => {
+                    audioToggle();
+                  }}>
+                  <RecordinBtnRedSection />
+                </RecordingBtn>
+              )}
               {audioRecorder.current && recordUri.length > 5 ? (
                 <RecordingSendBtn
                   onPress={() => {
-                    soundStart();
+                    uploadFile();
                   }}>
                   <FontawesomeIcon5
                     name="arrow-up"

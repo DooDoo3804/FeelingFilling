@@ -178,12 +178,14 @@ export const RecordingTitleText = styled.Text`
 `;
 
 export const RecordingBar = styled.View`
-  align-items: flex-end;
   width: 90%;
   height: 40px;
   background-color: ${Common.colors.emotionColor02};
   border-radius: 30px;
   margin-bottom: 30px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const RecordingBarDisable = styled.View`
@@ -208,7 +210,6 @@ export const RecordingTimer = styled.Text`
   font-size: 18px;
   color: ${Common.colors.deepGrey};
 `;
-
 export const RecordingBtnSection = styled.View`
   flex-direction: row;
   width: 90%;
@@ -226,6 +227,12 @@ export const RecordinBtnRedSection = styled.View`
   width: 22px;
   height: 22px;
   border-radius: 22px;
+`;
+
+export const RecordStopBtnSection = styled.View`
+  background-color: ${Common.colors.deepGrey};
+  width: 17px;
+  height: 17px;
 `;
 
 export const RecordingBtn = styled.View`
@@ -253,4 +260,17 @@ export const RecordingSendBtnDisable = styled.TouchableOpacity`
   background-color: ${Common.colors.lightGrey};
   justify-content: center;
   align-items: center;
+`;
+
+export const LottieContainer = styled.View`
+  width: 30%;
+  height: 100%;
+`;
+
+export const RecordingDisplayView = styled.View`
+  width: 60px;
+`;
+
+export const PlayButton = styled.View`
+  margin-left: 20px;
 `;
