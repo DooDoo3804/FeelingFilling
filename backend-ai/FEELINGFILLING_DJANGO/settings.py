@@ -112,7 +112,7 @@ DATABASES = {
     #     },
     # },
 }
-DATABASE_ROUTERS = ['django_mongodb_engine.router.MongoDBRouter']
+# DATABASE_ROUTERS = ['django_mongodb_engine.router.MongoDBRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
