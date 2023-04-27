@@ -87,6 +87,13 @@ def analysis_text(request):
 @api_view(['POST'])
 def analysis_voice(request):
     start = time.time()
+    # 토큰 decode해서 userid 추출
+    token = request.headers.get('Authorization').split(' ')[1]
+    user_id = decode_jwt_token(token)
+    if not user_id:
+            # jwt 검증 실패시 예외 처리
+            return HttpResponse(status=401, content='Authentication failed')
+    
     """
         STT 요청
     """
