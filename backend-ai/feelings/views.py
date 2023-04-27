@@ -303,7 +303,7 @@ def req_billing(amount, user_id):
 def decode_jwt(access_token):
     return jwt.decode(
         access_token,
-        settings.SECRET_KEY,
+        settings.JWT_SECRET,
         algorithms=['HS256'],
         issuer="Redux Todo Web Backend",
         options={"verify_aud": False},
@@ -318,6 +318,7 @@ def init_setting():
 
 
 """
+    STT JWT TOKEN
     인증 요청
     token의 만료 기간은 6시간
     주기적으로 token이 갱신될 수 있도록 /v1/authenticate 을 통해 token을 갱신해야 합니다.
