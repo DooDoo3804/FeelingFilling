@@ -91,7 +91,7 @@ public class RequestController {
 			logger.debug("전체 사용자 이번 달 저금 : ", stats);
 			
 			//전날 추이
-			List<Yesterday> yesterday = requestService.getYesterday();
+			Yesterday[][] yesterday = requestService.getYesterday();
 			resultMap.put("yesterday",yesterday);
 			logger.debug("전날 추이 : ", yesterday);
 			

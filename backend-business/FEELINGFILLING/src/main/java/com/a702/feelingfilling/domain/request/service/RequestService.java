@@ -13,7 +13,7 @@ public interface RequestService {
 	
 	//전체 통계
 	List<Stat> getThisMonth();
-	List<Yesterday> getYesterday();
+	Yesterday[][] getYesterday();
 	Stat getEmotionKing();
 	List<Stat> getTotal();
 	
