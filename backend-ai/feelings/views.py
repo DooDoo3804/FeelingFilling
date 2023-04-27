@@ -300,14 +300,18 @@ def req_billing(amount, user_id):
     return success
 
 # jwt decode 함수
-def decode_jwt(access_token):
-    return jwt.decode(
-        access_token,
-        settings.JWT_SECRET,
-        algorithms=['HS256'],
-        issuer="Redux Todo Web Backend",
-        options={"verify_aud": False},
-    )
+def decode_jwt_token(access_token):
+    try:
+        decoded_token = jwt.decode(access_token, settings.JWT_SECRET, algorithms=['HS256'])
+        user_id = decoded_token.get('user_id')
+        return user_id
+    except jwt.ExpiredSignatureError:
+        # 토큰이 만료되었을 때 예외 처리
+        return HttpResponse(status=401, content='Expired token')
+    except jwt.InvalidTokenError:
+        # 토큰이 올바르지 않을 때 예외 처리
+        return HttpResponse(status=401, content='Invalid token')
+
 
 # 초기에 모델을 받는데 시간이 오래걸림 // 초기 세팅 함수
 def init_setting():
