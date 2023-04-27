@@ -73,11 +73,11 @@ const OverallStats = () => {
     'GET',
     null,
   );
-  console.log(data);
-  console.log(error);
+  // console.log(data);
+  // console.log(error);
 
-  const priceConverter = (price: string) => {
-    return price.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const amountConverter = (amount: number): string => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   useEffect(() => {
@@ -86,6 +86,8 @@ const OverallStats = () => {
       {emotion: 'joy', amount: 10156730, x: 2, y: 0},
       {emotion: 'sadness', amount: 5134820, x: 0, y: 0.2},
     ]);
+
+    // setPrevTotal()
 
     setTotalMoney([
       {x: 1, y: 35, label: 'asdfasdfd원'},
@@ -106,9 +108,9 @@ const OverallStats = () => {
                 fill: (
                   {datum}, //datum은 VictoryBar에서 사용하는 데이터의 하나의 항목을 나타내는 객체
                 ) =>
-                  datum.emotion === 'angry'
+                  datum.emotion === 'anger'
                     ? Common.colors.emotionColor01
-                    : datum.emotion === 'happy'
+                    : datum.emotion === 'joy'
                     ? Common.colors.emotionColor02
                     : Common.colors.emotionColor03,
               },
@@ -116,7 +118,7 @@ const OverallStats = () => {
             bubbleProperty="amount"
             maxBubbleSize={80}
             minBubbleSize={60}
-            labels={({datum}) => priceConverter(datum.amount)}
+            labels={({datum}) => amountConverter(datum.amount)}
             // animate={{
             //   duration: 2000,
             //   easing: 'bounce',
@@ -136,7 +138,7 @@ const OverallStats = () => {
             }
           />
           <TitleText>전날 저금 추이</TitleText>
-          {prevTotal.length > 0 ? (
+          {/* {prevTotal.length > 0 ? (
             <VictoryChart
               height={250}
               style={{
@@ -163,7 +165,7 @@ const OverallStats = () => {
                     fill: Common.colors.selectGrey,
                   },
                 }}
-                tickFormat={t => priceConverter(`${t}`)}
+                tickFormat={t => amountConverter(t)}
               />
               <VictoryLine
                 data={prevTotal[0]}
@@ -205,9 +207,7 @@ const OverallStats = () => {
                 }}
               />
             </VictoryChart>
-          ) : (
-            ''
-          )}
+          ) : null} */}
           <EmoKingContainer>
             <TextWrapper>
               <EmoKingText>
