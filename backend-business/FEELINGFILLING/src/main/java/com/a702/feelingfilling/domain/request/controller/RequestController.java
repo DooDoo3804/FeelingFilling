@@ -49,7 +49,8 @@ public class RequestController {
 			logger.debug("사용자 이번 달 저금 : ", stats);
 			
 			//월별 추이
-			List<Month> months = requestService.getUserMonths(userId);
+//			List<Month> months = requestService.getUserMonths(userId);
+			Month[][] months = requestService.getUserMonths(userId);
 			resultMap.put("userMonths",months);
 			logger.debug("사용자 월별 추이", months);
 			
