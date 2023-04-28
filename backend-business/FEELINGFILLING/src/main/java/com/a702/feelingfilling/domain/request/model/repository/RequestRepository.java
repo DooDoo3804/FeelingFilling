@@ -14,7 +14,7 @@ public interface RequestRepository extends JpaRepository<Request,Integer> {
 	
 	//1. 이번 달 저금
 	@Query(nativeQuery = true, value = "select emotion, count(amount) as count, sum(amount) as amount from request where success = 1 and user_id = ?1 and extract(year_month from request_time) = extract(year_month from now()) group by emotion")
-	List<StatInterface> getUserThisMonth(Integer userId);
+	List<UserStatInterface> getUserThisMonth(Integer userId);
 	
 	//2. 월별 추이
 	@Query(nativeQuery = true, value = "select emotion, month(request_time) as month, sum(amount) as amount from request where success = 1 and user_id = ?1 and request_time>=date_sub(now(), interval 6 month) group by emotion, month(request_time) order by emotion, month(request_time)")

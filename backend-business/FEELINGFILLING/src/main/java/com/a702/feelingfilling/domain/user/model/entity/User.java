@@ -14,7 +14,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
-@Entity
+@Entity(name = "user")
 @Getter
 @Setter
 @ToString

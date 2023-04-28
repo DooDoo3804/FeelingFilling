@@ -6,7 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "request")
 @Setter
 @Getter
 @NoArgsConstructor
@@ -18,10 +18,11 @@ public class Request {
 	Integer requestId;
 	
 	@ManyToOne
+	@JoinColumn(name = "user_id")
 	User user;
 	
 	String content;
-	
+	@Column(name = "request_time")
 	LocalDateTime requestTime;
 	
 	String translation;

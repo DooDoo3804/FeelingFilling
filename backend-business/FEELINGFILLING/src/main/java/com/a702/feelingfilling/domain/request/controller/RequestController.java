@@ -1,9 +1,6 @@
 package com.a702.feelingfilling.domain.request.controller;
 
-import com.a702.feelingfilling.domain.request.model.dto.EmotionHigh;
-import com.a702.feelingfilling.domain.request.model.dto.Month;
-import com.a702.feelingfilling.domain.request.model.dto.Stat;
-import com.a702.feelingfilling.domain.request.model.dto.Yesterday;
+import com.a702.feelingfilling.domain.request.model.dto.*;
 import com.a702.feelingfilling.domain.request.service.RequestService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +42,7 @@ public class RequestController {
 		
 		try{
 			//이번 달 저금
-			List<Stat> stats = requestService.getUserThisMonth(userId);
+			List<UserStat> stats = requestService.getUserThisMonth(userId);
 			resultMap.put("userThisMonth",stats);
 			logger.debug("사용자 이번 달 저금 : ", stats);
 			
@@ -99,7 +96,7 @@ public class RequestController {
 			logger.debug("전날 추이 : ", yesterday);
 			
 			//이번 달 감정왕
-			Stat emotionKing = requestService.getEmotionKing();
+			EmotionKing emotionKing = requestService.getEmotionKing();
 			resultMap.put("emotionKing", emotionKing);
 			logger.debug("이번 달 감정왕 : ", emotionKing);
 			
@@ -118,5 +115,5 @@ public class RequestController {
 		}
 		
 		return new ResponseEntity<>(resultMap,status);
-	}	
+	}
 }

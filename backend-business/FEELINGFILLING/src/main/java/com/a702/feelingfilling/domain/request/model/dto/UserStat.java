@@ -8,11 +8,9 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 @Setter
-public class Yesterday extends Stat {
-	int hour;
-	public Yesterday(String emotion, int hour, int amount){
-		super(emotion,amount);
-		this.hour = hour;
-		
-	}
+@AllArgsConstructor
+public class UserStat {
+	String emotion;
+	int amount;
+	int count;
 }
