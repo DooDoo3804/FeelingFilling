@@ -5,10 +5,11 @@ import com.a702.feelingfilling.domain.request.model.dto.*;
 import java.util.List;
 
 public interface RequestCustomRepository {
+	
 	//개인 통계
 
 	//1.이번 달 저금
-	List<Stat> getUserThisMonth(Integer userId);
+	List<UserStat> getUserThisMonth(Integer userId);
 
 	//2. 월별 추이
 	List<Month> getUserMonths(Integer userId);
