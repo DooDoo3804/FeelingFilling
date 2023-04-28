@@ -42,7 +42,7 @@ public class RequestController {
 		
 		try{
 			//이번 달 저금
-			List<UserStat> stats = requestService.getUserThisMonth(userId);
+			UserStat[] stats = requestService.getUserThisMonth(userId);
 			resultMap.put("userThisMonth",stats);
 			logger.debug("사용자 이번 달 저금 : ", stats);
 			
@@ -86,7 +86,7 @@ public class RequestController {
 		
 		try{
 			//이번 달 저금
-			List<Stat> stats = requestService.getThisMonth();
+			Stat[] stats = requestService.getThisMonth();
 			resultMap.put("totalThisMonth", stats);
 			logger.debug("전체 사용자 이번 달 저금 : ", stats);
 			
@@ -101,7 +101,7 @@ public class RequestController {
 			logger.debug("이번 달 감정왕 : ", emotionKing);
 			
 			//전체 사용자 누적 적금액
-			List<Stat> total = requestService.getTotal();
+			Stat[] total = requestService.getTotal();
 			resultMap.put("total", total);
 			logger.debug("전체 사용자 누적 적금액 : ", total);
 			
