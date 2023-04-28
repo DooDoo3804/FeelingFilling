@@ -30,6 +30,4 @@ public class Chatting {
   int type;
   String content;
   LocalDateTime chatDate;
-
-
 }
