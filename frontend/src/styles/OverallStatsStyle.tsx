@@ -29,6 +29,7 @@ export const EmoKingContainer = styled.View`
   align-items: center;
   justify-content: space-between;
   padding: 20px 20px;
+  margin-bottom: 20px;
 `;
 
 export const EmoKingText = styled.Text`
@@ -47,4 +48,26 @@ export const EmoLottieWrapper = styled.View`
   width: 110px;
   height: 110px;
   border-radius: 100px;
+`;
+
+export const ErrorText = styled.Text`
+  color: ${Common.colors.selectGrey};
+  text-align: center;
+  font-size: 15px;
+  font-family: 'NotoSansKR-Medium';
+  line-height: 50px;
+  margin: 20px 0px;
+  margin-bottom: 40px;
+`;
+
+export const TitleWrapper = styled.View`
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+export const LottieWrapper = styled.View`
+  width: 30px;
+  height: 30px;
+  margin: 0px 5px;
 `;
