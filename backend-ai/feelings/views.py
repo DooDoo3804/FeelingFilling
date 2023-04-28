@@ -353,6 +353,7 @@ def init_setting():
 
 def get_jwt():
     global jwt_token
+    start = time.time()
     print("start schd")
     resp = requests.post(
         'https://openapi.vito.ai/v1/authenticate',
@@ -361,6 +362,9 @@ def get_jwt():
     )
     resp.raise_for_status()
     jwt_token = resp.json()['access_token']
+    end = time.time()
+    due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
+    print(f"소요시간 : {due_time}")
     print(resp.json()['access_token'])
 
 
