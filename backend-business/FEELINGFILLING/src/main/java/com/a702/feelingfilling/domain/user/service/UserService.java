@@ -7,4 +7,5 @@ public interface UserService {
   void join(UserJoinDTO userJoinDTO);
 
   UserDTO getUser();
+  int getLoginUserId();
 }

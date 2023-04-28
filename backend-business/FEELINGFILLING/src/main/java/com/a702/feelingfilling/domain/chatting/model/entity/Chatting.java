@@ -2,6 +2,8 @@ package com.a702.feelingfilling.domain.chatting.model.entity;
 
 import com.sun.istack.NotNull;
 import java.time.LocalDateTime;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "chatting")
+@Document(collection = "chattings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
@@ -24,10 +26,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @DynamicInsert
 public class Chatting {
   @Id
-  ObjectId chattingId;
+  private ObjectId chattingId;
   @NotNull
   @ColumnDefault("0")
-  int type;
-  String content;
-  LocalDateTime chatDate;
+  private int type;
+  private String content;
+  private LocalDateTime chatDate;
+
 }

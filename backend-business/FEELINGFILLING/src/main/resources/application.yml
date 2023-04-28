@@ -21,10 +21,10 @@ spring:
     show-sql: true
   data:
     mongodb:
-      uri: mongodb://localhost:27017/effitizer
-#      uri: mongodb:////k8a702.p.ssafy.io:27017/effitizer
-      authentication-database: admin
-      database: feelingfilling
+      uri: mongodb://localhost:27017/feelingfilling
+#      uri: mongodb:////k8a702.p.ssafy.io:27017
+#      authentication-database: admin
+#      database: feelingfilling
 
 
 

@@ -32,8 +32,12 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public UserDTO getUser(){
-		UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User userEntity = userRepository.findByUserId(loginUser.getId());
+		User userEntity = userRepository.findByUserId(getLoginUserId());
 		return UserDTO.toDTO(userEntity);
+	}
+	@Override
+	public int getLoginUserId(){
+		UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return loginUser.getId();
 	}
 }

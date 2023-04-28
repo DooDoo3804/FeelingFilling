@@ -7,13 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ChattingDTO {
-  int chattingId;
+  ObjectId chattingId;
   String content;
   LocalDateTime chatDate;
   int type;

@@ -2,6 +2,7 @@ package com.a702.feelingfilling.domain.user.controller;
 
 import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
 import com.a702.feelingfilling.domain.user.service.UserService;
+import io.swagger.annotations.Api;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
+@Api(tags = {"User API"})
 public class UserController {
 	@Autowired
 	public UserService userService;

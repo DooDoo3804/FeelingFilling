@@ -2,10 +2,12 @@ package com.a702.feelingfilling.domain.chatting.controller;
 
 import com.a702.feelingfilling.domain.chatting.model.dto.ChatInputDTO;
 import com.a702.feelingfilling.domain.chatting.service.ChattingService;
+import io.swagger.annotations.Api;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,8 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/chatting")
+@RequestMapping("/api/chatting")
 @Slf4j
+@Api(tags = {"채팅 API"})
 public class ChattingController {
   private final ChattingService chattingService;
   //1. 채팅입력
@@ -39,7 +42,7 @@ public class ChattingController {
 
   //2. 채팅 삭제
   @DeleteMapping
-  public ResponseEntity<?> deleteChat(@PathVariable int chattingId){
+  public ResponseEntity<?> deleteChat(@PathVariable ObjectId chattingId){
     log.info("chatting 삭제 : Id - " +chattingId);
     Map<String,Object> resultMap = new HashMap<>();
     try{
