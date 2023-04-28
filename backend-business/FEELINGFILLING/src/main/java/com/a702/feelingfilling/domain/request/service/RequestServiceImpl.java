@@ -14,7 +14,7 @@ public class RequestServiceImpl implements RequestService{
 	
 	@Autowired
 	private RequestRepository requestRepository;
-	private String[] emotion = new String[]{"anger","joy","sadness"};
+	private final String[] emotion = new String[]{"anger","joy","sadness"};
 	@Override
 	public List<Stat> getUserThisMonth(Integer userId) {
 		List<StatInterface> statInterfaces = requestRepository.getUserThisMonth(userId);
@@ -37,14 +37,20 @@ public class RequestServiceImpl implements RequestService{
 		List<MonthInterface> monthInterfaces = requestRepository.getUserMonths(userId);
 
 		int now = LocalDateTime.now().getMonthValue();
-		
+		int month = now;
+		int year = LocalDateTime.now().getYear()*100;
 		Month[][] months = new Month[3][6];
 		for(int i = 5;i>=0;i--) {
 			for(int j = 0;j<3;j++){
 				months[j][i] = Month.builder()
-						.month((now+6+i)%12+1)
+						.month(year+now)
 						.amount(0)
 						.build();
+			}
+			now--;
+			if(now==0){
+				now = 12;
+				year-=100;
 			}
 		}
 		
@@ -53,7 +59,7 @@ public class RequestServiceImpl implements RequestService{
 		
 		for(MonthInterface monthInterface: monthInterfaces){
 			while(i<3 && !monthInterface.getEmotion().equals(emotion[i]))i++;
-			j = getInd(now,monthInterface.getMonth());
+			j = getInd(month,monthInterface.getMonth());
 			months[i][j].setEmotion(monthInterface.getEmotion());
 			months[i][j].setAmount(monthInterface.getAmount());
 		}
