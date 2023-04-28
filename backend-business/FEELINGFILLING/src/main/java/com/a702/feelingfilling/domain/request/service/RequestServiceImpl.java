@@ -2,35 +2,40 @@ package com.a702.feelingfilling.domain.request.service;
 
 import com.a702.feelingfilling.domain.request.model.dto.*;
 import com.a702.feelingfilling.domain.request.model.repository.RequestCustomRepository;
-import com.a702.feelingfilling.domain.request.model.repository.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class RequestServiceImpl implements RequestService{
-	
-	@Autowired
-	private RequestRepository requestRepository;
+
 	@Autowired
 	private RequestCustomRepository requestCustomRepository;
 	
 	private final String[] emotion = new String[]{"anger","joy","sadness"};
 	
 	@Override
-	public List<UserStat> getUserThisMonth(Integer userId) {
-		List<UserStatInterface> statInterfaces = requestRepository.getUserThisMonth(userId);
+	public UserStat[] getUserThisMonth(Integer userId) {
 
-		List<UserStat> stats = new ArrayList<>();
-		statInterfaces.forEach(x -> stats.add(UserStat.builder()
-				.emotion(x.getEmotion())
-				.count(x.getCount())
-				.amount(x.getAmount())
-				.build()));
-		return stats;
+		List<UserStat> stats = requestCustomRepository.getUserThisMonth(userId);
+		
+		UserStat[] thisMonth = new UserStat[3];
+		int i = 0;
+		
+		for(int j = 0;j<3;j++){
+			if(i< stats.size() && stats.get(i).getEmotion().equals(emotion[j])){
+				System.out.println(stats.get(i));
+				thisMonth[j] = stats.get(i);
+				i++;
+			}
+			else{
+				thisMonth[j] = new UserStat(emotion[j],0,0);
+			}
+		}
+		
+		return thisMonth;
 	}
 	
 	public int getInd(int now, int m){
@@ -38,7 +43,8 @@ public class RequestServiceImpl implements RequestService{
 	}
 	@Override
 	public Month[][] getUserMonths(Integer userId) {
-		List<MonthInterface> monthInterfaces = requestRepository.getUserMonths(userId);
+
+		List<Month> monthInterfaces = requestCustomRepository.getUserMonths(userId);
 
 		int now = LocalDateTime.now().getMonthValue();
 		int month = now;
@@ -60,12 +66,11 @@ public class RequestServiceImpl implements RequestService{
 		
 		int i = 0;
 		int j;
-		
-		for(MonthInterface monthInterface: monthInterfaces){
-			while(i<3 && !monthInterface.getEmotion().equals(emotion[i]))i++;
-			j = getInd(month,monthInterface.getMonth());
-			months[i][j].setEmotion(monthInterface.getEmotion());
-			months[i][j].setAmount(monthInterface.getAmount());
+		for(Month m: monthInterfaces){
+			while(i<3 && !m.getEmotion().equals(emotion[i]))i++;
+			j = getInd(month,m.getMonth()%100);
+			months[i][j].setEmotion(m.getEmotion());
+			months[i][j].setAmount(m.getAmount());
 		}
 		
 		return months;
@@ -73,70 +78,54 @@ public class RequestServiceImpl implements RequestService{
 	
 	@Override
 	public EmotionHigh getEmotionHigh(Integer userId) {
-		
-		EmotionHighInterface date = requestRepository.getHighDateWithUserId(userId);
-		EmotionHighInterface hour = requestRepository.getHighHourWithUserId(userId);
-		EmotionHighInterface day = requestRepository.getHighDayWithUserId(userId);
-		
+
+		Integer date = requestCustomRepository.getHighDateWithUserId(userId);
+		Integer hour = requestCustomRepository.getHighHourWithUserId(userId);
+		Integer day = requestCustomRepository.getHighDayWithUserId(userId);
 		
 		return EmotionHigh.builder()
-				.date(date != null ? date.getDate() : 0)
-				.hour(hour != null ? hour.getHour() : -1)
-				.day(day != null ? convertDay(day.getDay()) : "없음")
+				.date(date==null?0:date)
+				.hour(hour==null?-1:hour)
+				.day(convertDay(day==null?0:day))
 				.build();
 	}
 	
 	@Override
 	public int getUserTotal(Integer userId) {
-		//JPA nativeQuery
-		return requestRepository.getUserTotal(userId);
-		
-//		//QueryDSL
-//		return requestCustomRepository.getUserTotal(userId);
+
+		return requestCustomRepository.getUserTotal(userId);
 	}
 	
+	
+	/***************
+	 	전체 통계
+	 **************/
+	
 	@Override
-	public List<Stat> getThisMonth() {
-		//JPA nativeQuery
-//		List<StatInterface> statInterfaces = requestRepository.getThisMonth();
-//
-//		List<Stat> stats = new ArrayList<>();
-//		statInterfaces.forEach(x -> stats.add(Stat.builder()
-//				.emotion(x.getEmotion())
-//				.amount(x.getAmount())
-//				.build()));
-//		return stats;
+	public Stat[] getThisMonth() {
+
+		List<Stat> stats = requestCustomRepository.getThisMonth();
 		
-		//QueryDSL
-		return requestCustomRepository.getThisMonth();
+		Stat[] thisMonth = new Stat[3];
+		int i = 0;
+		
+		for(int j = 0;j<3;j++){
+			if(i< stats.size() && stats.get(i).getEmotion().equals(emotion[j])){
+				System.out.println(stats.get(i));
+				thisMonth[j] = stats.get(i);
+				i++;
+			}
+			else{
+				thisMonth[j] = new Stat(emotion[j],0);
+			}
+		}
+		
+		return thisMonth;
 	}
 	
 	@Override
 	public Yesterday[][] getYesterday() {
-		//JPA nativeQuery
-//		List<YesterdayInterface> yesterdayInterfaces = requestRepository.getYesterday();
-//
-//		int now = LocalDateTime.now().getMonthValue();
-//
-//		Yesterday[][] yesterday = new Yesterday[3][24];
-//		for(int i = 23;i>=0;i--) {
-//			for(int j = 0;j<3;j++){
-//				yesterday[j][i] = Yesterday.builder()
-//						.hour(i)
-//						.amount(0)
-//						.build();
-//			}
-//		}
-//
-//		int i = 0;
-//		int j;
-//
-//		for(YesterdayInterface yesterdayInterface: yesterdayInterfaces){
-//			while(i<3 && !yesterdayInterface.getEmotion().equals(emotion[i]))i++;
-//			yesterday[i][yesterdayInterface.getHour()].setEmotion(yesterdayInterface.getEmotion());
-//			yesterday[i][yesterdayInterface.getHour()].setAmount(yesterdayInterface.getAmount());
-//		}
-		//QueryDSL
+
 		List<Yesterday> yesterdayInterfaces = requestCustomRepository.getYesterday();
 		
 		Yesterday[][] yesterday = new Yesterday[3][24];
@@ -161,36 +150,33 @@ public class RequestServiceImpl implements RequestService{
 	
 	@Override
 	public EmotionKing getEmotionKing() {
-		//JPA nativeQuery
-//		StatInterface statInterface = requestRepository.getEmotionKing();
-//
-//		return Stat.builder()
-//				.amount(statInterface != null? statInterface.getAmount():0)
-//				.count(statInterface != null? statInterface.getCount() : 0)
-//				.build();
-		//QueryDSL
+
 		return requestCustomRepository.getEmotionKing();
 	}
 	
 	@Override
-	public List<Stat> getTotal() {
-		// JPA nativeQuery
-//		List<StatInterface> statInterfaces = requestRepository.getTotal();
-//
-//		List<Stat> stats = new ArrayList<>();
-//
-//		statInterfaces.forEach(x -> stats.add(Stat.builder()
-//				.emotion(x.getEmotion())
-//				.amount(x.getAmount())
-//				.build()));
-//
-//		return stats;
-		//QueryDSL
-		return requestCustomRepository.getTotal();
+	public Stat[] getTotal() {
+
+		List<Stat> stats = requestCustomRepository.getTotal();
+		
+		Stat[] total = new Stat[3];
+		int i = 0;
+		
+		for(int j = 0;j<3;j++){
+			if(i< stats.size() && stats.get(i).getEmotion().equals(emotion[j])){
+				total[j] = stats.get(i);
+				i++;
+			}
+			else{
+				total[j] = new Stat(emotion[j],0);
+			}
+		}
+		
+		return total;
 	}
 	
 	public String convertDay(int d){
-		String[] day = new String[]{"월","화","수","목","금","토","일"};
+		String[] day = new String[]{"없음","일","월","화","수","목","금","토"};
 		
 		return day[d];
 	}
