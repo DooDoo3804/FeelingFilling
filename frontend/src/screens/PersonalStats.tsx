@@ -75,24 +75,45 @@ interface TotalStatisticsDataType {
   amount: number;
 }
 
+interface EmotionHighDataType {
+  date: number;
+  hour: string;
+  day: string;
+}
+
+interface TotalAmountDataType {
+  total: number;
+  coffee: number;
+  burger: number;
+}
+
 const PersonalStats = () => {
+  // 이번달 저금
   const [thisMonthSavingData, setThisMonthSavingData] = useState<
     ThisMonthSavingDataType[]
   >([]);
+  // 6개월 저금 추이
   const [totalStatisticsData, setTotalStatisticsData] = useState<
     TotalStatisticsDataType[][]
   >([]);
+  // 이번달 감정적 고조
+  const [thisMonthEmotionData, setThisMonthEmotionData] =
+    useState<EmotionHighDataType>();
+  // 누적 합계
+  const [totalAmountData, setTotalAmountData] = useState<TotalAmountDataType>();
 
   useEffect(() => {
-    const thisMonthData: ThisMonthSavingDataType[] = [
+    // 이번달 저금
+    const userThisMonth: ThisMonthSavingDataType[] = [
       {emotion: 'sad', cnt: 2, amount: 40000},
       {emotion: 'angry', cnt: 13, amount: 100820},
       {emotion: 'joy', cnt: 5, amount: 60000},
     ];
-    const sortedThisMonthData = thisMonthData.sort(function (a, b) {
+    const sortedThisMonthData = userThisMonth.sort(function (a, b) {
       return b.amount - a.amount;
     });
     setThisMonthSavingData(sortedThisMonthData);
+    // 6개월 저금 추이
     const userMonths: TotalStatisticsDataType[][] = [
       [
         {emotion: 'angry', month: 2, amount: 100000},
@@ -103,14 +124,6 @@ const PersonalStats = () => {
         {emotion: 'angry', month: 7, amount: 3000},
       ],
       [
-        {emotion: 'sad', month: 2, amount: 405345},
-        {emotion: 'sad', month: 3, amount: 3345},
-        {emotion: 'sad', month: 4, amount: 83462},
-        {emotion: 'sad', month: 5, amount: 2356},
-        {emotion: 'sad', month: 6, amount: 42450},
-        {emotion: 'sad', month: 7, amount: 300454},
-      ],
-      [
         {emotion: 'joy', month: 2, amount: 2400},
         {emotion: 'joy', month: 3, amount: 64000},
         {emotion: 'joy', month: 4, amount: 444000},
@@ -118,8 +131,39 @@ const PersonalStats = () => {
         {emotion: 'joy', month: 6, amount: 5400},
         {emotion: 'joy', month: 7, amount: 3000},
       ],
+      [
+        {emotion: 'sad', month: 2, amount: 405345},
+        {emotion: 'sad', month: 3, amount: 3345},
+        {emotion: 'sad', month: 4, amount: 83462},
+        {emotion: 'sad', month: 5, amount: 2356},
+        {emotion: 'sad', month: 6, amount: 42450},
+        {emotion: 'sad', month: 7, amount: 300454},
+      ],
     ];
     setTotalStatisticsData(userMonths);
+    // 이번달 감정적 고조
+    const emotionHigh = {
+      date: 15,
+      hour: 11,
+      day: '월',
+    };
+    let hour;
+    if (emotionHigh.hour < 12) {
+      hour = 'A.M ' + emotionHigh.hour;
+    } else {
+      hour = 'P.M' + (emotionHigh.hour - 12);
+    }
+    const thisMonthEmotion: EmotionHighDataType = {
+      date: emotionHigh.date,
+      hour: hour,
+      day: emotionHigh.day,
+    };
+    setThisMonthEmotionData(thisMonthEmotion);
+    // 누적 합계
+    const total = 1328100;
+    const coffee = 295;
+    const burger = 255;
+    setTotalAmountData({total: total, coffee: coffee, burger: burger});
   }, []);
 
   const priceConverter = (price: string) => {
@@ -308,7 +352,7 @@ const PersonalStats = () => {
                 />
               </LinearGradient>
             </BestDateSmileContainer>
-            <BestDateText>15일</BestDateText>
+            <BestDateText>{thisMonthEmotionData?.date}일</BestDateText>
           </BestDateContainer>
           <BestSamllContainer>
             <BestHourContainer>
@@ -319,7 +363,7 @@ const PersonalStats = () => {
                   loop
                 />
               </BestHourLottie>
-              <BestHourText>A.M 11</BestHourText>
+              <BestHourText>{thisMonthEmotionData?.hour}</BestHourText>
             </BestHourContainer>
             <BestDayContainer>
               <BestDayLottie>
@@ -329,7 +373,7 @@ const PersonalStats = () => {
                   loop
                 />
               </BestDayLottie>
-              <BestDayText>월요일</BestDayText>
+              <BestDayText>{thisMonthEmotionData?.day}요일</BestDayText>
             </BestDayContainer>
           </BestSamllContainer>
         </ThisMonthEmotionBodyContainer>
@@ -353,7 +397,7 @@ const PersonalStats = () => {
             <AmountHeadingTextContainer>
               <AmountHeadingText1>나의 누적 저금</AmountHeadingText1>
               <AmountHeadingText2>
-                {priceConverter(1328100 + '')} 원
+                {priceConverter(totalAmountData?.total + '')} 원
               </AmountHeadingText2>
             </AmountHeadingTextContainer>
           </AmountHeadingContainer>
@@ -367,7 +411,7 @@ const PersonalStats = () => {
             </AmountCoffeeLottieContainer>
             <AmountCoffeeTextContainer>
               <AmountText1>STARBUCKS 아메리카노</AmountText1>
-              <AmountText2>295 잔</AmountText2>
+              <AmountText2>{totalAmountData?.coffee} 잔</AmountText2>
             </AmountCoffeeTextContainer>
           </AmountCoffeeContainer>
           <AmountBurgerContainer>
@@ -380,7 +424,7 @@ const PersonalStats = () => {
             </AmountBurgerLottieContainer>
             <AmountBurgerTextContainer>
               <AmountText1>McDonald's 빅맥</AmountText1>
-              <AmountText2>255 개</AmountText2>
+              <AmountText2>{totalAmountData?.burger} 개</AmountText2>
             </AmountBurgerTextContainer>
           </AmountBurgerContainer>
         </CumulativeAmountBodyContainer>

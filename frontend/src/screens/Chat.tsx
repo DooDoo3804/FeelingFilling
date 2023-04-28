@@ -2,7 +2,6 @@ import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import {
   Platform,
-  Alert,
   Keyboard,
   TouchableWithoutFeedback,
   LogBox,
@@ -461,9 +460,15 @@ const Chat = () => {
     setText(inputText);
   };
 
+  const handleTextSubmit = () => {
+    console.log(text);
+    setText('');
+  };
+
   const textSend = (): void => {
     if (text.length > 0) {
-      Alert.alert(text);
+      console.log(text);
+      setText('');
     }
   };
 
@@ -474,6 +479,35 @@ const Chat = () => {
           {renderOfChat()}
         </ChatSectionContainer>
       </TouchableWithoutFeedback>
+      <SendingSectionContainer>
+        <TextInputSection
+          value={text}
+          onChangeText={handleTextChange}
+          onFocus={handleTextKeyPress}
+          onSubmitEditing={handleTextSubmit}
+        />
+        {isTexting ? (
+          <InputBtn onPress={textSend}>
+            <FontawesomeIcon5
+              name="arrow-up"
+              color={Common.colors.white01}
+              size={22}
+            />
+          </InputBtn>
+        ) : (
+          <InputBtn
+            onPress={() => {
+              setIsClickRecordModal(true);
+            }}>
+            <FontawesomeIcon5
+              name="microphone"
+              color={Common.colors.white01}
+              size={20}
+            />
+          </InputBtn>
+        )}
+      </SendingSectionContainer>
+      {/* 녹음 모달 */}
       <Modal
         animationType={'fade'}
         transparent={true}
@@ -602,33 +636,6 @@ const Chat = () => {
           </RecordingSection>
         </RecordingSectionContainer>
       </Modal>
-      <SendingSectionContainer>
-        <TextInputSection
-          value={text}
-          onChangeText={handleTextChange}
-          onFocus={handleTextKeyPress}
-        />
-        {isTexting ? (
-          <InputBtn onPress={textSend}>
-            <FontawesomeIcon5
-              name="arrow-up"
-              color={Common.colors.white01}
-              size={22}
-            />
-          </InputBtn>
-        ) : (
-          <InputBtn
-            onPress={() => {
-              setIsClickRecordModal(true);
-            }}>
-            <FontawesomeIcon5
-              name="microphone"
-              color={Common.colors.white01}
-              size={20}
-            />
-          </InputBtn>
-        )}
-      </SendingSectionContainer>
     </Container>
   );
 };
