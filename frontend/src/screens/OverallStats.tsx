@@ -88,16 +88,9 @@ const SadGradient = () => (
 );
 
 const OverallStats = () => {
-  const [monthTotal, setMonthTotal] = useState<monthTotalType[] | null>([
-    {emotion: 'joy', amount: 1, x: 2, y: 0},
-    {emotion: 'sadness', amount: 1, x: 0, y: 0},
-    {emotion: 'anger', amount: 1, x: 1, y: 0},
-  ]);
-
+  const [monthTotal, setMonthTotal] = useState<monthTotalType[] | null>([]);
   const [prevTotal, setPrevTotal] = useState<prevTotalType[][] | null>(null);
-
   const [emotionKing, setEmotionKing] = useState<emotionKingType | null>(null);
-
   const [totalMoney, setTotalMoney] = useState<totalMoneyType[] | null>(null);
 
   const {data, error} = useAxios<ApiResponse>(
@@ -107,27 +100,40 @@ const OverallStats = () => {
   );
 
   const amountConverter = (amount: number): string => {
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return Math.floor(amount)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   useEffect(() => {
     if (data && data.message === 'success') {
+      const totalAmount =
+        data.total[0].amount + data.total[1].amount + data.total[2].amount + 1;
+
+      let angerAmount = data.totalThisMonth[1].amount;
+      let joyAmount = data.totalThisMonth[0].amount;
+      let sadAmount = data.totalThisMonth[2].amount;
+
+      if (angerAmount < 1) angerAmount = 0.1;
+      if (joyAmount < 1) joyAmount = 0.1;
+      if (sadAmount < 1) sadAmount = 0.1;
+
       setMonthTotal([
         {
           emotion: 'anger',
-          amount: data.totalThisMonth[1].amount,
+          amount: angerAmount,
           x: 1,
           y: 1,
         },
         {
           emotion: 'joy',
-          amount: data.totalThisMonth[0].amount,
+          amount: joyAmount,
           x: 2,
           y: 0,
         },
         {
           emotion: 'sadness',
-          amount: data.totalThisMonth[2].amount,
+          amount: sadAmount,
           x: 0,
           y: 0.2,
         },
@@ -137,8 +143,6 @@ const OverallStats = () => {
 
       setEmotionKing(data.emotionKing);
 
-      const totalAmount =
-        data.total[0].amount + data.total[1].amount + data.total[2].amount;
       setTotalMoney([
         {
           x: 1,
@@ -174,7 +178,7 @@ const OverallStats = () => {
           </TitleWrapper>
           <VictoryChart
             height={250}
-            padding={{top: 90, bottom: 80, left: 60, right: 110}}>
+            padding={{top: 90, bottom: 80, left: 60, right: 130}}>
             <AngerGradient />
             <JoyGradient />
             <SadGradient />
