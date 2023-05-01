@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -42,7 +43,7 @@ public class ChattingController {
 
   //2. 채팅 삭제
   @DeleteMapping
-  public ResponseEntity<?> deleteChat(@PathVariable ObjectId chattingId){
+  public ResponseEntity<?> deleteChat(@RequestParam ObjectId chattingId){
     log.info("chatting 삭제 : Id - " +chattingId);
     Map<String,Object> resultMap = new HashMap<>();
     try{

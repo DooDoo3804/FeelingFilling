@@ -21,7 +21,7 @@ public class ChattingDTO {
   String mood;
   int amount;
 
-  ChattingDTO fromEntity(Chatting entity){
+  public static ChattingDTO fromEntity(Chatting entity){
     int type = entity.getType();
     if(type == 2){
       return ChattingDTO.builder()

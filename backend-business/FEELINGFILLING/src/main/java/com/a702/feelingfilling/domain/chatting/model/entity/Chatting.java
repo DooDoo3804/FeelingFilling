@@ -4,7 +4,7 @@ import com.sun.istack.NotNull;
 import java.time.LocalDateTime;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +16,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Document(collection = "chattings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,7 +26,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @DynamicInsert
 public class Chatting {
-  @Id
+
+  @MongoId
+  @GeneratedValue
   private ObjectId chattingId;
   @NotNull
   @ColumnDefault("0")
