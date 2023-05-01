@@ -8,8 +8,13 @@ import {
   Modal,
   View,
 } from 'react-native';
+/////// components ///////
 import {Common} from '../components/Common';
+import ErrorModal from '../components/ErrorModal';
+import OkModal from '../components/OkModal';
+/////// style ///////
 import FontawesomeIcon5 from 'react-native-vector-icons/FontAwesome5';
+import Lottie from 'lottie-react-native';
 import {
   Container,
   ChatSectionContainer,
@@ -45,16 +50,13 @@ import {
   PlayButton,
   RecordingDisplayView,
 } from '../styles/ChatStyle';
-import Lottie from 'lottie-react-native';
-
-/////// png
+/////// png ///////
 import ChatMoneyPng from '../assets/chat_money.png';
 import EmoAngry from '../assets/emo_angry.png';
 import EmoSad from '../assets/emo_sad.png';
 import EmoHappy from '../assets/emo_happy.png';
 LogBox.ignoreAllLogs();
-
-/////// recording, file
+/////// recording, file ///////
 import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -65,6 +67,10 @@ export const clickSave = () => {
 };
 
 const Chat = () => {
+  // modal control
+  const [errorModalView, setErrorModalView] = useState<boolean>(false);
+  const [okModalView, setOkModalView] = useState<boolean>(false);
+
   const [text, setText] = useState<string>('');
   const [isTexting, setIsTexting] = useState<boolean>(false);
 
@@ -507,6 +513,17 @@ const Chat = () => {
           </InputBtn>
         )}
       </SendingSectionContainer>
+      {/* 오류 모달 */}
+      <ErrorModal
+        showErrorModal={errorModalView}
+        setShowErrorModal={setErrorModalView}
+      />
+      {/* 성공 모달 */}
+      <OkModal
+        showOkModal={okModalView}
+        setShowOkModal={setOkModalView}
+        msg="test"
+      />
       {/* 녹음 모달 */}
       <Modal
         animationType={'fade'}
