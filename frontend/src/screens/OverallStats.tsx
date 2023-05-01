@@ -16,7 +16,8 @@ import {Common} from '../components/Common';
 import {
   Container,
   TitleText,
-  ScreenScroll,
+  LottieContainer1,
+  LottieContainer2,
   PageContainer,
   EmoKingContainer,
   TextWrapper,
@@ -168,17 +169,188 @@ const OverallStats = () => {
 
   return (
     <Container>
-      <ScreenScroll>
-        <PageContainer>
-          <TitleWrapper>
-            <TitleText>이번 달 저금</TitleText>
-            <LottieWrapper>
-              <Lottie source={require('../assets/coin.json')} autoPlay loop />
-            </LottieWrapper>
-          </TitleWrapper>
-          <VictoryChart
+      <PageContainer>
+        <TitleWrapper>
+          <TitleText>이번 달 저금</TitleText>
+          <LottieContainer1>
+            <Lottie source={require('../assets/coin.json')} autoPlay loop />
+          </LottieContainer1>
+        </TitleWrapper>
+        <VictoryChart
+          height={250}
+          padding={{top: 90, bottom: 80, left: 60, right: 130}}>
+          <AngerGradient />
+          <JoyGradient />
+          <SadGradient />
+          <VictoryAxis
+            style={{
+              axis: {stroke: ''},
+            }}
+            tickFormat={() => ''}
+          />
+          <VictoryAxis
+            dependentAxis
+            style={{
+              axis: {stroke: ''},
+            }}
+            tickFormat={() => ''}
+          />
+          <VictoryScatter
+            data={monthTotal}
+            style={{
+              data: {
+                fill: (
+                  {datum}, //datum은 VictoryBar에서 사용하는 데이터의 하나의 항목을 나타내는 객체
+                ) =>
+                  datum.emotion === 'anger'
+                    ? 'url(#anger-gradient)'
+                    : datum.emotion === 'joy'
+                    ? 'url(#joy-gradient)'
+                    : 'url(#sad-gradient)',
+              },
+            }}
+            bubbleProperty="amount"
+            maxBubbleSize={80}
+            minBubbleSize={60}
             height={250}
-            padding={{top: 90, bottom: 80, left: 60, right: 130}}>
+            labels={({datum}) => amountConverter(datum.amount)}
+            labelComponent={
+              <VictoryLabel
+                style={[
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  {
+                    fontFamily: 'NotoSansKR-Bold',
+                    fontSize: 20,
+                    dy: 20,
+                    fill: Common.colors.white01,
+                  },
+                ]}
+              />
+            }
+          />
+        </VictoryChart>
+
+        <TitleWrapper>
+          <TitleText>전날 저금 추이</TitleText>
+          <LottieContainer2>
+            <Lottie
+              source={require('../assets/chart-grow-up.json')}
+              autoPlay
+              loop
+            />
+          </LottieContainer2>
+        </TitleWrapper>
+        {prevTotal && (
+          <VictoryChart
+            height={260}
+            style={{
+              background: {fill: '#F9F9F9'},
+            }}
+            domainPadding={{x: 5, y: 5}}
+            minDomain={{y: -40}}
+            // maxDomain={{y: 26000}}
+            padding={{top: 20, bottom: 50, left: 60, right: 50}}>
+            <VictoryAxis
+              style={{
+                axis: {stroke: ''},
+                tickLabels: {
+                  fontSize: 14,
+                  fill: Common.colors.selectGrey,
+                },
+              }}
+              tickFormat={hour => `${hour}시`}
+            />
+            <VictoryAxis
+              dependentAxis
+              style={{
+                axis: {stroke: ''},
+                tickLabels: {
+                  fontSize: 12,
+                  fill: Common.colors.selectGrey,
+                },
+              }}
+              tickFormat={t => amountConverter(t)}
+            />
+            <VictoryLine
+              data={prevTotal[0]}
+              x="hour"
+              y="amount"
+              interpolation="natural"
+              style={{
+                data: {
+                  stroke: Common.colors.emotionColor01,
+                  strokeWidth: 2,
+                  strokeLinecap: 'round',
+                },
+              }}
+            />
+            <VictoryLine
+              data={prevTotal[1]}
+              x="hour"
+              y="amount"
+              interpolation="natural"
+              style={{
+                data: {
+                  stroke: Common.colors.emotionColor02,
+                  strokeWidth: 2,
+                  strokeLinecap: 'round',
+                },
+              }}
+            />
+            <VictoryLine
+              data={prevTotal[2]}
+              x="hour"
+              y="amount"
+              interpolation="natural"
+              style={{
+                data: {
+                  stroke: Common.colors.emotionColor03,
+                  strokeWidth: 2,
+                  strokeLinecap: 'round',
+                },
+              }}
+            />
+          </VictoryChart>
+        )}
+        <EmoKingContainer>
+          <TextWrapper>
+            {emotionKing ? (
+              <>
+                <EmoKingText>
+                  이번달 감정 왕{'  '}
+                  <FontAwesome5Icon name="crown" color="#FFE24B" size={20} />
+                </EmoKingText>
+                <EmoKingText>{emotionKing.count}회 저금</EmoKingText>
+                <EmoKingText>
+                  저금액 {amountConverter(emotionKing.amount)}원
+                </EmoKingText>
+              </>
+            ) : (
+              <>
+                <EmoKingText>필링필링을 이용하고</EmoKingText>
+                <EmoKingText>매달 감정 왕에</EmoKingText>
+                <EmoKingText>도전해보세요!</EmoKingText>
+              </>
+            )}
+          </TextWrapper>
+          <EmoLottieWrapper>
+            <Lottie
+              source={require('../assets/emotion_king.json')}
+              autoPlay
+              loop
+            />
+          </EmoLottieWrapper>
+        </EmoKingContainer>
+        <TitleWrapper>
+          <TitleText>저금 총 누적액</TitleText>
+          <LottieContainer1>
+            <Lottie source={require('../assets/coin.json')} autoPlay loop />
+          </LottieContainer1>
+        </TitleWrapper>
+        {totalMoney ? (
+          <VictoryChart
+            height={300}
+            padding={{top: -30, bottom: 50, left: 0, right: 40}}>
             <AngerGradient />
             <JoyGradient />
             <SadGradient />
@@ -195,175 +367,31 @@ const OverallStats = () => {
               }}
               tickFormat={() => ''}
             />
-            <VictoryScatter
-              data={monthTotal}
-              style={{
-                data: {
-                  fill: (
-                    {datum}, //datum은 VictoryBar에서 사용하는 데이터의 하나의 항목을 나타내는 객체
-                  ) =>
-                    datum.emotion === 'anger'
-                      ? 'url(#anger-gradient)'
-                      : datum.emotion === 'joy'
-                      ? 'url(#joy-gradient)'
-                      : 'url(#sad-gradient)',
-                },
-              }}
-              bubbleProperty="amount"
-              maxBubbleSize={80}
-              minBubbleSize={60}
-              height={250}
-              labels={({datum}) => amountConverter(datum.amount)}
-              labelComponent={
-                <VictoryLabel
-                  style={[
-                    // eslint-disable-next-line react-native/no-inline-styles
-                    {
-                      fontFamily: 'NotoSansKR-Bold',
-                      fontSize: 20,
-                      dy: 20,
-                      color: Common.colors.white01,
-                    },
-                  ]}
-                />
-              }
-            />
-          </VictoryChart>
-
-          <TitleText>전날 저금 추이</TitleText>
-          {prevTotal && (
-            <VictoryChart
-              height={260}
-              style={{
-                background: {fill: Common.colors.backgroundColor01},
-              }}
-              domainPadding={{x: 5, y: 5}}
-              minDomain={{y: -40}}
-              // maxDomain={{y: 26000}}
-              padding={{top: 20, bottom: 50, left: 60, right: 50}}>
-              <VictoryAxis
-                style={{
-                  axis: {stroke: ''},
-                  tickLabels: {
-                    fontSize: 14,
-                    fill: Common.colors.selectGrey,
-                  },
-                }}
-                tickFormat={hour => `${hour}시`}
-              />
-              <VictoryAxis
-                dependentAxis
-                style={{
-                  axis: {stroke: ''},
-                  tickLabels: {
-                    fontSize: 12,
-                    fill: Common.colors.selectGrey,
-                  },
-                }}
-                tickFormat={t => amountConverter(t)}
-              />
-              <VictoryLine
-                data={prevTotal[0]}
-                x="hour"
-                y="amount"
-                interpolation="natural"
-                style={{
-                  data: {
-                    stroke: Common.colors.emotionColor01,
-                    strokeWidth: 2,
-                    strokeLinecap: 'round',
-                  },
-                }}
-              />
-              <VictoryLine
-                data={prevTotal[1]}
-                x="hour"
-                y="amount"
-                interpolation="natural"
-                style={{
-                  data: {
-                    stroke: Common.colors.emotionColor02,
-                    strokeWidth: 2,
-                    strokeLinecap: 'round',
-                  },
-                }}
-              />
-              <VictoryLine
-                data={prevTotal[2]}
-                x="hour"
-                y="amount"
-                interpolation="natural"
-                style={{
-                  data: {
-                    stroke: Common.colors.emotionColor03,
-                    strokeWidth: 2,
-                    strokeLinecap: 'round',
-                  },
-                }}
-              />
-            </VictoryChart>
-          )}
-          <EmoKingContainer>
-            <TextWrapper>
-              {emotionKing ? (
-                <>
-                  <EmoKingText>
-                    이번달 감정 왕{'  '}
-                    <FontAwesome5Icon name="crown" color="#FFE24B" size={20} />
-                  </EmoKingText>
-                  <EmoKingText>{emotionKing.count}회 저금</EmoKingText>
-                  <EmoKingText>
-                    저금액 {amountConverter(emotionKing.amount)}원
-                  </EmoKingText>
-                </>
-              ) : (
-                <>
-                  <EmoKingText>필링필링을 이용하고</EmoKingText>
-                  <EmoKingText>매달 감정 왕에</EmoKingText>
-                  <EmoKingText>도전해보세요!</EmoKingText>
-                </>
-              )}
-            </TextWrapper>
-            <EmoLottieWrapper>
-              <Lottie
-                source={require('../assets/emotion_king.json')}
-                autoPlay
-                loop
-              />
-            </EmoLottieWrapper>
-          </EmoKingContainer>
-          <TitleWrapper>
-            <TitleText>저금 총 누적액</TitleText>
-            <LottieWrapper>
-              <Lottie source={require('../assets/coin.json')} autoPlay loop />
-            </LottieWrapper>
-          </TitleWrapper>
-          {totalMoney ? (
             <VictoryPie
               data={totalMoney}
-              innerRadius={100}
-              labelRadius={({innerRadius}) => innerRadius + 2}
-              radius={70}
+              innerRadius={90}
+              labelRadius={({innerRadius}) => innerRadius + 10} // 레이블 간격 조절
+              radius={50}
               cornerRadius={10}
-              padAngle={3}
+              padAngle={5}
               colorScale={[
-                Common.colors.emotionColor01,
-                Common.colors.emotionColor02,
-                Common.colors.emotionColor03,
+                'url(#anger-gradient)',
+                'url(#joy-gradient)',
+                'url(#sad-gradient)',
               ]}
               style={{labels: {fontSize: 14, fontWeight: 'bold'}}}
-              padding={{top: -20, bottom: 0, left: 100, right: 140}}
+              labelPosition={'centroid'}
               animate={{
                 easing: 'exp',
                 duration: 12000,
               }}
               height={280}
             />
-          ) : (
-            <ErrorText>정보를 불러올 수 없어요.</ErrorText>
-          )}
-        </PageContainer>
-      </ScreenScroll>
+          </VictoryChart>
+        ) : (
+          <ErrorText>정보를 불러올 수 없어요.</ErrorText>
+        )}
+      </PageContainer>
     </Container>
   );
 };
