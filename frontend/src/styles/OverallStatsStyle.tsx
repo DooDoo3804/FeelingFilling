@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 import {Common} from '../components/Common';
 
-export const Container = styled.View`
+export const Container = styled.ScrollView`
   flex: 1;
   background-color: ${Common.colors.white01};
   padding: 20px;
@@ -13,8 +13,17 @@ export const TitleText = styled.Text`
   font-family: 'NotoSansKR-Bold';
 `;
 
-export const ScreenScroll = styled.ScrollView`
-  flex: 1;
+export const LottieContainer1 = styled.View`
+  margin-top: 13px;
+  width: 35px;
+  height: 35px;
+`;
+
+export const LottieContainer2 = styled.View`
+  margin-left: 7px;
+  margin-top: 11px;
+  width: 35px;
+  height: 35px;
 `;
 
 export const PageContainer = styled.View`
@@ -62,8 +71,6 @@ export const ErrorText = styled.Text`
 
 export const TitleWrapper = styled.View`
   flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
 `;
 
 export const LottieWrapper = styled.View`
