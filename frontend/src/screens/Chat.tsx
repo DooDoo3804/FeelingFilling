@@ -2,15 +2,19 @@ import React, {useState, useEffect, useRef} from 'react';
 import axios from 'axios';
 import {
   Platform,
-  Alert,
   Keyboard,
   TouchableWithoutFeedback,
   LogBox,
   Modal,
   View,
 } from 'react-native';
+/////// components ///////
 import {Common} from '../components/Common';
+import ErrorModal from '../components/ErrorModal';
+import OkModal from '../components/OkModal';
+/////// style ///////
 import FontawesomeIcon5 from 'react-native-vector-icons/FontAwesome5';
+import Lottie from 'lottie-react-native';
 import {
   Container,
   ChatSectionContainer,
@@ -46,16 +50,13 @@ import {
   PlayButton,
   RecordingDisplayView,
 } from '../styles/ChatStyle';
-import Lottie from 'lottie-react-native';
-
-/////// png
+/////// png ///////
 import ChatMoneyPng from '../assets/chat_money.png';
 import EmoAngry from '../assets/emo_angry.png';
 import EmoSad from '../assets/emo_sad.png';
 import EmoHappy from '../assets/emo_happy.png';
 LogBox.ignoreAllLogs();
-
-/////// recording, file
+/////// recording, file ///////
 import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -66,6 +67,10 @@ export const clickSave = () => {
 };
 
 const Chat = () => {
+  // modal control
+  const [errorModalView, setErrorModalView] = useState<boolean>(false);
+  const [okModalView, setOkModalView] = useState<boolean>(false);
+
   const [text, setText] = useState<string>('');
   const [isTexting, setIsTexting] = useState<boolean>(false);
 
@@ -461,9 +466,15 @@ const Chat = () => {
     setText(inputText);
   };
 
+  const handleTextSubmit = () => {
+    console.log(text);
+    setText('');
+  };
+
   const textSend = (): void => {
     if (text.length > 0) {
-      Alert.alert(text);
+      console.log(text);
+      setText('');
     }
   };
 
@@ -474,6 +485,46 @@ const Chat = () => {
           {renderOfChat()}
         </ChatSectionContainer>
       </TouchableWithoutFeedback>
+      <SendingSectionContainer>
+        <TextInputSection
+          value={text}
+          onChangeText={handleTextChange}
+          onFocus={handleTextKeyPress}
+          onSubmitEditing={handleTextSubmit}
+        />
+        {isTexting ? (
+          <InputBtn onPress={textSend}>
+            <FontawesomeIcon5
+              name="arrow-up"
+              color={Common.colors.white01}
+              size={22}
+            />
+          </InputBtn>
+        ) : (
+          <InputBtn
+            onPress={() => {
+              setIsClickRecordModal(true);
+            }}>
+            <FontawesomeIcon5
+              name="microphone"
+              color={Common.colors.white01}
+              size={20}
+            />
+          </InputBtn>
+        )}
+      </SendingSectionContainer>
+      {/* 오류 모달 */}
+      <ErrorModal
+        showErrorModal={errorModalView}
+        setShowErrorModal={setErrorModalView}
+      />
+      {/* 성공 모달 */}
+      <OkModal
+        showOkModal={okModalView}
+        setShowOkModal={setOkModalView}
+        msg="test"
+      />
+      {/* 녹음 모달 */}
       <Modal
         animationType={'fade'}
         transparent={true}
@@ -602,33 +653,6 @@ const Chat = () => {
           </RecordingSection>
         </RecordingSectionContainer>
       </Modal>
-      <SendingSectionContainer>
-        <TextInputSection
-          value={text}
-          onChangeText={handleTextChange}
-          onFocus={handleTextKeyPress}
-        />
-        {isTexting ? (
-          <InputBtn onPress={textSend}>
-            <FontawesomeIcon5
-              name="arrow-up"
-              color={Common.colors.white01}
-              size={22}
-            />
-          </InputBtn>
-        ) : (
-          <InputBtn
-            onPress={() => {
-              setIsClickRecordModal(true);
-            }}>
-            <FontawesomeIcon5
-              name="microphone"
-              color={Common.colors.white01}
-              size={20}
-            />
-          </InputBtn>
-        )}
-      </SendingSectionContainer>
     </Container>
   );
 };
