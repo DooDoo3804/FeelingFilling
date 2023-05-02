@@ -35,5 +35,8 @@ public class Chatting {
   private int type;
   private String content;
   private LocalDateTime chatDate;
+  private String mood;
+  private int amount;
+  private int userId;
 
 }

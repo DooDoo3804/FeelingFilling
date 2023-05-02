@@ -22,23 +22,13 @@ public class ChattingDTO {
   int amount;
 
   public static ChattingDTO fromEntity(Chatting entity){
-    int type = entity.getType();
-    if(type == 2){
       return ChattingDTO.builder()
           .chattingId(entity.getChattingId())
           .content(entity.getContent())
           .chatDate(entity.getChatDate())
           .type(entity.getType())
+          .mood(entity.getMood())
+          .amount(entity.getAmount())
           .build();
-      //--------------수정 필요----------------
-    }
-    else{
-      return ChattingDTO.builder()
-          .chattingId(entity.getChattingId())
-          .content(entity.getContent())
-          .chatDate(entity.getChatDate())
-          .type(entity.getType())
-          .build();
-    }
   }
 }

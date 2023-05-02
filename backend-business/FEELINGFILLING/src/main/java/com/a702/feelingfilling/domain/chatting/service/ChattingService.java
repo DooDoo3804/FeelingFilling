@@ -8,5 +8,5 @@ import org.bson.types.ObjectId;
 public interface ChattingService {
   ChattingDTO createChat(ChatInputDTO chatInputDTO);
   void removeChat(ObjectId chattingId);
-  List<ChattingDTO> getChatList();
+  List<ChattingDTO> getChatList(int page);
 }

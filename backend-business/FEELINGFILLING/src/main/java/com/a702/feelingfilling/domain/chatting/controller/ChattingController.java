@@ -58,12 +58,12 @@ public class ChattingController {
 
   //3.채팅 목록 조회
   @GetMapping
-  public ResponseEntity<?> getChatList(){
+  public ResponseEntity<?> getChatList(@RequestParam int page){
     log.info("chatting 목록조회");
     Map<String,Object> resultMap = new HashMap<>();
     try{
       resultMap.put("message","SUCCESS");
-      resultMap.put("chattings",chattingService.getChatList());
+      resultMap.put("chattings",chattingService.getChatList(page));
       return ResponseEntity.ok().body(resultMap);
     }catch (Exception e){
       resultMap.put("message",e.getMessage());
