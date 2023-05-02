@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {NativeModules} from 'react-native';
 
 import {Provider, useSelector} from 'react-redux';
 import {makeStore} from './src/redux';
@@ -7,9 +8,10 @@ import type {AppState} from './src/redux';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 
-// import AuthStackNavigation from './src/navigations/AuthStack';
+import AuthStackNavigation from './src/navigations/AuthStack';
 import Main from './src/navigations/MainTab';
 import Spinner from './src/components/Spinner';
+import Config from 'react-native-config';
 
 const store = makeStore();
 
@@ -30,6 +32,14 @@ const AppWrapper = () => {
 };
 
 export default function App() {
+  useEffect(() => {
+    if (NativeModules.KakaoDynamicHost) {
+      NativeModules.KakaoDynamicHost.registerDynamicHost(Config.KAKAO_APP_KEY);
+    } else {
+      console.error('KakaoDynamicHost module not found');
+    }
+  }, []);
+
   return (
     <Provider store={store}>
       <AppWrapper />

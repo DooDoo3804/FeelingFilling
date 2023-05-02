@@ -1,7 +1,11 @@
 import React from 'react';
-
+import {NativeModules, Button} from 'react-native';
 import Swiper from 'react-native-swiper';
 import Lottie from 'lottie-react-native';
+import {
+  KakaoLoginModuleInterface,
+  KakaoOAuthToken,
+} from '@react-native-seoul/kakao-login';
 
 import {Common} from '../components/Common';
 import font_logo from '../assets/font_logo.png';
@@ -18,6 +22,51 @@ import {
   KakaoLogo,
   BtnText,
 } from '../styles/LoginStyle';
+
+const {RNKakaoLogins} = NativeModules;
+
+const NativeKakaoLogins: KakaoLoginModuleInterface = {
+  login() {
+    return RNKakaoLogins.login();
+  },
+  loginWithKakaoAccount() {
+    return RNKakaoLogins.loginWithKakaoAccount();
+  },
+  logout() {
+    return RNKakaoLogins.logout();
+  },
+  unlink() {
+    return RNKakaoLogins.unlink();
+  },
+  getProfile() {
+    return RNKakaoLogins.getProfile();
+  },
+  getAccessToken() {
+    return RNKakaoLogins.getAccessToken();
+  },
+};
+
+const KakaoLoginButton = () => {
+  const signInWithKakao = async (): Promise<void> => {
+    try {
+      const token: KakaoOAuthToken = await NativeKakaoLogins.login();
+      console.log(token);
+      console.log('Access token:', token.accessToken);
+
+      const profile = await NativeKakaoLogins.getProfile();
+      console.log('User profile:', profile);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  return (
+    <LoginBtn onPress={signInWithKakao}>
+      <KakaoLogo source={kakao_logo} />
+      <BtnText textColor={Common.colors.deepGrey}>카카오로 시작하기</BtnText>
+    </LoginBtn>
+  );
+};
 
 const Landing = ({navigation}: {navigation: any}) => {
   return (
@@ -64,10 +113,8 @@ const Landing = ({navigation}: {navigation: any}) => {
           </SwiperView>
         </Swiper>
       </SwiperConatiner>
-      <LoginBtn onPress={() => navigation.navigate('Login')}>
-        <KakaoLogo source={kakao_logo} />
-        <BtnText textColor={Common.colors.deepGrey}>카카오로 시작하기</BtnText>
-      </LoginBtn>
+      <KakaoLoginButton />
+      <Button title="move" onPress={() => navigation.navigate('SignUp')} />
     </Container>
   );
 };
