@@ -22,6 +22,7 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 	 	개인 통계
 	 **************/
 	
+	//1. 개인 이번 달 저금
 	@Override
 	public List<UserStat> getUserThisMonth(Integer userId) {
 		return jpaQueryFactory
@@ -34,6 +35,7 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 				.orderBy(request.emotion.asc()).fetch();
 	}
 
+	//2. 개인 월별 추이(6개월)
 	@Override
 	public List<Month> getUserMonths(Integer userId) {
 		LocalDateTime monthsAgo = LocalDateTime.now().minusMonths(6);
@@ -48,6 +50,7 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 				.fetch();
 	}
 	
+	//3. 개인 감정 최고조 - 날짜
 	@Override
 	public Integer getHighDateWithUserId(Integer userId) {
 
@@ -62,6 +65,7 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 					.fetchFirst();
 	}
 
+	//3. 개인 감정 최고조 - 시간
 	@Override
 	public Integer getHighHourWithUserId(Integer userId) {
 		return jpaQueryFactory
@@ -74,7 +78,8 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 				.orderBy(request.amount.count().desc())
 				.fetchFirst();
 	}
-
+	
+	//3. 개인 감정 최고조 - 요일
 	@Override
 	public Integer getHighDayWithUserId(Integer userId) {
 		return jpaQueryFactory
@@ -87,7 +92,8 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 				.orderBy(request.amount.count().desc())
 				.fetchFirst();
 	}
-
+	
+	//4. 개인 전체 저금 누적 액
 	@Override
 	public int getUserTotal(Integer userId) {
 		return jpaQueryFactory
@@ -103,7 +109,7 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 		전체 통계
 	 **************/
 	
-	//1. 이번 달 저금
+	//1. 전체 이번 달 저금
 	@Override
 	public List<Stat> getThisMonth() {
 		return jpaQueryFactory
@@ -127,7 +133,8 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 				.orderBy(request.emotion.asc(),request.requestTime.hour().asc())
 				.fetch();
 	}
-
+	
+	//3. 전체 이번 달 감정 왕
 	@Override
 	public EmotionKing getEmotionKing() {
 
@@ -140,7 +147,8 @@ public class RequestCustomRepositoryImpl implements RequestCustomRepository{
 				.orderBy(request.amount.count().desc(),request.amount.sum().desc())
 				.fetchFirst();
 	}
-
+	
+	//4. 전체 저금 누적 액
 	@Override
 	public List<Stat> getTotal() {
 		return jpaQueryFactory
