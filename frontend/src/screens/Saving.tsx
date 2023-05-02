@@ -1,40 +1,28 @@
-import React, {useState} from 'react';
-import {Text} from 'react-native';
-import styled from 'styled-components/native';
+import React, {useState, useEffect} from 'react';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {Common} from '../components/Common';
-
-const SavingWrapper = styled.View`
-  flex: 1;
-`;
-
-const BalanceWrapper = styled.View`
-  background-color: ${Common.colors.emotionColor02};
-  align-items: center;
-`;
-
-const MonthWrapper = styled.View`
-  flex-direction: row;
-  align-items: center;
-`;
-
-const PrevNextBtn = styled.TouchableOpacity``;
-
-const MonthText = styled.Text`
-  font-family: 'NotoSansKR-Bold';
-  font-size: 16px;
-  color: ${Common.colors.deepGrey};
-  padding: 20px 20px;
-`;
-
-const BalanceText = styled.Text`
-  font-family: 'NotoSansKR-Black';
-  font-size: 28px;
-  color: ${Common.colors.deepGrey};
-  padding: 0px 20px;
-  margin-bottom: 30px;
-  line-height: 50px;
-`;
+import {
+  SavingWrapper,
+  PrevNextBtn,
+  BalanceText,
+  BalanceWrapper,
+  MonthText,
+  MonthWrapper,
+  SavingListContainer,
+  SavingItemContainer,
+  SavingItemFront,
+  SavingItemTail,
+  SavingDateText,
+  SavingMoneyText,
+  WithdrawMoneyText,
+  SavingMoneySumText,
+  EmotionPngContainer,
+} from '../styles/SavingStyle';
+import FontawesomeIcon5 from 'react-native-vector-icons/FontAwesome5';
+/////// png ///////
+import EmoAngry from '../assets/emo_angry.png';
+import EmoSad from '../assets/emo_sad.png';
+import EmoHappy from '../assets/emo_happy.png';
 
 const Saving = () => {
   const now = new Date();
@@ -68,6 +56,15 @@ const Saving = () => {
     }
   };
 
+  const SavingListRander = () => {
+    const result = [];
+    return result;
+  };
+
+  useEffect(() => {
+    const data = {};
+  }, []);
+
   return (
     <SavingWrapper>
       <BalanceWrapper>
@@ -96,7 +93,32 @@ const Saving = () => {
         </MonthWrapper>
         <BalanceText>181,818원</BalanceText>
       </BalanceWrapper>
-      <Text>Saving</Text>
+      <SavingListContainer>
+        <SavingItemContainer>
+          <SavingItemFront>
+            <SavingDateText>2023.04.14 13:48</SavingDateText>
+            <FontawesomeIcon5
+              name="money-check-alt"
+              color={'#1bac80'}
+              size={35}
+            />
+          </SavingItemFront>
+          <SavingItemTail>
+            <WithdrawMoneyText>-1,800</WithdrawMoneyText>
+            <SavingMoneySumText>잔액 180,000원</SavingMoneySumText>
+          </SavingItemTail>
+        </SavingItemContainer>
+        <SavingItemContainer>
+          <SavingItemFront>
+            <SavingDateText>2023.04.14 13:48</SavingDateText>
+            <EmotionPngContainer source={EmoHappy} />
+          </SavingItemFront>
+          <SavingItemTail>
+            <SavingMoneyText>1,800</SavingMoneyText>
+            <SavingMoneySumText>잔액 181,800원</SavingMoneySumText>
+          </SavingItemTail>
+        </SavingItemContainer>
+      </SavingListContainer>
     </SavingWrapper>
   );
 };
