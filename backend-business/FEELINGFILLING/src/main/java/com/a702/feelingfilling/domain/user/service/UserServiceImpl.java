@@ -4,18 +4,25 @@ import com.a702.feelingfilling.domain.user.model.dto.UserDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserLoginDTO;
 import com.a702.feelingfilling.domain.user.model.entity.User;
-import com.a702.feelingfilling.domain.user.model.repository.BadgeRepository;
+import com.a702.feelingfilling.domain.user.model.entity.UserBadge;
+import com.a702.feelingfilling.domain.user.model.repository.UserBadgeRepository;
 import com.a702.feelingfilling.domain.user.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService{
 	@Autowired
-	BadgeRepository badgeRepository;
+	UserBadgeRepository userBadgeRepository;
 	@Autowired
 	UserRepository userRepository;
+	
+	private int badgeCnt = 15;
+	
 	@Override
 	public void join(UserJoinDTO userJoinDTO){
 		User userEntity = userRepository.findByUserId(userJoinDTO.getUserId());
@@ -36,4 +43,19 @@ public class UserServiceImpl implements UserService{
 		User userEntity = userRepository.findByUserId(loginUser.getId());
 		return UserDTO.toDTO(userEntity);
 	}
+	
+	@Override
+	public List<Integer> getUserBadge(int userId) {
+		List<Integer> badge = new ArrayList<>();
+		//int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+		List<UserBadge> badges = userBadgeRepository.findByUser_UserId(userId);
+		
+		for(UserBadge userBadge : badges){
+			badge.add(userBadge.getBadgeId());
+		}
+		
+		return badge;
+	}
+	
+	
 }

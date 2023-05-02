@@ -15,6 +15,7 @@ public class RequestServiceImpl implements RequestService{
 	private RequestCustomRepository requestCustomRepository;
 	
 	private final String[] emotion = new String[]{"anger","joy","sadness"};
+	private final String[] weekday = new String[]{"없음","일","월","화","수","목","금","토"};
 	
 	@Override
 	public UserStat[] getUserThisMonth(Integer userId) {
@@ -86,7 +87,7 @@ public class RequestServiceImpl implements RequestService{
 		return EmotionHigh.builder()
 				.date(date==null?0:date)
 				.hour(hour==null?-1:hour)
-				.day(convertDay(day==null?0:day))
+				.day(weekday[day==null?0:day])
 				.build();
 	}
 	
@@ -150,8 +151,9 @@ public class RequestServiceImpl implements RequestService{
 	
 	@Override
 	public EmotionKing getEmotionKing() {
-
-		return requestCustomRepository.getEmotionKing();
+		EmotionKing emotionKing = requestCustomRepository.getEmotionKing();
+		
+		return emotionKing == null ? EmotionKing.builder().amount(0).count(0).build() : emotionKing;
 	}
 	
 	@Override
@@ -173,11 +175,5 @@ public class RequestServiceImpl implements RequestService{
 		}
 		
 		return total;
-	}
-	
-	public String convertDay(int d){
-		String[] day = new String[]{"없음","일","월","화","수","목","금","토"};
-		
-		return day[d];
 	}
 }
