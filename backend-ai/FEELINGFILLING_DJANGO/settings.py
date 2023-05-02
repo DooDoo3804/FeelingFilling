@@ -28,8 +28,8 @@ JWT_SECRET = "makemoneyfromyouremotionandfeelbetter"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['3.38.191.128', '3.38.191.128:8000', "127.0.0.1"]
+# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['3.38.191.128', '3.38.191.128:8000', "127.0.0.1", "feelingfilling.store"]
 
 
 # scheduler 설정
@@ -52,9 +52,6 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'feelings',
-
-
-
 ]
 
 MIDDLEWARE = [
