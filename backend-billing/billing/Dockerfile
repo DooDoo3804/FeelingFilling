@@ -8,5 +8,5 @@ RUN ./gradlew clean bootJar
 FROM adoptopenjdk/openjdk11:jdk-11.0.10_9-alpine
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-EXPOSE 8080
-CMD ["java", "-jar", "./build/libs/billing.jar"]
+EXPOSE 8702
+CMD ["java", "-jar", "/app.jar"]
