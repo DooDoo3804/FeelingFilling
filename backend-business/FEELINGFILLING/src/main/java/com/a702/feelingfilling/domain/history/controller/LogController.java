@@ -44,7 +44,7 @@ public class LogController {
 		try{
 			//이번 달 저금
 			List<LogDTO> logs = logService.getUserMonthLog(userId,year,month);
-			resultMap.put("userThisMonth",logs);
+			resultMap.put("logs",logs);
 			logger.debug("% 회원의 %d월 거래내역 : ", userId, month, logs);
 			
 			resultMap.put("message", SUCCESS);

@@ -11,14 +11,14 @@ import java.time.format.DateTimeFormatter;
 @Setter
 @Getter
 public class LogDTO {
-	String log_time;
+	String logTime;
 	String emotion;
 	int amount;
 	int total;
 	
 	public static LogDTO toDTO(History history){
 		return LogDTO.builder()
-				.log_time(history.getRequestTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+				.logTime(history.getRequestTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
 				.emotion(history.getEmotion())
 				.amount(history.getAmount())
 				.total(history.getTotal())
