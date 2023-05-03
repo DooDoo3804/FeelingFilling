@@ -26,7 +26,6 @@ public class React {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "react_id")
   int reactId;
   @OneToOne
   @JoinColumn(name = "chatting_id")
