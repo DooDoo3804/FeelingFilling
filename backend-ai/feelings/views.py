@@ -16,8 +16,8 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
 from .models import React, Chatting, Request, User
 
-jwt_token = ""
 
+jwt_token = ""
 
 # 텍스트 번역 api
 # post 요청
@@ -39,8 +39,6 @@ def analysis_text(request):
     """
     user = User.objects.get(user_id = 1)
     # user = User.objects.get(user_id = user_id)
-    result = insert_chatting(text)
-    print(result)
 
     """
         번역 요청
@@ -149,9 +147,9 @@ def analysis_voice(request):
     """
         chatting 저장
     """
-    user = User.objects.get(user_id = user_id)
-    result = insert_chatting(text)
-    print(result)
+    # user = User.objects.get(user_id = user_id)
+    # result = insert_chatting(text)
+    # print(result)
 
     """
         번역 요청
@@ -222,23 +220,23 @@ def make_react():
 
 
 # chatting에 insert 함수
-def insert_chatting(text):
-    # MongoDB 클라이언트 생성
-    client = MongoClient('mongodb://3.38.191.128:27017/')
-    # 데이터베이스 선택
-    db = client['feelingfilling']
-    # 컬렉션 선택
-    collection = db['chatting']
-    # 문서 생성
-    chat = {"user": 1, "text": text, "date": datetime.datetime.now()}
-    # 문서 삽입
-    result = collection.insert_one(chat)
-    # # 단일 문서 조회
-    # post = posts.find_one({"author": "Mike"})
-    # # 다중 문서 조회
-    # for post in posts.find():
-    #     print(post)
-    return result
+# def insert_chatting(text):
+#     # MongoDB 클라이언트 생성
+#     client = MongoClient('mongodb://3.38.191.128:27017/')
+#     # 데이터베이스 선택
+#     db = client['feelingfilling']
+#     # 컬렉션 선택
+#     collection = db['chatting']
+#     # 문서 생성
+#     chat = {"user": 1, "text": text, "date": datetime.datetime.now()}
+#     # 문서 삽입
+#     result = collection.insert_one(chat)
+#     # # 단일 문서 조회
+#     # post = posts.find_one({"author": "Mike"})
+#     # # 다중 문서 조회
+#     # for post in posts.find():
+#     #     print(post)
+#     return result
 
 
 # 번역 함수
@@ -303,18 +301,20 @@ def analysis_emition(translation_result):
 
 
 # Billing에 요청 함수
-def req_billing(token, amount, user_id):
-    headers = { 'Authorization' : 'Bearer' + token}
-    params = {'amount' : amount}
+# def req_billing(token, amount, user_id):
+def req_billing(amount, user_id):
+    # headers = { 'Authorization' : 'Bearer'}
+    # headers = { 'Authorization' : 'Bearer' + token}
     resp = requests.post(
-        'http://3.38.191.128:8080/billing/subscription',
-        headers=headers,
-        params=params,
+        'http://13.124.31.137:8702/billing/subscription',
+        headers = {"Content-Type": "application/json"},
         data={
+            'amount' : amount,
             'serviceUserId': user_id,
             'serviceName': "FeelingFilling",
         }
     )
+    print(resp)
     success = 1
     return success
 
