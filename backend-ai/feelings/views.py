@@ -388,8 +388,7 @@ def get_jwt():
     jwt_token = resp.json()['access_token']
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
-    print(f"소요시간 : {due_time}")
-    print(resp.json()['access_token'])
+    print(f"[{datetime.datetime.now()}] 소요시간 : {due_time}")
 
 
 def schedule_api():
