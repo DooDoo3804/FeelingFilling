@@ -20,11 +20,11 @@ from .models import React, Chatting, Request, User
     text 분석 요청 api
 
     spring으로부터 요청 받음
-    text를 영어로 번역
-    번역한 영어를 모델에 넣고 감정 분석을 진행
-    분석된 값을 기반으로 적금할 금액 계산
-    req_billing을 통해 billing에 요청
-    billing으로 부터 성공 여부를 받고 request에 저장
+    text를 영어로 번역 v
+    번역한 영어를 모델에 넣고 감정 분석을 진행 v
+    분석된 값을 기반으로 적금할 금액 계산 v
+    req_billing을 통해 billing에 요청 x
+    billing으로 부터 성공 여부를 받고 request에 저장 v
     반환문 및 적금된 금액을 반환 (spring 한테)
 """
 
@@ -103,15 +103,15 @@ def analysis_text(request):
 """
     voice 분석 요청 api
 
-    front로 부터 요청 받음
-    voice파일을 stt api에 요청보냄
-    stt 결과를 받음
-    결과를 영어로 번역
-    번역한 영어를 모델에 넣고 감정 분석을 진행
-    분석된 값을 기반으로 적금할 금액 계산
-    req_billing을 통해 billing에 요청
-    billing으로 부터 성공 여부를 받고 request에 저장
-    반환문 및 적금된 금액을 반환 (front 한테)
+    front로 부터 요청 받음 x
+    voice파일을 stt api에 요청보냄 v
+    stt 결과를 받음 v
+    결과를 영어로 번역 v
+    번역한 영어를 모델에 넣고 감정 분석을 진행 v
+    분석된 값을 기반으로 적금할 금액 계산 v
+    req_billing을 통해 billing에 요청 x
+    billing으로 부터 성공 여부를 받고 request에 저장 v
+    반환문 및 적금된 금액을 반환 (front 한테) x
 """
 # 음성 번역 api
 # post 요청
@@ -158,7 +158,7 @@ def analysis_voice(request):
                     # 응답이 성공적으로 온 경우
                     break
                 else:
-                    # 응답이 오지 않은 경우 1촣 재요청
+                    # 응답이 오지 않은 경우 1초 후 재요청
                     print(f'Retrying after 1 seconds...')
                     sleep(1)
             print(resp.json())
@@ -168,12 +168,7 @@ def analysis_voice(request):
         print(e)
     text = resp.json()
 
-    """
-        chatting 저장
-    """
     user = User.objects.get(user_id = 1)
-    # result = insert_chatting(text)
-    # print(result)
 
     """
         번역 요청
