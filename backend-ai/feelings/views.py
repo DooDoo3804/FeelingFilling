@@ -16,6 +16,17 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
 from .models import React, Chatting, Request, User
 
+"""
+    text 분석 요청 api
+
+    spring으로부터 요청 받음
+    text를 영어로 번역
+    번역한 영어를 모델에 넣고 감정 분석을 진행
+    분석된 값을 기반으로 적금할 금액 계산
+    req_billing을 통해 billing에 요청
+    billing으로 부터 성공 여부를 받고 request에 저장
+    반환문 및 적금된 금액을 반환 (spring 한테)
+"""
 
 jwt_token = ""
 
