@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {useAxios} from '../hooks/useAxios';
+
 import {
   BadgeDescription,
   BadgeImage,
@@ -25,6 +27,11 @@ import money02 from '../assets/badges/badge_money02.png';
 import money03 from '../assets/badges/badge_money03.png';
 import nomoney from '../assets/badges/badge_nomoney.png';
 import default01 from '../assets/badges/badge_default.png';
+
+interface ApiResponse {
+  message: string;
+  badges: number[];
+}
 
 const badgeList = [
   {
@@ -107,7 +114,22 @@ const badgeList = [
 ];
 
 const Badges = () => {
-  const [badges, setBadges] = useState([0, 2, 3, 4, 5, 6, 8, 9]);
+  const [badges, setBadges] = useState<number[]>([]);
+
+  // 로그인 기능 생기고 API 요청 주소 변경되면 주소 바꿔주기
+  const {data, error} = useAxios<ApiResponse>(
+    'http://k8a702.p.ssafy.io:8080/api/user/badge/1',
+    'GET',
+    null,
+  );
+
+  useEffect(() => {
+    if (data) {
+      setBadges(data.badges);
+    } else {
+      console.log('error : ', error);
+    }
+  }, [data, error]);
 
   return (
     <BadgePageContainer>
@@ -118,7 +140,7 @@ const Badges = () => {
             .map((item, idx) => {
               if (badges.includes(idx)) {
                 return (
-                  <SingleBadgeContainer>
+                  <SingleBadgeContainer key={idx}>
                     <BadgeImage source={badgeList[idx].src} />
                     <BadgeTitle>{badgeList[idx].name}</BadgeTitle>
                     <BadgeDescription>
@@ -128,7 +150,7 @@ const Badges = () => {
                 );
               } else {
                 return (
-                  <SingleBadgeContainer>
+                  <SingleBadgeContainer key={idx}>
                     <BadgeImage source={default01} />
                     <BadgeTitle>숨겨진 배지</BadgeTitle>
                     <BadgeDescription>
