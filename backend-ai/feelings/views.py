@@ -45,9 +45,6 @@ def analysis_text(request):
     
     text = request.data['text']
     
-    """
-        chatting 저장
-    """
     user = User.objects.get(user_id = 1)
     # user = User.objects.get(user_id = user_id)
 
