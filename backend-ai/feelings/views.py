@@ -171,7 +171,7 @@ def analysis_voice(request):
     """
         chatting 저장
     """
-    # user = User.objects.get(user_id = user_id)
+    user = User.objects.get(user_id = 1)
     # result = insert_chatting(text)
     # print(result)
 
@@ -239,6 +239,7 @@ def cal_deposit(score):
 
 
 # GPT // ChatBot react 생성 함수
+# 아직 미정
 def make_react():
     pass
 
