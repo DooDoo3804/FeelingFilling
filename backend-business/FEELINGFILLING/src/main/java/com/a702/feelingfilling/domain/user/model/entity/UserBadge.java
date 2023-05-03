@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "user_badge")
+@Entity
 @Setter
 @Getter
 @AllArgsConstructor
@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 public class UserBadge {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_badge_id")
+
 	Integer UserBadgeId;
 	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "userId")
 	User user;
-	@Column(name = "badge_id")
+
 	int badgeId;
-	@Column(name = "achieved_date")
+
 	LocalDateTime achievedDate;
 	
 	
