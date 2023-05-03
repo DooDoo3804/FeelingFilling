@@ -9,6 +9,7 @@ services:
     environment:
       SERVER_MODE: prod
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     # command: python manage.py runserver 0.0.0.0:8000 --noreload
     ports:
       - "8000:8000"
