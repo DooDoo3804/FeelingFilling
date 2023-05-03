@@ -1,6 +1,6 @@
-package com.a702.feelingfilling.domain.request.model.repository;
+package com.a702.feelingfilling.domain.history.model.repository;
 
-import com.a702.feelingfilling.domain.request.model.dto.*;
+import com.a702.feelingfilling.domain.history.model.dto.*;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.a702.feelingfilling.domain.request.model.entity.QRequest.request;
+import static com.a702.feelingfilling.domain.history.model.entity.QRequest.request;
 @Repository
 @RequiredArgsConstructor
-public class RequestCustomRepositoryImpl implements RequestCustomRepository{
+public class StatCustomRepositoryImpl implements StatCustomRepository {
 
 	private final JPAQueryFactory jpaQueryFactory;
 	
