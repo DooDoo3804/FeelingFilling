@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {useAxios} from '../hooks/useAxios';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {Common} from '../components/Common';
 import {
@@ -24,46 +25,120 @@ import EmoAngry from '../assets/emo_angry.png';
 import EmoSad from '../assets/emo_sad.png';
 import EmoHappy from '../assets/emo_happy.png';
 
+interface responseDataType {
+  message: string;
+  logs: savingListDataType[];
+}
+
+interface savingListDataType {
+  logTime: string;
+  emotion: string;
+  amount: number;
+  total: number;
+}
+
 const Saving = () => {
   const now = new Date();
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
+  const {data, refetch} = useAxios<responseDataType>(
+    `http://3.38.191.128:8080/api/log/${1}/${year}/${month}`,
+    'GET',
+    null,
+  );
+
+  const priceConverter = (price: string) => {
+    return price.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  const [savingListData, setSavingListData] = useState<savingListDataType[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const savingList = data?.logs as savingListDataType[];
+    setSavingListData(savingList);
+  }, [data?.logs]);
 
   const prevMonth = () => {
     if (month === 0) {
+      refetch(`http://3.38.191.128:8080/api/log/${1}/${year - 1}/${11}`);
       setYear(year - 1);
       setMonth(11);
     } else {
+      refetch(`http://3.38.191.128:8080/api/log/${1}/${year}/${month}`);
       setMonth(month - 1);
     }
+    const savingList = data?.logs as savingListDataType[];
+    setSavingListData(savingList);
   };
 
   const nextMonth = () => {
     if (year < now.getFullYear()) {
       if (month === 11) {
+        refetch(`http://3.38.191.128:8080/api/log/${1}/${year + 1}/${1}`);
         setYear(year + 1);
         setMonth(0);
       } else {
+        refetch(
+          `http://3.38.191.128:8080/api/log/${1}/${year - 1}/${month + 2}`,
+        );
         setMonth(month + 1);
       }
     } else if (year === now.getFullYear() && month < now.getMonth()) {
       if (month === 12) {
+        refetch(`http://3.38.191.128:8080/api/log/${1}/${year + 1}/${1}`);
         setYear(year + 1);
         setMonth(0);
       } else {
+        refetch(`http://3.38.191.128:8080/api/log/${1}/${year}/${month + 2}`);
         setMonth(month + 1);
       }
     }
+    const savingList = data?.logs as savingListDataType[];
+    setSavingListData(savingList);
   };
 
   const SavingListRander = () => {
-    const result = [];
+    const result: any[] = [];
+    let idx = 0;
+    savingListData.forEach(e => {
+      result.push(
+        <SavingItemContainer key={idx++}>
+          <SavingItemFront>
+            <SavingDateText>{e.logTime.substring(0, 16)}</SavingDateText>
+            {e.emotion === 'angry' ? (
+              <EmotionPngContainer source={EmoAngry} />
+            ) : e.emotion === 'happy' ? (
+              <EmotionPngContainer source={EmoHappy} />
+            ) : e.emotion === 'sad' ? (
+              <EmotionPngContainer source={EmoSad} />
+            ) : (
+              <FontawesomeIcon5
+                name="money-check-alt"
+                color={'#1bac80'}
+                size={35}
+              />
+            )}
+          </SavingItemFront>
+          <SavingItemTail>
+            {e.emotion === 'deposit' ? (
+              <WithdrawMoneyText>
+                -{priceConverter(e.amount + '')}
+              </WithdrawMoneyText>
+            ) : (
+              <SavingMoneyText>{priceConverter(e.amount + '')}</SavingMoneyText>
+            )}
+            <SavingMoneySumText>
+              잔액 {priceConverter(e.total + '')}원
+            </SavingMoneySumText>
+          </SavingItemTail>
+        </SavingItemContainer>,
+      );
+      console.log(e);
+    });
     return result;
   };
-
-  useEffect(() => {
-    const data = {};
-  }, []);
 
   return (
     <SavingWrapper>
@@ -91,33 +166,15 @@ const Saving = () => {
             />
           </PrevNextBtn>
         </MonthWrapper>
-        <BalanceText>181,818원</BalanceText>
+        <BalanceText>
+          {savingListData && savingListData.length > 0
+            ? priceConverter(savingListData[0].total + '')
+            : '0'}
+          원
+        </BalanceText>
       </BalanceWrapper>
       <SavingListContainer>
-        <SavingItemContainer>
-          <SavingItemFront>
-            <SavingDateText>2023.04.14 13:48</SavingDateText>
-            <FontawesomeIcon5
-              name="money-check-alt"
-              color={'#1bac80'}
-              size={35}
-            />
-          </SavingItemFront>
-          <SavingItemTail>
-            <WithdrawMoneyText>-1,800</WithdrawMoneyText>
-            <SavingMoneySumText>잔액 180,000원</SavingMoneySumText>
-          </SavingItemTail>
-        </SavingItemContainer>
-        <SavingItemContainer>
-          <SavingItemFront>
-            <SavingDateText>2023.04.14 13:48</SavingDateText>
-            <EmotionPngContainer source={EmoHappy} />
-          </SavingItemFront>
-          <SavingItemTail>
-            <SavingMoneyText>1,800</SavingMoneyText>
-            <SavingMoneySumText>잔액 181,800원</SavingMoneySumText>
-          </SavingItemTail>
-        </SavingItemContainer>
+        {savingListData ? SavingListRander() : ''}
       </SavingListContainer>
     </SavingWrapper>
   );
