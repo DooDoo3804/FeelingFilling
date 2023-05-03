@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import axios, {AxiosResponse, AxiosError} from 'axios';
 import {useDispatch} from 'react-redux';
 import {toggleProgress} from '../redux';
@@ -6,13 +6,15 @@ import {toggleProgress} from '../redux';
 type FetchData<T> = {
   data: T | null;
   error: AxiosError | null;
+  refetch: (newUrl?: string) => void;
 };
 
 export const useAxios = <T>(
-  url: string,
+  initialUrl: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
   request_config: JSON | null = null,
 ): FetchData<T> => {
+  const [url, setUrl] = useState<string>(initialUrl);
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<AxiosError | null>(null);
 
@@ -24,29 +26,38 @@ export const useAxios = <T>(
     dispatch(toggleProgress(status));
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      handleProgress(true);
+  const fetchData = useCallback(async () => {
+    handleProgress(true);
 
-      try {
-        const config = {
-          body: request_config,
-        };
-        const res: AxiosResponse<T> = await axios.request<T>({
-          url,
-          method,
-          ...config,
-        });
-        setData(res.data);
-      } catch (err: any) {
-        setError(err);
-      }
-      handleProgress(false);
-    };
-    fetchData();
+    try {
+      const config = {
+        body: request_config,
+      };
+      const res: AxiosResponse<T> = await axios.request<T>({
+        url,
+        method,
+        ...config,
+      });
+      setData(res.data);
+    } catch (err: any) {
+      setError(err);
+    }
+    handleProgress(false);
   }, [url]);
 
-  return {data, error};
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const refetch = (newUrl?: string) => {
+    if (newUrl) {
+      setUrl(newUrl);
+    } else {
+      fetchData();
+    }
+  };
+
+  return {data, error, refetch};
 };
 
 // import {useAxios} from '../hooks/useAxios';
