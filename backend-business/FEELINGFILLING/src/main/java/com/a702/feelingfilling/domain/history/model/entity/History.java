@@ -6,7 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "history")
+@Entity
 @Setter
 @Getter
 @NoArgsConstructor
@@ -15,14 +15,13 @@ import java.time.LocalDateTime;
 public class History {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "history_id")
 	Integer historyId;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	User user;
 	
-	@Column(name = "request_time")
+
 	LocalDateTime requestTime;
 	
 	String emotion;

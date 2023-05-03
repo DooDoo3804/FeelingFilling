@@ -14,7 +14,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
-@Entity(name = "user")
+@Entity
 @Getter
 @Setter
 @ToString
@@ -24,10 +24,9 @@ import org.springframework.data.annotation.CreatedDate;
 public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
-	@Column(name = "user_id")
 	Integer userId;
 	String nickname;
-	@Column(name = "id_oauth2")
+
 	String idOAuth2;
 	String role;
 	@NotNull

@@ -32,14 +32,14 @@ public class Chatting {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "chatting_id")
+
   int chattingId;
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   @NotNull
   User user;
   String content;
-  @Column(name = "chat_date")
+
   @NotNull
   @CreationTimestamp
   LocalDateTime chatDate;
