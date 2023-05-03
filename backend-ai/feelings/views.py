@@ -89,6 +89,19 @@ def analysis_text(request):
     return JsonResponse(context, status = 201)
 
 
+"""
+    voice 분석 요청 api
+
+    front로 부터 요청 받음
+    voice파일을 stt api에 요청보냄
+    stt 결과를 받음
+    결과를 영어로 번역
+    번역한 영어를 모델에 넣고 감정 분석을 진행
+    분석된 값을 기반으로 적금할 금액 계산
+    req_billing을 통해 billing에 요청
+    billing으로 부터 성공 여부를 받고 request에 저장
+    반환문 및 적금된 금액을 반환 (front 한테)
+"""
 # 음성 번역 api
 # post 요청
 @api_view(['POST'])
