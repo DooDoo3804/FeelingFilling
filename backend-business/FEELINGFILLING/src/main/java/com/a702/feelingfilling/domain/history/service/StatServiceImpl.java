@@ -1,7 +1,7 @@
-package com.a702.feelingfilling.domain.request.service;
+package com.a702.feelingfilling.domain.history.service;
 
-import com.a702.feelingfilling.domain.request.model.dto.*;
-import com.a702.feelingfilling.domain.request.model.repository.RequestCustomRepository;
+import com.a702.feelingfilling.domain.history.model.dto.*;
+import com.a702.feelingfilling.domain.history.model.repository.StatCustomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class RequestServiceImpl implements RequestService{
+public class StatServiceImpl implements StatService {
 
 	@Autowired
-	private RequestCustomRepository requestCustomRepository;
+	private StatCustomRepository statCustomRepository;
 	
 	private final String[] emotion = new String[]{"anger","joy","sadness"};
 	private final String[] weekday = new String[]{"없음","일","월","화","수","목","금","토"};
@@ -20,7 +20,7 @@ public class RequestServiceImpl implements RequestService{
 	@Override
 	public UserStat[] getUserThisMonth(Integer userId) {
 
-		List<UserStat> stats = requestCustomRepository.getUserThisMonth(userId);
+		List<UserStat> stats = statCustomRepository.getUserThisMonth(userId);
 		
 		UserStat[] thisMonth = new UserStat[3];
 		int i = 0;
@@ -45,7 +45,7 @@ public class RequestServiceImpl implements RequestService{
 	@Override
 	public Month[][] getUserMonths(Integer userId) {
 
-		List<Month> monthInterfaces = requestCustomRepository.getUserMonths(userId);
+		List<Month> monthInterfaces = statCustomRepository.getUserMonths(userId);
 
 		int now = LocalDateTime.now().getMonthValue();
 		int month = now;
@@ -80,9 +80,9 @@ public class RequestServiceImpl implements RequestService{
 	@Override
 	public EmotionHigh getEmotionHigh(Integer userId) {
 
-		Integer date = requestCustomRepository.getHighDateWithUserId(userId);
-		Integer hour = requestCustomRepository.getHighHourWithUserId(userId);
-		Integer day = requestCustomRepository.getHighDayWithUserId(userId);
+		Integer date = statCustomRepository.getHighDateWithUserId(userId);
+		Integer hour = statCustomRepository.getHighHourWithUserId(userId);
+		Integer day = statCustomRepository.getHighDayWithUserId(userId);
 		
 		return EmotionHigh.builder()
 				.date(date==null?0:date)
@@ -94,7 +94,7 @@ public class RequestServiceImpl implements RequestService{
 	@Override
 	public int getUserTotal(Integer userId) {
 
-		return requestCustomRepository.getUserTotal(userId);
+		return statCustomRepository.getUserTotal(userId);
 	}
 	
 	
@@ -105,7 +105,7 @@ public class RequestServiceImpl implements RequestService{
 	@Override
 	public Stat[] getThisMonth() {
 
-		List<Stat> stats = requestCustomRepository.getThisMonth();
+		List<Stat> stats = statCustomRepository.getThisMonth();
 		
 		Stat[] thisMonth = new Stat[3];
 		int i = 0;
@@ -127,7 +127,7 @@ public class RequestServiceImpl implements RequestService{
 	@Override
 	public Yesterday[][] getYesterday() {
 
-		List<Yesterday> yesterdayInterfaces = requestCustomRepository.getYesterday();
+		List<Yesterday> yesterdayInterfaces = statCustomRepository.getYesterday();
 		
 		Yesterday[][] yesterday = new Yesterday[3][24];
 		for(int i = 23;i>=0;i--) {
@@ -151,7 +151,7 @@ public class RequestServiceImpl implements RequestService{
 	
 	@Override
 	public EmotionKing getEmotionKing() {
-		EmotionKing emotionKing = requestCustomRepository.getEmotionKing();
+		EmotionKing emotionKing = statCustomRepository.getEmotionKing();
 		
 		return emotionKing == null ? EmotionKing.builder().amount(0).count(0).build() : emotionKing;
 	}
@@ -159,7 +159,7 @@ public class RequestServiceImpl implements RequestService{
 	@Override
 	public Stat[] getTotal() {
 
-		List<Stat> stats = requestCustomRepository.getTotal();
+		List<Stat> stats = statCustomRepository.getTotal();
 		
 		Stat[] total = new Stat[3];
 		int i = 0;

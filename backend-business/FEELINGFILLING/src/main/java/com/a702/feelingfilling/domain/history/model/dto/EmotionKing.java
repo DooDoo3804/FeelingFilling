@@ -1,6 +1,5 @@
-package com.a702.feelingfilling.domain.request.model.dto;
+package com.a702.feelingfilling.domain.history.model.dto;
 
-import io.swagger.annotations.Api;
 import lombok.*;
 
 @Builder

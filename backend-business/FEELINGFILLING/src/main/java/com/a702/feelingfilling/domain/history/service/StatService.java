@@ -1,8 +1,8 @@
-package com.a702.feelingfilling.domain.request.service;
+package com.a702.feelingfilling.domain.history.service;
 
-import com.a702.feelingfilling.domain.request.model.dto.*;
+import com.a702.feelingfilling.domain.history.model.dto.*;
 
-public interface RequestService {
+public interface StatService {
 	//개인 통계
 	UserStat[] getUserThisMonth(Integer userId);
 	Month[][] getUserMonths(Integer userId);
