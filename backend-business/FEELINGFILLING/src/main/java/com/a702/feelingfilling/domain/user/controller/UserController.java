@@ -45,14 +45,15 @@ public class UserController {
 	}//join
 
 	//3. 정보조회
-	@GetMapping
+	@GetMapping("/{userId}")
 //	@PreAuthorize("hasRole('ROLE_AMDIN') or hasRole('ROLE_USER')" )
-	public ResponseEntity<?> getUser(){
+	public ResponseEntity<?> getUser(@PathVariable int userId){
 		log.info("회원 정보 조회 요청");
 		Map<String, Object> resultMap;
 		try{
 			resultMap = new HashMap<>();
-			resultMap.put("user", userService.getUser());
+//			resultMap.put("user", userService.getUser());
+			resultMap.put("user", userService.getUser(userId));
 			resultMap.put("message", "SUCCESS");
 			return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
 		}catch (Exception e){
@@ -62,7 +63,23 @@ public class UserController {
 		}
 	}
 	
-	//4. 뱃지 조회
+	//4. 정보수정
+	@PutMapping
+//	@PreAuthorize("hasRole('ROLE_AMDIN') or hasRole('ROLE_USER')" )
+	public ResponseEntity<?> modifyUser(UserDTO userDTO){
+		log.info("회원 정보 수정 요청");
+		Map<String, Object> resultMap = new HashMap<>();
+		try{
+			resultMap.put("user", userService.modifyUser(userDTO));
+			resultMap.put("message", "SUCCESS");
+			return ResponseEntity.status(HttpStatus.OK).body(resultMap);
+		}catch (Exception e){
+			resultMap.put("message", e.getMessage());
+			return ResponseEntity.badRequest().body(resultMap);
+		}
+	}
+	
+	//5. 뱃지 조회
 	@GetMapping("/badge/{userId}")
 //	@PreAuthorize(("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')"))
 	public ResponseEntity<?> getUserBadge(@PathVariable int userId){
