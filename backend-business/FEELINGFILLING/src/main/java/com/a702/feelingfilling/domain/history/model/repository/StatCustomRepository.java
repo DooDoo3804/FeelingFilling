@@ -1,10 +1,10 @@
-package com.a702.feelingfilling.domain.request.model.repository;
+package com.a702.feelingfilling.domain.history.model.repository;
 
-import com.a702.feelingfilling.domain.request.model.dto.*;
+import com.a702.feelingfilling.domain.history.model.dto.*;
 
 import java.util.List;
 
-public interface RequestCustomRepository {
+public interface StatCustomRepository {
 	
 	//개인 통계
 

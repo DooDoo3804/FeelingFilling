@@ -1,4 +1,4 @@
-package com.a702.feelingfilling.domain.request.model.entity;
+package com.a702.feelingfilling.domain.history.model.entity;
 
 import com.a702.feelingfilling.domain.user.model.entity.User;
 import lombok.*;
@@ -6,34 +6,29 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity(name = "request")
+@Entity(name = "history")
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Request {
+public class History {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Integer requestId;
+	@Column(name = "history_id")
+	Integer historyId;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	User user;
 	
-	String content;
 	@Column(name = "request_time")
 	LocalDateTime requestTime;
 	
-	String translation;
-	
-	String react;
-	
 	String emotion;
 	
-	Double intensity;
 	
 	int amount;
 	
-	boolean success;
+	int total;
 }
