@@ -1,6 +1,7 @@
 package com.a702.feelingfilling.domain.user.service;
 
 import com.a702.feelingfilling.domain.user.model.dto.UserDTO;
+import com.a702.feelingfilling.domain.user.model.dto.UserLoginDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
 import com.a702.feelingfilling.domain.user.model.entity.User;
 import com.a702.feelingfilling.domain.user.model.entity.UserBadge;
