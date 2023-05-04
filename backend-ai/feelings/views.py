@@ -320,17 +320,18 @@ def analysis_emition(translation_result):
 # Billing에 요청 함수
 # def req_billing(token, amount, user_id):
 def req_billing(amount, user_id):
-    # headers = { 'Authorization' : 'Bearer'}
-    # headers = { 'Authorization' : 'Bearer' + token}
-    resp = requests.post(
-        'http://13.124.31.137:8702/billing/subscription',
-        headers = {"Content-Type": "application/json"},
-        data={
-            'amount' : amount,
-            'serviceUserId': user_id,
-            'serviceName': "FeelingFilling",
-        }
-    )
+    try:
+        resp = requests.post(
+            'http://13.124.31.137:8702/billing/subscription',
+            json={
+                'amount' : 1,
+                'serviceUserId': 1,
+                'serviceName': "abcd",
+            }
+        )
+        print(resp)
+    except Exception as e:
+        print(e)
     print(resp)
     success = 1
     return success
