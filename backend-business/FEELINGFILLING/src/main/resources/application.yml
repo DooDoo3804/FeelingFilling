@@ -17,7 +17,7 @@ spring:
     hibernate:
       ddl-auto: none
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: com.a702.feelingfilling.global.strategy.CustomPhysicalNamingStrategy
     show-sql: true
   data:
     mongodb:

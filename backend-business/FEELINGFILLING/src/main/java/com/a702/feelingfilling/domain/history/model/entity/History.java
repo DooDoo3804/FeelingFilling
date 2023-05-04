@@ -1,4 +1,4 @@
-package com.a702.feelingfilling.domain.request.model.entity;
+package com.a702.feelingfilling.domain.history.model.entity;
 
 import com.a702.feelingfilling.domain.user.model.entity.User;
 import lombok.*;
@@ -12,27 +12,22 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Request {
+public class History {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Integer requestId;
+	Integer historyId;
 	
 	@ManyToOne
+	@JoinColumn(name = "user_id")
 	User user;
 	
-	String content;
-	
+
 	LocalDateTime requestTime;
-	
-	String translation;
-	
-	String react;
 	
 	String emotion;
 	
-	Double intensity;
 	
 	int amount;
 	
-	boolean success;
+	int total;
 }
