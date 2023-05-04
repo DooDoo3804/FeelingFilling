@@ -1,9 +1,6 @@
 package com.example.billing.controller;
 
-import com.example.billing.data.dto.KakaoApproveDTO;
-import com.example.billing.data.dto.KakaoReadyDTO;
-import com.example.billing.data.dto.ServiceUserDTO;
-import com.example.billing.data.dto.UserDTO;
+import com.example.billing.data.dto.*;
 import com.example.billing.service.KakaoPayService;
 import com.example.billing.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +41,8 @@ public class BillingController {
     }
 
     @PostMapping("/subscription")
-    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserDTO serviceUserDTO, @RequestParam int amount){
-       kakaoPayService.kakaoPaySubscription(serviceUserDTO, amount);
+    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody PaySubscriptionDTO paySubscriptionDTO){
+       kakaoPayService.kakaoPaySubscription(paySubscriptionDTO);
 
        return new ResponseEntity<>(HttpStatus.OK);
     }

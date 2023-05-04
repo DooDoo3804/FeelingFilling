@@ -116,8 +116,9 @@ public class KakaoPayService {
         return kakaoApproveDTO;
     }
 
-    public void kakaoPaySubscription(ServiceUserDTO serviceUserDTO, int amount){
-        User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
+    public void kakaoPaySubscription(PaySubscriptionDTO paySubscriptionDTO){
+        User user = userRepository.findUserByServiceNameAndServiceUserId(paySubscriptionDTO.getServiceName(), paySubscriptionDTO.getServiceUserId());
+        int amount = paySubscriptionDTO.getAmount();
 
         KakaoOrder newOrder = new KakaoOrder();
         newOrder.setUser(user);
