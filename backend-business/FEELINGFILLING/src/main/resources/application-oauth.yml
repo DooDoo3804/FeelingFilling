@@ -28,8 +28,8 @@ spring:
             client-name: Kakao
             authorization-grant-type: authorization_code
             client-authentication-method: POST
-#            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
-            redirect-uri: https://k8a702.p.ssafy.io:8080/login/oauth2/code/kakao
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+#            redirect-uri: https://k8a702.p.ssafy.io:8080/login/oauth2/code/kakao
         provider:
 #          naver:
 #            authorization-uri: https://nid.naver.com/oauth2.0/authorize

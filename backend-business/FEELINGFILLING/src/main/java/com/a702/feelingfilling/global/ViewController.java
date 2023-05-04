@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/api/test")
 public class ViewController {
-  @GetMapping("/api/loginForm")
+  @GetMapping("/loginForm")
   public String login() {
     return "loginForm";
   }

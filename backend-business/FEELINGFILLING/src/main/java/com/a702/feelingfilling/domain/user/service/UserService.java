@@ -10,6 +10,7 @@ public interface UserService {
 
   int getLoginUserId();
 
+  void login(String jwt);
 //  UserDTO getUser();
 //  UserDTO modifyUser(UserDTO userDTO);
 //  boolean[] getUserBadge();

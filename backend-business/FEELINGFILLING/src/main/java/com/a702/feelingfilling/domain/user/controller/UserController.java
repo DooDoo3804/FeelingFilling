@@ -6,8 +6,10 @@ import com.a702.feelingfilling.domain.user.service.UserService;
 import io.swagger.annotations.Api;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +30,25 @@ public class UserController {
 	private static final String SUCCESS = "success";
 	private static final String FAIL = "fail";
 	private static final String ALREADY_EXIST = "already exists";
-	
+
+	//1. 로그인
+	@GetMapping("/login")
+	public ResponseEntity<?> login(HttpServletRequest request){
+		Map<String, Object> resultMap;
+		try{
+			resultMap = new HashMap<>();
+			String jwt = request.getHeader("Authorization");
+			log.info("JWT from Kakao : " + jwt);
+			userService.login(jwt);
+			resultMap.put("message", "SUCCESS");
+			return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
+		}catch (Exception e){
+			resultMap = new HashMap<>();
+			resultMap.put("message", e.getMessage());
+			return ResponseEntity.badRequest().body(resultMap);
+		}
+	}//login
+
 	//2. 회원가입
 	@PostMapping
 	public ResponseEntity<?> join(@RequestBody UserJoinDTO userJoinDTO){
@@ -88,12 +108,10 @@ public class UserController {
 		log.info("회원 뱃지 조회 요청");
 		HttpStatus status = HttpStatus.OK;
 		Map<String, Object> resultMap = new HashMap<>();
-		
 		try{
 			List<Integer> badges = userService.getUserBadge(userId);
 			resultMap.put("badges",badges);
 			log.debug("유저 뱃지 조회 ,",badges);
-			
 			resultMap.put("message", SUCCESS);
 		}
 		catch (Exception e){
