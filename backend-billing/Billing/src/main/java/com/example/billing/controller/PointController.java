@@ -1,5 +1,7 @@
 package com.example.billing.controller;
 
+import com.example.billing.data.dto.ProcessResultDTO;
+import com.example.billing.data.dto.ServiceUserAndAmountDTO;
 import com.example.billing.data.dto.ServiceUserDTO;
 import com.example.billing.data.dto.WithdrawalDTO;
 import com.example.billing.service.PointService;
@@ -20,19 +22,23 @@ public class PointController {
     @PostMapping("/")
     public ResponseEntity<Map<String,Object>> getPoint(@RequestBody ServiceUserDTO serviceUserDTO){
         long amount = pointService.getPoint(serviceUserDTO);
-        Map<String, Object> map = new HashMap<>();
 
+        Map<String, Object> map = new HashMap<>();
+        ProcessResultDTO processResultDTO = new ProcessResultDTO(true, "조회에 성공하였습니다.");
+        map.put("result", processResultDTO);
         map.put("amount", amount);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<Map<String,Object>> withdrawPoint(@RequestBody ServiceUserDTO serviceUserDTO, @RequestParam long amount){
-        WithdrawalDTO withdrawalDTO = pointService.withdrawPoint(serviceUserDTO, amount);
+    public ResponseEntity<Map<String,Object>> withdrawPoint(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO){
+        WithdrawalDTO withdrawalDTO = pointService.withdrawPoint(serviceUserAndAmountDTO);
 
         Map<String, Object> map = new HashMap<>();
 
-        map.put("withdrawal", withdrawalDTO);
+        ProcessResultDTO processResultDTO = new ProcessResultDTO(true, "출금에 성공하였습니다.");
+        map.put("result", processResultDTO);
+        map.put("amount", withdrawalDTO);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }

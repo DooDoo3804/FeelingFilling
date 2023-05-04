@@ -3,7 +3,7 @@ package com.example.billing.data.dto;
 import lombok.Data;
 
 @Data
-public class PaySubscriptionDTO {
+public class ServiceUserAndAmountDTO {
 
     private String serviceName;
 

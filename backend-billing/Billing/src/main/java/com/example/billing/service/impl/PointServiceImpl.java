@@ -2,6 +2,7 @@ package com.example.billing.service.impl;
 
 import com.example.billing.data.billingDB.entity.User;
 import com.example.billing.data.billingDB.repository.UserRepository;
+import com.example.billing.data.dto.ServiceUserAndAmountDTO;
 import com.example.billing.data.dto.ServiceUserDTO;
 import com.example.billing.data.dto.WithdrawalDTO;
 import com.example.billing.service.PointService;
@@ -16,8 +17,9 @@ import javax.transaction.Transactional;
 public class PointServiceImpl implements PointService {
     private final UserRepository userRepository;
     @Override
-    public WithdrawalDTO withdrawPoint(ServiceUserDTO serviceUserDTO, long amount) {
-        User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
+    public WithdrawalDTO withdrawPoint(ServiceUserAndAmountDTO serviceUserAndAmountDTO) {
+        User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserAndAmountDTO.getServiceName(), serviceUserAndAmountDTO.getServiceUserId());
+        int amount = serviceUserAndAmountDTO.getAmount();
         WithdrawalDTO withdrawalDTO;
         long balanceBefore = user.getPoint();
         if(balanceBefore >= amount){

@@ -24,7 +24,6 @@ public class BillingController {
     public ResponseEntity<Map<String,Object>> startSubscription(@RequestBody ServiceUserDTO serviceUserDTO){
         UserDTO userDTO = userService.createUser(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
         KakaoReadyDTO kakaoReadyDTO= kakaoPayService.kakaoPayReady(userDTO);
-        Map<String, Object> map = new HashMap<>();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", kakaoReadyDTO.getNext_redirect_pc_url());
         System.out.println(kakaoReadyDTO);
@@ -36,14 +35,19 @@ public class BillingController {
         KakaoApproveDTO kakaoApproveDTO= kakaoPayService.kakaoPayApprove(orderId, pg_token);
         Map<String, Object> map = new HashMap<>();
 
-        map.put("kakao", kakaoApproveDTO);
+        ProcessResultDTO processResultDTO = new ProcessResultDTO(true, "구독 등록이 완료되었습니다.");
+        map.put("result", processResultDTO);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @PostMapping("/subscription")
-    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody PaySubscriptionDTO paySubscriptionDTO){
-       kakaoPayService.kakaoPaySubscription(paySubscriptionDTO);
+    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO){
+       kakaoPayService.kakaoPaySubscription(serviceUserAndAmountDTO);
 
-       return new ResponseEntity<>(HttpStatus.OK);
+        Map<String, Object> map = new HashMap<>();
+        ProcessResultDTO processResultDTO = new ProcessResultDTO(true, "입금에 성공하였습니다.");
+        map.put("result", processResultDTO);
+        map.put("amount", serviceUserAndAmountDTO.getAmount());
+       return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }
