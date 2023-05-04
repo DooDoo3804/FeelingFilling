@@ -7,10 +7,14 @@ import java.util.List;
 
 public interface UserService {
   void join(UserJoinDTO userJoinDTO);
+
+  int getLoginUserId();
+
 //  UserDTO getUser();
 //  UserDTO modifyUser(UserDTO userDTO);
 //  boolean[] getUserBadge();
   UserDTO getUser(int userId);
   UserDTO modifyUser(UserDTO userDTO);
   List<Integer> getUserBadge(int userId);
+
 }

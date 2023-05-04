@@ -36,6 +36,11 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
+	public int getLoginUserId(){
+		UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return loginUser.getId();
+	}
+
 //	public UserDTO getUser(){
 //		UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //		User userEntity = userRepository.findByUserId(loginUser.getId());
@@ -72,6 +77,5 @@ public class UserServiceImpl implements UserService{
 		
 		return badge;
 	}
-	
-	
+
 }

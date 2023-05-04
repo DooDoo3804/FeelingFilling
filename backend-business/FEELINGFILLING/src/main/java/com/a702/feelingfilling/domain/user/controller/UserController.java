@@ -4,6 +4,8 @@ import com.a702.feelingfilling.domain.user.model.dto.UserDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
 import com.a702.feelingfilling.domain.user.service.UserService;
 import io.swagger.annotations.Api;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
