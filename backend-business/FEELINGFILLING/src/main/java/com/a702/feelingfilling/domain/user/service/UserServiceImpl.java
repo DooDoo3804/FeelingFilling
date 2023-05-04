@@ -8,6 +8,7 @@ import com.a702.feelingfilling.domain.user.model.entity.UserBadge;
 import com.a702.feelingfilling.domain.user.model.repository.UserBadgeRepository;
 import com.a702.feelingfilling.domain.user.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
