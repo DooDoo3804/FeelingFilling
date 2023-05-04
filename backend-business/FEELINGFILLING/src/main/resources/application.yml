@@ -26,8 +26,6 @@ spring:
 #      authentication-database: admin
 #      database: feelingfilling
 
-
-
 jwt:
   secret: makemoneyfromyouremotionandfeelbetter
   jackson:

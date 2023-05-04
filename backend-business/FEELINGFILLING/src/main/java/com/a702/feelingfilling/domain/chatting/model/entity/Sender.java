@@ -24,7 +24,8 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @DynamicInsert
 public class Sender {
   @MongoId(FieldType.INT32)
-  private long senderId;
+  private int senderId;
   @DBRef
   private List<Chatting> chattings;
+  private long numOfChat;
 }

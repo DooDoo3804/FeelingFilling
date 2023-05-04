@@ -14,7 +14,7 @@ import org.bson.types.ObjectId;
 @AllArgsConstructor
 @Builder
 public class ChattingDTO {
-  ObjectId chattingId;
+  String chattingId;
   String content;
   LocalDateTime chatDate;
   int type;
@@ -23,7 +23,7 @@ public class ChattingDTO {
 
   public static ChattingDTO fromEntity(Chatting entity){
       return ChattingDTO.builder()
-          .chattingId(entity.getChattingId())
+          .chattingId(entity.getChattingId().toString())
           .content(entity.getContent())
           .chatDate(entity.getChatDate())
           .type(entity.getType())

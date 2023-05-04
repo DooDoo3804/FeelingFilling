@@ -9,16 +9,13 @@ import com.a702.feelingfilling.domain.chatting.repository.SenderRepository;
 import com.a702.feelingfilling.domain.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
-import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -38,15 +35,14 @@ public class ChattingServiceImpl implements ChattingService {
   @Override
   public ChattingDTO createChat(ChatInputDTO chatInputDTO) {
     try{
-//      int userId = userService.getLoginUserId();
-      int userId = 2;
+      int userId = userService.getLoginUserId();
       Chatting newChat = Chatting.builder()
           .type(chatInputDTO.getType())
           .content(chatInputDTO.getContent())
           .chatDate(LocalDateTime.now())
           .mood("default")
           .amount(0)
-          .userId(2)
+          .userId(userId)
           .build();
       chattingRepository.save(newChat);
       log.info("newChat : "+newChat.toString());
@@ -72,28 +68,19 @@ public class ChattingServiceImpl implements ChattingService {
     }
   }//removeChat
 
-  int PAGE_SIZE = 5;
+  int PAGE_SIZE = 20;
   //3.채팅 목록 조회
   public List<ChattingDTO> getChatList(int page){
-//    int userId = userService.getLoginUserId();
-//    Query query = new Query();
-//    query.addCriteria(Criteria.where("senderId").is(2));
-//    ProjectionOperation project = Aggregation.project()
-//        .and("chattings").slice(page, PAGE_SIZE).as("chattings");
-//
-//    Aggregation agg = Aggregation.newAggregation(project);
-//    AggregationResults<Object> aggregate = mongoTemplate.aggregate(agg, "sender", Object.class);
-////    Aggregation aggregation = Aggregation.newAggregation(
-////        Aggregation.match(Criteria.where("_id").in),
-////        Aggregation.bucket("chattings"),
-////        Aggregation.skip(skip),
-////        Aggregation.limit(PAGE_SIZE)
-////    );
-//    List<Object> chattings = aggregate.getMappedResults();
-//    log.info(chattings.toString());
+    int loginUserId = userService.getLoginUserId();
+//    int loginUserId = 2;
     log.info("-----------------------");
-    List<Object> chattings2 = senderRepository.findAllBySenderIdAndPage(2, -1, 4);
-    log.info(chattings2.toString());
-    return null;
+    int start = PAGE_SIZE*page;
+    Sender sender = senderRepository.findAllBySenderIdAndPage(loginUserId, -start, PAGE_SIZE);
+    List<Chatting> chattings = sender.getChattings();
+    log.info(chattings.toString());
+    List<ChattingDTO> result = chattings.stream()
+        .map(m-> ChattingDTO.fromEntity(m))
+        .collect(Collectors.toList());
+    return result;
   }
 }//ChattingServiceImpl

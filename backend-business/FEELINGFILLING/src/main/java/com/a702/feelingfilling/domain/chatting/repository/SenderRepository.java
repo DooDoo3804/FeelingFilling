@@ -12,10 +12,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SenderRepository extends MongoRepository<Sender, ObjectId> {
+public interface SenderRepository extends MongoRepository<Sender, Integer> {
 
-  @Query(value = "{'senderId':?0}", fields = "{'chattings':{'$slice':  [?1, ?2] } }")
-  List<Object> findAllBySenderIdAndPage(int senderId, Integer start, Integer num);
+  @Query(value = "{'senderId':?0}", fields = "{'chattings':{'$slice':  [?1 , ?2] } }")
+  Sender findAllBySenderIdAndPage(int senderId, Integer start, Integer num);
 
 //  @Query(value = "{'senderId':?0}", fields = "{'$slice': ['chatting', '?1', '?2'] }")
 //  List<Object> findAllBySenderIdAndPage(int senderId, Integer start, Integer num);

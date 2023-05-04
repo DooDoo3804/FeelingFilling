@@ -26,7 +26,6 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 @Builder
 @DynamicInsert
 public class Chatting {
-
   @MongoId
   @GeneratedValue
   private ObjectId chattingId;
