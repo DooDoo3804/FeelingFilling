@@ -51,6 +51,9 @@ dependencies {
 	//For test
 	implementation 'org.springframework.boot:spring-boot-starter-mustache'
 
+//	implementation ('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
 	//For QueryDSL
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
