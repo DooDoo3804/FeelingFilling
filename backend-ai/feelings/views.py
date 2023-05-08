@@ -95,7 +95,7 @@ def analysis_text(request):
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-    return JsonResponse(context, status = 201)
+    return JsonResponse(context, status = 201, content_type=u"application/json; charset=utf-8")
 
 
 """
@@ -219,7 +219,7 @@ def analysis_voice(request):
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
-    return JsonResponse(context, status = 201)
+    return JsonResponse(context, status = 201, content_type=u"application/json; charset=utf-8")
 
 
 # 측정된 감정 정도에 따라 적금 금액 계산
