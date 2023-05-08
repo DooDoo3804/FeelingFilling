@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 JWT_SECRET = os.environ.get("JWT_SECRET_KEY")
-
+SECRET_KEY = 'django-insecure-q$*onm-4%hiq*ii9lxcq5w@*r4qj1mjio)4%_$s&o7=5qpb@v8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -142,7 +142,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
