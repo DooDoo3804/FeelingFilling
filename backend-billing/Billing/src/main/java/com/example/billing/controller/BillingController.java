@@ -24,10 +24,9 @@ public class BillingController {
     public ResponseEntity<Map<String,Object>> startSubscription(@RequestBody ServiceUserDTO serviceUserDTO){
         UserDTO userDTO = userService.createUser(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
         KakaoReadyDTO kakaoReadyDTO= kakaoPayService.kakaoPayReady(userDTO);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", kakaoReadyDTO.getNext_redirect_pc_url());
-        System.out.println(kakaoReadyDTO);
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        Map<String, Object> map = new HashMap<>();
+        map.put("url", kakaoReadyDTO.getNext_redirect_mobile_url());
+        return new ResponseEntity<>(map, HttpStatus.FOUND);
     }
 
     @GetMapping("/subscription/success")
