@@ -2,19 +2,23 @@ package com.a702.feelingfilling.domain.user.service;
 
 import com.a702.feelingfilling.domain.user.model.dto.UserDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
+import com.a702.feelingfilling.domain.user.model.dto.UserKakaoRequestDTO;
+import com.a702.feelingfilling.domain.user.model.dto.UserKakaoResponseDTO;
+import com.a702.feelingfilling.global.jwt.JwtTokens;
 
 import java.util.List;
 
 public interface UserService {
-  void join(UserJoinDTO userJoinDTO);
+    UserKakaoResponseDTO kakaoLogin(UserKakaoRequestDTO kakaoDTO);
 
-  int getLoginUserId();
+    JwtTokens join(UserJoinDTO userJoinDTO);
 
-//  UserDTO getUser();
-//  UserDTO modifyUser(UserDTO userDTO);
-//  boolean[] getUserBadge();
-  UserDTO getUser(int userId);
-  UserDTO modifyUser(UserDTO userDTO);
-  List<Integer> getUserBadge(int userId);
+    int getLoginUserId();
+
+    UserDTO getUser(int userId);
+
+    UserDTO modifyUser(UserDTO userDTO);
+
+    List<Integer> getUserBadge(int userId);
 
 }
