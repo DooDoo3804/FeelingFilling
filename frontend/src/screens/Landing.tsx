@@ -1,11 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {NativeModules, Button} from 'react-native';
+import axios, {AxiosResponse, AxiosError} from 'axios';
 import Swiper from 'react-native-swiper';
 import Lottie from 'lottie-react-native';
 import {
   KakaoLoginModuleInterface,
   KakaoOAuthToken,
 } from '@react-native-seoul/kakao-login';
+
+import {useAxios} from '../hooks/useAxios';
 
 import {Common} from '../components/Common';
 import font_logo from '../assets/font_logo.png';
@@ -22,6 +25,11 @@ import {
   KakaoLogo,
   BtnText,
 } from '../styles/LoginStyle';
+
+type FetchData<T> = {
+  data: T | null;
+  error: AxiosError | null;
+};
 
 const {RNKakaoLogins} = NativeModules;
 
@@ -46,15 +54,33 @@ const NativeKakaoLogins: KakaoLoginModuleInterface = {
   },
 };
 
-const KakaoLoginButton = () => {
+const KakaoLoginButton = ({navigation}: {navigation: any}) => {
+  // const [data, setData] = useState(null);
+  const [userId, setUserId] = useState(null);
+
   const signInWithKakao = async (): Promise<void> => {
     try {
       const token: KakaoOAuthToken = await NativeKakaoLogins.login();
       console.log(token);
-      console.log('Access token:', token.accessToken);
-
+      // setData(token);
       const profile = await NativeKakaoLogins.getProfile();
-      console.log('User profile:', profile);
+      // console.log('User profile:', profile);
+      setUserId(profile.id);
+
+      const res: AxiosResponse<T> = await axios.post(
+        'http://k8a702.p.ssafy.io:8080/api/user/kakao',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: {
+            kakaoId: profile.id,
+          },
+        },
+      );
+      if (res.data.newJoin) {
+        navigation.navigate('SignUp');
+      }
     } catch (err) {
       console.log(err);
     }
@@ -113,7 +139,7 @@ const Landing = ({navigation}: {navigation: any}) => {
           </SwiperView>
         </Swiper>
       </SwiperConatiner>
-      <KakaoLoginButton />
+      <KakaoLoginButton navigation={navigation} />
       <Button title="move" onPress={() => navigation.navigate('SignUp')} />
     </Container>
   );
