@@ -1,11 +1,9 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import Landing from '../screens/Landing';
-import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 
 type RootStackParamList = {
-  Login: undefined;
   Landing: undefined;
   SignUp: undefined;
 };
@@ -19,11 +17,6 @@ const AuthStackNavigation = () => {
       <Stack.Screen
         name="Landing"
         component={Landing}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Login"
-        component={Login}
         options={{headerShown: false}}
       />
       <Stack.Screen
