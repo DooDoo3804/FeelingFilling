@@ -3,6 +3,8 @@ package com.example.billing.service;
 import com.example.billing.data.billingDB.entity.*;
 import com.example.billing.data.billingDB.repository.*;
 import com.example.billing.data.dto.*;
+import com.example.billing.data.loggingDB.document.KakaoPayApproveDocument;
+import com.example.billing.data.loggingDB.repository.KakaoPayApproveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -34,6 +36,8 @@ public class KakaoPayService {
     private final DepositRepository depositRepository;
 
     private final WithdrawalRepository withdrawalRepository;
+
+    private final KakaoPayApproveRepository kakaoPayApproveRepository;
 
     public KakaoReadyDTO kakaoPayReady(UserDTO userDTO) {
         User user = User.builder()
@@ -113,6 +117,14 @@ public class KakaoPayService {
         actionRepository.save(action);
 
         kakaoOrder.getActions().add(action);
+        KakaoPayApproveDocument kakaoPayApproveDocument = KakaoPayApproveDocument.builder()
+                .kakaoOrder(kakaoOrder)
+                .status("success")
+                .userId(kakaoOrder.getUser().getUserId())
+                .serviceName(kakaoOrder.getUser().getServiceName())
+                .serviceUserId(kakaoOrder.getUser().getServiceUserId())
+                .build();
+        kakaoPayApproveRepository.save(kakaoPayApproveDocument);
         return kakaoApproveDTO;
     }
 

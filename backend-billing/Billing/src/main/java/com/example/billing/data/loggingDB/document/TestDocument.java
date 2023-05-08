@@ -1,4 +1,4 @@
-package com.example.billing.data.loggingDB.entity;
+package com.example.billing.data.loggingDB.document;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

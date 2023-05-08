@@ -1,6 +1,6 @@
 package com.example.billing.controller;
 
-import com.example.billing.data.loggingDB.entity.TestDocument;
+import com.example.billing.data.loggingDB.document.TestDocument;
 import com.example.billing.data.loggingDB.repository.TestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
