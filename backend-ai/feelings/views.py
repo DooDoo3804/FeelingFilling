@@ -69,7 +69,8 @@ def analysis_text(request):
         billing 요청
         0 // 1
     """
-    success = req_billing(amount, 1)
+    success, message = req_billing(amount, 1)
+    print(message)
     # success = req_billing(token, amount, user_id)
     if success:
         # request 데이터 저장 (success 받아와야 함)
@@ -186,8 +187,8 @@ def analysis_voice(request):
     """
         billing 요청
     """
-    success = req_billing(token, amount, user_id)
-
+    success, message = req_billing(token, amount, user_id)
+    print(message)
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
