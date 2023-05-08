@@ -2,10 +2,12 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import Landing from '../screens/Landing';
 import SignUp from '../screens/SignUp';
+import Payment from '../screens/Payment';
 
 type RootStackParamList = {
   Landing: undefined;
   SignUp: undefined;
+  Payment: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -22,6 +24,11 @@ const AuthStackNavigation = () => {
       <Stack.Screen
         name="SignUp"
         component={SignUp}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Payment"
+        component={Payment}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
