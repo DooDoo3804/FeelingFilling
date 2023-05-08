@@ -19,7 +19,7 @@ import {
   TitleContainer,
 } from '../styles/LoginStyle';
 
-const SignUp = () => {
+const SignUp = ({navigation}: {navigation: any}) => {
   const [nickname, setNickname] = useState<string>('');
   const [nameError, setNameError] = useState<boolean>(false);
   const [multiSliderValue, setMultiSliderValue] = useState<number[]>([
@@ -82,7 +82,11 @@ const SignUp = () => {
 
       <ColorBtn color={Common.colors.kakao}>
         <KakaoLogo source={kakao_logo} />
-        <BtnText textColor={Common.colors.deepGrey}>결제 등록하기</BtnText>
+        <BtnText
+          textColor={Common.colors.deepGrey}
+          onPress={() => navigation.navigate('Payment')}>
+          결제 등록하기
+        </BtnText>
       </ColorBtn>
     </Container>
   );
