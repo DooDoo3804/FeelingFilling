@@ -15,11 +15,9 @@ import java.time.LocalDateTime;
 @Builder
 @ToString
 public class UserJoinDTO {
-    int userId;
     String nickname;
     int minimum;
     int maximum;
-
     String kakaoId;
 
     public static User toUser(UserJoinDTO userJoinDTO) {
