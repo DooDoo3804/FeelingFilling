@@ -329,12 +329,11 @@ def req_billing(amount, user_id):
                 'serviceName': "abcd",
             }
         )
-        print(resp)
+        success = resp.json()['result']['result']
+        message = resp.json()['result']['mesage']
     except Exception as e:
         print(e)
-    print(resp)
-    success = 1
-    return success
+    return success, message
 
 
 # jwt decode 함수
