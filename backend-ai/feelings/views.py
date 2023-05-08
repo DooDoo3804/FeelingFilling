@@ -331,7 +331,7 @@ def req_billing(amount, user_id):
             }
         )
         success = resp.json()['result']['result']
-        message = resp.json()['result']['mesage']
+        message = resp.json()['result']['message']
     except Exception as e:
         print(e)
     return success, message
