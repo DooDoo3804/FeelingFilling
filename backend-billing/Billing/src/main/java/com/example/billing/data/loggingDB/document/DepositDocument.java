@@ -1,6 +1,5 @@
 package com.example.billing.data.loggingDB.document;
 
-import com.example.billing.data.billingDB.entity.KakaoOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -9,14 +8,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Setter
 @NoArgsConstructor
-@Document(collection = "kakao_pay_approvement")
+@Document(collection = "deposit")
 @AllArgsConstructor
 @Builder
-public class KakaoPayApproveDocument {
+public class DepositDocument {
     @Id
     private String _id;
     private int userId;
@@ -27,7 +25,9 @@ public class KakaoPayApproveDocument {
     private String tid;
     private String sid;
     private String aid;
+    private int depositId;
+    private String depositMethod;
+    private int depositAmount;
     private LocalDateTime createdDate;
-
 
 }

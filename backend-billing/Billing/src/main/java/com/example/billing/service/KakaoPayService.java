@@ -118,11 +118,15 @@ public class KakaoPayService {
 
         kakaoOrder.getActions().add(action);
         KakaoPayApproveDocument kakaoPayApproveDocument = KakaoPayApproveDocument.builder()
-                .kakaoOrder(kakaoOrder)
+                .tid(kakaoOrder.getTid())
+                .aid(action.getAid())
+                .sid(kakaoOrder.getUser().getSid())
+                .orderId(kakaoOrder.getOrderId())
                 .status("success")
                 .userId(kakaoOrder.getUser().getUserId())
                 .serviceName(kakaoOrder.getUser().getServiceName())
                 .serviceUserId(kakaoOrder.getUser().getServiceUserId())
+                .createdDate(kakaoOrder.getCreatedDate())
                 .build();
         kakaoPayApproveRepository.save(kakaoPayApproveDocument);
         return kakaoApproveDTO;
