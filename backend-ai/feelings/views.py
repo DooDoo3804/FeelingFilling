@@ -64,8 +64,6 @@ def analysis_text(request):
     """
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
-    # insert_chatting(text)
-
     """
         billing 요청
         0 // 1
@@ -184,7 +182,15 @@ def analysis_voice(request):
     """
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
+        
+    # mongo db 조회해서 userid로 조회 및 count가 0 이 아니라면
+    # 뒤에서부터 해당 개수 F로 바꿔주고 0으로 전환
     # chatting에 react도 저장해야함??
+    # 토큰 받아야함....?
+
+    # check_chatting(user_id)
+
+
     """
         billing 요청
     """
@@ -238,24 +244,44 @@ def make_react():
     pass
 
 
-# # chatting에 insert 함수
-# def insert_chatting(text):
-#     # MongoDB 클라이언트 생성
-#     client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
-#     # 데이터베이스 선택
-#     db = client['feelingfilling']
-#     # 컬렉션 선택
-#     collection = db['chatting']
-#     # 문서 생성
-#     chat = {"user": 1, "text": text, "date": datetime.datetime.now()}
-#     # 문서 삽입
-#     result = collection.insert_one(chat)
-#     # # 단일 문서 조회
-#     # post = posts.find_one({"author": "Mike"})
-#     # # 다중 문서 조회
-#     # for post in posts.find():
-#     #     print(post)
-#     return result
+# chatting에 insert 함수
+def check_chatting(user_id):
+    # MongoDB 클라이언트 생성
+    client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
+    # 데이터베이스 선택
+    db = client['feelingfilling']
+    # 컬렉션 선택
+    collection = db['chatting']
+    # collection = db['senders']
+
+    # 문서 생성 삽입
+    # chat = {"user": 1, "text": [text], "date": datetime.datetime.now(), "count" : 3}
+    # result = collection.insert_one(chat)
+
+    # # 단일 문서 조회
+    # 만약 count? 가 0이 아니라면 뒤에서 부터 이를 보두 F로 바꿔주고
+    # count를 0으로 바꿔준다.
+    # 이후 voice 분석 진행
+    # 비동기 처리?
+    post = collection.find_one({"user": user_id})
+    update_text = post['text']
+    if (post['count'] != 0):
+        # print("이거 수정해야함")
+        for i in range(post['count']):
+            # update_text[len(post['text']) - i] 의 TF를 F로 바꿈
+            pass
+
+    # db 업데이트 
+    filter = {"user" : user_id}
+    update1 = {'&set' : {'count' : 0}}
+    collection.update_one(filter, update1)
+    update2 = {'$set' : {'text' : update_text}}
+    collection.update_one(filter, update2)
+
+    # 다중 문서 조회
+    # for post in collection.find():
+    #     print(post)
+    return post
 
 
 # 번역 함수
@@ -272,11 +298,11 @@ def translation_text(text):
     {abs_translator.text}""")
     print("----------------------------------------------------------------")
 
-    return analysis_emition(abs_translator)
+    return analysis_emotion(abs_translator)
 
 
 # 감정 분석 함수
-def analysis_emition(translation_result): 
+def analysis_emotion(translation_result): 
     # 번역
     classifier = pipeline("text-classification",
                           model='j-hartmann/emotion-english-distilroberta-base', return_all_scores=True)
@@ -326,7 +352,7 @@ def req_billing(amount, user_id):
         resp = requests.post(
             'http://13.124.31.137:8702/billing/subscription',
             json={
-                'amount' : 1000000,
+                'amount' : 10,
                 'serviceUserId': 1,
                 'serviceName': "abcd",
             }
