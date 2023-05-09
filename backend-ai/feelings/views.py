@@ -64,6 +64,7 @@ def analysis_text(request):
     """
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
+    # insert_chatting(text)
 
     """
         billing 요청
@@ -278,7 +279,7 @@ def translation_text(text):
 def analysis_emition(translation_result): 
     # 번역
     classifier = pipeline("text-classification",
-                          model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
+                          model='j-hartmann/emotion-english-distilroberta-base', return_all_scores=True)
     prediction = classifier(translation_result.text)
     print("----------------------------------------------------------------")
     print("TOTAL PREDICTIONS")
@@ -325,7 +326,7 @@ def req_billing(amount, user_id):
         resp = requests.post(
             'http://13.124.31.137:8702/billing/subscription',
             json={
-                'amount' : 1,
+                'amount' : 1000000,
                 'serviceUserId': 1,
                 'serviceName': "abcd",
             }
@@ -355,7 +356,7 @@ def decode_jwt_token(access_token):
 def init_setting():
     get_jwt()
     classifier = pipeline("text-classification",
-                          model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
+                          model='j-hartmann/emotion-english-distilroberta-base', return_all_scores=True)
     classifier("")
 
 
