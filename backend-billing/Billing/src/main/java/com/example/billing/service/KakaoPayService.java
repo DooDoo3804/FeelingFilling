@@ -1,20 +1,31 @@
 package com.example.billing.service;
 
-import com.example.billing.data.billingDB.entity.*;
-import com.example.billing.data.billingDB.repository.*;
-import com.example.billing.data.dto.*;
-import com.example.billing.data.loggingDB.document.KakaoPayApproveDocument;
-import com.example.billing.data.loggingDB.repository.KakaoPayApproveRepository;
+import com.example.billing.data.billingDB.entity.Action;
+import com.example.billing.data.billingDB.entity.Deposit;
+import com.example.billing.data.billingDB.entity.KakaoOrder;
+import com.example.billing.data.billingDB.entity.User;
+import com.example.billing.data.billingDB.repository.ActionRepository;
+import com.example.billing.data.billingDB.repository.DepositRepository;
+import com.example.billing.data.billingDB.repository.KakaoOrderRepository;
+import com.example.billing.data.billingDB.repository.UserRepository;
+import com.example.billing.data.dto.KakaoApproveDTO;
+import com.example.billing.data.dto.KakaoReadyDTO;
+import com.example.billing.data.dto.ServiceUserAndAmountDTO;
+import com.example.billing.data.dto.UserDTO;
+import com.example.billing.data.loggingDB.document.DepositLogDocument;
+import com.example.billing.data.loggingDB.document.KakaoPayApproveLogDocument;
+import com.example.billing.data.loggingDB.repository.DepositLogRepository;
+import com.example.billing.data.loggingDB.repository.KakaoPayApproveLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -35,10 +46,9 @@ public class KakaoPayService {
 
     private final DepositRepository depositRepository;
 
-    private final WithdrawalRepository withdrawalRepository;
+    private final KakaoPayApproveLogRepository kakaoPayApproveLogRepository;
 
-    private final KakaoPayApproveRepository kakaoPayApproveRepository;
-
+    private final DepositLogRepository depositLogRepository;
     public KakaoReadyDTO kakaoPayReady(UserDTO userDTO) {
         User user = User.builder()
                 .userId(userDTO.getUserId())
@@ -117,7 +127,7 @@ public class KakaoPayService {
         actionRepository.save(action);
 
         kakaoOrder.getActions().add(action);
-        KakaoPayApproveDocument kakaoPayApproveDocument = KakaoPayApproveDocument.builder()
+        KakaoPayApproveLogDocument kakaoPayApproveDocument = KakaoPayApproveLogDocument.builder()
                 .tid(kakaoOrder.getTid())
                 .aid(action.getAid())
                 .sid(kakaoOrder.getUser().getSid())
@@ -126,9 +136,8 @@ public class KakaoPayService {
                 .userId(kakaoOrder.getUser().getUserId())
                 .serviceName(kakaoOrder.getUser().getServiceName())
                 .serviceUserId(kakaoOrder.getUser().getServiceUserId())
-                .createdDate(kakaoOrder.getCreatedDate())
                 .build();
-        kakaoPayApproveRepository.save(kakaoPayApproveDocument);
+        kakaoPayApproveLogRepository.save(kakaoPayApproveDocument);
         return kakaoApproveDTO;
     }
 
@@ -180,5 +189,22 @@ public class KakaoPayService {
         Deposit newDeposit = new Deposit("KakaoPay", amount);
         newDeposit = depositRepository.save(newDeposit);
         user.getDeposit().add(newDeposit);
+
+        DepositLogDocument depositLog = DepositLogDocument.builder()
+                .userId(user.getUserId())
+                .serviceName(user.getServiceName())
+                .serviceUserId(user.getServiceUserId())
+                .sid(user.getSid())
+                .balance(user.getPoint())
+                .status("Success")
+                .orderId(newOrder.getOrderId())
+                .tid(newOrder.getTid())
+                .aid(action.getAid())
+                .depositId(newDeposit.getDepositId())
+                .depositMethod(newDeposit.getDepositMethod())
+                .depositAmount(newDeposit.getDepositAmount())
+                .build();
+
+        depositLogRepository.save(depositLog);
     }
 }

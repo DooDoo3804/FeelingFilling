@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,10 +12,10 @@ import java.time.LocalDateTime;
 
 @Setter
 @NoArgsConstructor
-@Document(collection = "deposit")
+@Document(collection = "kakao_pay_approvement")
 @AllArgsConstructor
 @Builder
-public class DepositDocument {
+public class KakaoPayApproveLogDocument {
     @Id
     private String _id;
     private int userId;
@@ -25,9 +26,8 @@ public class DepositDocument {
     private String tid;
     private String sid;
     private String aid;
-    private int depositId;
-    private String depositMethod;
-    private int depositAmount;
+    @CreatedDate
     private LocalDateTime createdDate;
+
 
 }
