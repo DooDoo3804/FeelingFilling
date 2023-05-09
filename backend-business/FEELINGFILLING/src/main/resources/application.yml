@@ -21,7 +21,7 @@ spring:
     show-sql: true
   data:
     mongodb:
-      #      uri: mongodb://localhost:27017/feelingfilling
+#            uri: mongodb://localhost:27017/feelingfilling
       uri: mongodb://k8a702.p.ssafy.io:27017/feelingfilling
       username: root
       password: mammoth77

@@ -1,5 +1,7 @@
 package com.a702.feelingfilling.domain.user.service;
 
+import com.a702.feelingfilling.domain.chatting.model.entity.Sender;
+import com.a702.feelingfilling.domain.chatting.repository.SenderRepository;
 import com.a702.feelingfilling.domain.user.model.dto.*;
 import com.a702.feelingfilling.domain.user.model.entity.User;
 import com.a702.feelingfilling.domain.user.model.entity.UserBadge;
@@ -8,6 +10,7 @@ import com.a702.feelingfilling.domain.user.model.repository.UserRepository;
 import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -17,13 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserBadgeRepository userBadgeRepository;
     private final UserRepository userRepository;
+    private final SenderRepository senderRepository;
     private final JwtTokenService jwtTokenService;
     private int badgeCnt = 15;
 
@@ -49,6 +53,8 @@ public class UserServiceImpl implements UserService {
         if (max < min) throw new IllegalArgumentException("Unvalid Maximum Value");
         User user = UserJoinDTO.toUser(userJoinDTO);
         userRepository.save(user);
+        log.info("DB user 저장완료 : " + user.toString());
+        senderRepository.save(Sender.builder().senderId(user.getUserId()).chattings(new ArrayList<>()).build());
         return jwtTokenService.generateToken(user.getUserId(), user.getNickname(), user.getRole());
     }
 

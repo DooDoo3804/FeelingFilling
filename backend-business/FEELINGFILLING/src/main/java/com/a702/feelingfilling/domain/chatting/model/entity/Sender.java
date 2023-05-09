@@ -27,5 +27,4 @@ public class Sender {
   private int senderId;
   @DBRef
   private List<Chatting> chattings;
-  private long numOfChat;
 }
