@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
         // 이미 가입한 유저
         if (user.isPresent()) {
             User realUser = user.get();
+            log.info("기존 회원 입니다 : " + realUser.toString());
             JwtTokens jwtTokens = jwtTokenService.generateToken(realUser.getUserId(), realUser.getNickname(), realUser.getRole());
             return UserKakaoResponseDTO.builder().accessToken(jwtTokens.getAccessToken()).refreshToken(jwtTokens.getRefreshToken()).isNewJoin(false).build();
         } else {
@@ -54,7 +55,12 @@ public class UserServiceImpl implements UserService {
         User user = UserJoinDTO.toUser(userJoinDTO);
         userRepository.save(user);
         log.info("DB user 저장완료 : " + user.toString());
-        senderRepository.save(Sender.builder().senderId(user.getUserId()).chattings(new ArrayList<>()).build());
+        Sender newSender = Sender.builder().senderId(user.getUserId()).chattings(new ArrayList<>())
+            .numOfChat(0)
+            .numOfUnAnalysed(0)
+            .build();
+        senderRepository.save(newSender);
+        log.info("sender저장");
         return jwtTokenService.generateToken(user.getUserId(), user.getNickname(), user.getRole());
     }
 

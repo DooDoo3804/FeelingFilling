@@ -43,13 +43,20 @@ public class ChattingServiceImpl implements ChattingService {
           .mood("default")
           .amount(0)
           .userId(userId)
+          .isAnalysed(false)
           .build();
+      log.info("---------------");
       chattingRepository.save(newChat);
       log.info("newChat : "+newChat.toString());
       //채팅을 사용자 리스트에 추가
       Update update = new Update();
       update.addToSet("chattings", newChat);
       mongoTemplate.updateMulti(Query.query(Criteria.where("_id").is(userId)),update,Sender.class);
+      //sender값에 채팅 갯수 업데이트하기
+      
+
+
+      //---------------------------------------------------
       return ChattingDTO.fromEntity(newChat);
     }catch (Exception e){
       throw e;
