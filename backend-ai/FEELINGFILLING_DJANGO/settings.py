@@ -24,12 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 JWT_SECRET = os.environ.get("JWT_SECRET_KEY")
-SECRET_KEY = 'django-insecure-q$*onm-4%hiq*ii9lxcq5w@*r4qj1mjio)4%_$s&o7=5qpb@v8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 # ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['3.38.191.128', '3.38.191.128:8000', "127.0.0.1", "feelingfilling.store"]
+ALLOWED_HOSTS = ['3.38.191.128', '3.38.191.128:8000', "127.0.0.1", "feelingfilling.store", "feelings-application"]
 
 
 # scheduler 설정
