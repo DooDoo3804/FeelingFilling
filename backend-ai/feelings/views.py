@@ -238,10 +238,10 @@ def make_react():
     pass
 
 
-# chatting에 insert 함수
+# # chatting에 insert 함수
 # def insert_chatting(text):
 #     # MongoDB 클라이언트 생성
-#     client = MongoClient('mongodb://3.38.191.128:27017/')
+#     client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
 #     # 데이터베이스 선택
 #     db = client['feelingfilling']
 #     # 컬렉션 선택
