@@ -1,6 +1,5 @@
 package com.a702.feelingfilling.domain.chatting.service;
 
-import com.a702.feelingfilling.domain.chatting.exception.CustomException;
 import com.a702.feelingfilling.domain.chatting.model.dto.AnalyzedResult;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChatInputDTO;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChattingDTO;
@@ -109,7 +108,7 @@ public class ChattingServiceImpl implements ChattingService {
 
   //4.텍스트 분석
   @Override
-  public ChattingDTO analyze() {
+  public ChattingDTO analyze(String accessToken) {
     Query query;
     Update update;
     String article;
@@ -148,6 +147,7 @@ public class ChattingServiceImpl implements ChattingService {
       String uri = UriComponentsBuilder.fromHttpUrl("https://feelingfilling.store/feelings/text").toUriString();
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
+      headers.set("Authorization", accessToken);
       JSONObject body = new JSONObject();
       body.put("text",article);
       HttpEntity<?> entity = new HttpEntity<>(body.toString(), headers);
