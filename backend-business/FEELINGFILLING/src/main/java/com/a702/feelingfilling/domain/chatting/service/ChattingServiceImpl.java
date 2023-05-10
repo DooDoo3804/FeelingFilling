@@ -1,5 +1,6 @@
 package com.a702.feelingfilling.domain.chatting.service;
 
+import com.a702.feelingfilling.domain.chatting.model.dto.AnalyzedResult;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChatInputDTO;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChattingDTO;
 import com.a702.feelingfilling.domain.chatting.model.entity.Chatting;
@@ -9,17 +10,26 @@ import com.a702.feelingfilling.domain.chatting.repository.SenderRepository;
 import com.a702.feelingfilling.domain.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.minidev.json.JSONObject;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 @Slf4j
@@ -80,6 +90,7 @@ public class ChattingServiceImpl implements ChattingService {
   int PAGE_SIZE = 20;
   //3.채팅 목록 조회
   public List<ChattingDTO> getChatList(int page){
+    log.info("page : " + page);
     int loginUserId = userService.getLoginUserId();
 //    int loginUserId = 2;
     log.info("-----------------------");
@@ -91,5 +102,40 @@ public class ChattingServiceImpl implements ChattingService {
         .map(m-> ChattingDTO.fromEntity(m))
         .collect(Collectors.toList());
     return result;
+  }
+
+  //4.텍스트 분석
+  @Override
+  public AnalyzedResult analyze() {
+    int loginUserId = userService.getLoginUserId();
+    Sender senderWithNum = senderRepository.findBySenderId(loginUserId);
+    int num = senderWithNum.getNumOfUnAnalysed();
+    Sender sender = senderRepository.findAllBySenderIdAndPage(loginUserId, -num, num);
+    StringBuilder sb = new StringBuilder();
+    for(Chatting text : sender.getChattings()){
+      sb.append(text.getContent());
+      sb.append(" ");
+    }
+    String article = sb.toString();
+    log.info("article : " + article);
+
+    //Send Request to Django Server
+
+    RestTemplate template = new RestTemplate();
+    String uri = UriComponentsBuilder.fromHttpUrl("http://k8a702.p.ssafy.io/feeling/text").toUriString();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    JSONObject body = new JSONObject();
+    body.put("text",article);
+    HttpEntity<?> entity = new HttpEntity<>(body.toString(), headers);
+    log.info("요청보내기");
+    ResponseEntity<Map> response = template.exchange(
+        uri,
+        HttpMethod.POST,
+        entity,
+        Map.class);
+    Map<String,Object> responseBody = response.getBody();
+    log.info(responseBody.toString());
+    return AnalyzedResult.resultMap(responseBody);
   }
 }//ChattingServiceImpl
