@@ -5,21 +5,19 @@ import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserKakaoRequestDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserKakaoResponseDTO;
 import com.a702.feelingfilling.domain.user.service.UserService;
-import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
 import io.swagger.annotations.Api;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -59,15 +57,14 @@ public class UserController {
     }//join
 
     //3. 정보조회
-    @GetMapping("/{userId}")
+    @GetMapping()
 //	@PreAuthorize("hasRole('ROLE_AMDIN') or hasRole('ROLE_USER')" )
-    public ResponseEntity<?> getUser(@PathVariable int userId) {
+    public ResponseEntity<?> getUser() {
         log.info("회원 정보 조회 요청");
         Map<String, Object> resultMap;
         try {
             resultMap = new HashMap<>();
-//			resultMap.put("user", userService.getUser());
-            resultMap.put("user", userService.getUser(userId));
+			resultMap.put("user", userService.getUser());
             resultMap.put("message", "SUCCESS");
             return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
         } catch (Exception e) {
@@ -93,9 +90,26 @@ public class UserController {
         }
     }
 
-    //5. 뱃지 조회
+    //5. 회원 탈퇴
+    @DeleteMapping()
+//    @PreAuthorize(("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')"))
+    public ResponseEntity<?> deleteUser(){
+        log.info("회원 탈퇴 요청");
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            int userId = userService.deleteUser();
+            resultMap.put("message", "SUCCESS");
+            log.debug("탈퇴한 회원 : {}", userId);
+            return ResponseEntity.status(HttpStatus.OK).body(resultMap);
+        } catch (Exception e) {
+            log.error("회원 탈퇴 중 에러 발생 : {}",e);
+            resultMap.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(resultMap);
+        }
+    }
+    //6. 뱃지 조회
     @GetMapping("/badge/{userId}")
-//	@PreAuthorize(("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')"))
+//	@PreAuthorize(("hasRole('ROLE_ADMIN')"))
     public ResponseEntity<?> getUserBadge(@PathVariable int userId) {
         log.info("회원 뱃지 조회 요청");
         HttpStatus status = HttpStatus.OK;
@@ -104,14 +118,68 @@ public class UserController {
         try {
             List<Integer> badges = userService.getUserBadge(userId);
             resultMap.put("badges", badges);
-            log.debug("유저 뱃지 조회 ,", badges);
+            log.debug("회원 뱃지 조회 ,", badges);
 
             resultMap.put("message", SUCCESS);
         } catch (Exception e) {
-            log.error("유저 뱃지 조회 에러 : {}", e.getMessage());
+            log.error("회원 뱃지 조회 에러 : {}", e.getMessage());
             status = HttpStatus.BAD_REQUEST;
         }
 
         return new ResponseEntity<>(resultMap, status);
     }
+    // 7. 관리자용 회원 목록 조회
+    @GetMapping("/list")
+//	@PreAuthorize("hasRole('ROLE_AMDIN')" )
+    public ResponseEntity<?> getUserListForAdmin() {
+        log.info("관리자의 회원 리스트 조회 요청");
+        Map<String, Object> resultMap;
+        try {
+            resultMap = new HashMap<>();
+            resultMap.put("users", userService.getUserListForAdmin());
+            resultMap.put("message", "SUCCESS");
+            return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
+        } catch (Exception e) {
+            resultMap = new HashMap<>();
+            resultMap.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(resultMap);
+        }
+    }
+    
+    // 8. 관리자용 회원 정보 조회
+    @GetMapping("/{userId}")
+//	@PreAuthorize("hasRole('ROLE_AMDIN')" )
+    public ResponseEntity<?> getUserForAdmin(@PathVariable int userId) {
+        log.info("관리자의 회원 정보 조회 요청");
+        Map<String, Object> resultMap;
+        try {
+            resultMap = new HashMap<>();
+            resultMap.put("user", userService.getUserForAdmin(userId));
+            resultMap.put("message", "SUCCESS");
+            return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
+        } catch (Exception e) {
+            resultMap = new HashMap<>();
+            resultMap.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(resultMap);
+        }
+    }
+    
+    // 9. 관리자용 회원 탈퇴
+    @DeleteMapping("/{userId}")
+//    @PreAuthorize(("hasRole('ROLE_ADMIN')"))
+    public ResponseEntity<?> deleteUserForAdmin(@ApiParam("탈퇴 시킬 아이디") @PathVariable Integer userId){
+        log.info("관리자가 회원 탈퇴 요청");
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            userService.deleteUserForAdmin(userId);
+            resultMap.put("message", "SUCCESS");
+            log.debug("관리자가 탈퇴시킨 회원 : {}", userId);
+            return ResponseEntity.status(HttpStatus.OK).body(resultMap);
+        } catch (Exception e) {
+            log.error("관리자의 회원 탈퇴 처리 중 에러 발생 : {}",e);
+            resultMap.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(resultMap);
+        }
+    }
+    
 }
