@@ -21,7 +21,7 @@ import java.util.List;
 @Transactional
 public class PointServiceImpl implements PointService {
     private final UserRepository userRepository;
-
+    private final WithdrawalRepository withdrawalRepository;
     private final WithdrawalLogRepository withdrawalLogRepository;
 
     @Override
@@ -35,7 +35,7 @@ public class PointServiceImpl implements PointService {
             user.setPoint(balanceAfter);
             List<Withdrawal> withdrawalList = user.getWithdrawals();
             Withdrawal newWithdrawal = new Withdrawal("Kakao", amount);
-            newWithdrawal = WithdrawalRepository.save(newWithdrawal);
+            newWithdrawal = withdrawalRepository.save(newWithdrawal);
             withdrawalList.add(newWithdrawal);
 
             /*
@@ -50,7 +50,7 @@ public class PointServiceImpl implements PointService {
                     .balance(user.getPoint())
                     .status("Success")
                     .build();
-
+            withdrawalLogRepository.save(withdrawalLog);
         }else{
             long balanceAfter = balanceBefore;
             withdrawalDTO = new WithdrawalDTO(false, amount, balanceBefore, balanceAfter, "잔액이 부족합니다.");
