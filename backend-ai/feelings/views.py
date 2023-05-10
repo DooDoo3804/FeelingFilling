@@ -37,15 +37,16 @@ def analysis_text(request):
     # 받아온 text 데이터
     start = time.time()
     # 토큰 decode해서 userid 추출
-    # token = request.headers.get('Authorization').split(' ')[1]
-    # user_id = decode_jwt_token(token)
-    # if not user_id:
-    #         # jwt 검증 실패시 예외 처리
-    #         return HttpResponse(status=401, content='Authentication failed')
+    token = request.headers.get('Authorization', None)[6::]
+    print(token)
+    user_id = decode_jwt_token(token)
+    if not user_id:
+            # jwt 검증 실패시 예외 처리
+            return HttpResponse(status=401, content='Authentication failed')
     
     text = request.data['text']
     
-    user = User.objects.get(user_id = 1)
+    user = User.objects.get(user_id = user_id)
     # user = User.objects.get(user_id = user_id)
 
     """
@@ -64,12 +65,12 @@ def analysis_text(request):
     """
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
-    check_chatting(1)
+    check_chatting(user_id)
     """
         billing 요청
         0 // 1
     """
-    success, message = req_billing(amount, 1)
+    success, message = req_billing(token, amount, user_id)
     print(message)
     # success = req_billing(token, amount, user_id)
     if success:
@@ -117,7 +118,8 @@ def analysis_text(request):
 def analysis_voice(request):
     start = time.time()
     # 토큰 decode해서 userid 추출
-    token = request.headers.get('Authorization').split(' ')[1]
+    token = request.headers.get('Authorization', None)[6::]
+    print(token)
     user_id = decode_jwt_token(token)
     if not user_id:
             # jwt 검증 실패시 예외 처리
@@ -166,7 +168,7 @@ def analysis_voice(request):
         print(e)
     text = resp.json()
 
-    user = User.objects.get(user_id = 1)
+    user = User.objects.get(user_id = user_id)
 
     """
         번역 요청
@@ -264,7 +266,7 @@ def check_chatting(user_id):
     # count를 0으로 바꿔준다.
     # 이후 voice 분석 진행
     # 비동기 처리?
-    post = collection.find_one({"_id": 28})
+    post = collection.find_one({"_id": user_id})
     print(post)
     update_text = post['chattings']
     # if (post['count'] != 0):
@@ -274,7 +276,7 @@ def check_chatting(user_id):
     #         # update_text[len(post['text']) - i] 의 TF를 F로 바꿈
 
     # db 업데이트 
-    filter = {"_id" : 28}
+    filter = {"_id" : user_id}
     update1 = {'$set' : {'numOfChat' : 2}}
     collection.update_one(filter, update1)
     # update2 = {'$set' : {'text' : update_text}}
@@ -326,9 +328,10 @@ def analysis_emotion(translation_result):
     for p in prediction[0]:
         score = p['score']
         feeling = p['label']
-        
+        # anger joy sadness
+        # disgust fear  neatral  surprise
         # 각 감정을 서비스 기준에 맞게 재집계
-        if (feeling == "love" or feeling == "joy") : scores[0] += score
+        if (feeling == "neatral" or feeling == "joy") : scores[0] += score
         elif (feeling == "sadness") : scores[1] += score
         elif (feeling == "anger") : scores[2] += score
         elif (feeling == "fear") :
@@ -337,6 +340,9 @@ def analysis_emotion(translation_result):
         elif (feeling == "surprise") :
             scores[1] += score * 0.5
             scores[2] += score * 0.5
+        elif (feeling == "disgust") :
+            scores[1] += score * 0.65
+            scores[2] += score * 0.35
 
     # max 감정과 스코어 추출
     max_score = max(scores)
@@ -351,7 +357,7 @@ def analysis_emotion(translation_result):
 
 # Billing에 요청 함수
 # def req_billing(token, amount, user_id):
-def req_billing(amount, user_id):
+def req_billing(token, amount, user_id):
     try:
         resp = requests.post(
             'http://13.124.31.137:8702/billing/subscription',
@@ -371,8 +377,8 @@ def req_billing(amount, user_id):
 # jwt decode 함수
 def decode_jwt_token(access_token):
     try:
-        decoded_token = jwt.decode(access_token, settings.JWT_SECRET, algorithms=['HS256'])
-        user_id = decoded_token.get('user_id')
+        decoded_data = jwt.decode(access_token, options={"verify_signature": False})
+        user_id = decoded_data.get('userId')
         return user_id
     except jwt.ExpiredSignatureError:
         # 토큰이 만료되었을 때 예외 처리
