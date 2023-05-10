@@ -34,8 +34,8 @@ public class BillingController {
         KakaoApproveDTO kakaoApproveDTO= kakaoPayService.kakaoPayApprove(orderId, pg_token);
         Map<String, Object> map = new HashMap<>();
 
-        ProcessResultDTO processResultDTO = new ProcessResultDTO(true, "구독 등록이 완료되었습니다.");
-        map.put("result", processResultDTO);
+        map.put("result", true);
+        map.put("message", "구독 등록이 완료되었습니다.")
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
@@ -44,8 +44,8 @@ public class BillingController {
        kakaoPayService.kakaoPaySubscription(serviceUserAndAmountDTO);
 
         Map<String, Object> map = new HashMap<>();
-        ProcessResultDTO processResultDTO = new ProcessResultDTO(true, "입금에 성공하였습니다.");
-        map.put("result", processResultDTO);
+        map.put("result", true);
+        map.put("message","입금에 성공하였습니다.")
         map.put("amount", serviceUserAndAmountDTO.getAmount());
        return new ResponseEntity<>(map, HttpStatus.OK);
     }

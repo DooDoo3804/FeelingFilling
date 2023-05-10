@@ -24,9 +24,10 @@ public class PointController {
         long amount = pointService.getPoint(serviceUserDTO);
 
         Map<String, Object> map = new HashMap<>();
-        ProcessResultDTO processResultDTO = new ProcessResultDTO(true, "조회에 성공하였습니다.");
-        map.put("result", processResultDTO);
+        map.put("result", true);
+        map.put("message", "조회에 성공하였습니다.");
         map.put("amount", amount);
+        return ResponseEntity.status(HttpStatus.OK).body()
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
@@ -37,8 +38,10 @@ public class PointController {
         Map<String, Object> map = new HashMap<>();
 
         ProcessResultDTO processResultDTO = new ProcessResultDTO(true, "출금에 성공하였습니다.");
-        map.put("result", processResultDTO);
-        map.put("amount", withdrawalDTO);
+        map.put("result", withdrawalDTO.isSuccess());
+        map.put("message", withdrawalDTO.getMessage());
+        map.put("amount", withdrawalDTO.getRequestedAmount());
+
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }
