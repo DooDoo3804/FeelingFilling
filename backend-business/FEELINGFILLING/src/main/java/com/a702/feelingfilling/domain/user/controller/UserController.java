@@ -5,21 +5,19 @@ import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserKakaoRequestDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserKakaoResponseDTO;
 import com.a702.feelingfilling.domain.user.service.UserService;
-import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
 import io.swagger.annotations.Api;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -93,7 +91,27 @@ public class UserController {
         }
     }
 
-    //5. 뱃지 조회
+    //5. 회원 탈퇴
+    @DeleteMapping("/{userId}")
+//    @PreAuthorize(("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')"))
+//    public ResponseEntity<?> deleteUser(){
+    public ResponseEntity<?> deleteUser(@ApiParam("탈퇴 시 필요한 아이디") @PathVariable Integer userId){
+        log.info("회원 탈퇴 요청");
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+//            userService.deleteUser();
+            userService.deleteUser(userId);
+            resultMap.put("message", "SUCCESS");
+            log.debug("탈퇴한 회원 : {}", userId);
+            return ResponseEntity.status(HttpStatus.OK).body(resultMap);
+        } catch (Exception e) {
+            log.error("회원 탈퇴 중 에러 발생 : {}",e);
+            resultMap.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(resultMap);
+        }
+    }
+    
+    //6. 뱃지 조회
     @GetMapping("/badge/{userId}")
 //	@PreAuthorize(("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')"))
     public ResponseEntity<?> getUserBadge(@PathVariable int userId) {
