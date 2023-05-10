@@ -66,6 +66,8 @@ public class ChattingServiceImpl implements ChattingService {
       //sender값에 채팅 갯수 업데이트하기
       update = new Update();
       update.inc("numOfChat");
+      mongoTemplate.updateFirst(query,update,Sender.class);
+      update = new Update();
       update.inc("numOfUnAnalysed");
       mongoTemplate.updateFirst(query,update,Sender.class);
       //---------------------------------------------------
@@ -119,10 +121,17 @@ public class ChattingServiceImpl implements ChattingService {
     String article = sb.toString();
     log.info("article : " + article);
 
-    //Send Request to Django Server
 
+    //분석안된 갯수 초기화해주기
+    Query query = Query.query(Criteria.where("_id").is(loginUserId));
+    Update update = new Update();
+    update.set("numOfUnAnalysed",0);
+    mongoTemplate.updateFirst(query,update,Sender.class);
+
+
+    //Send Request to Django Server
     RestTemplate template = new RestTemplate();
-    String uri = UriComponentsBuilder.fromHttpUrl("http://k8a702.p.ssafy.io/feeling/text").toUriString();
+    String uri = UriComponentsBuilder.fromHttpUrl("https://feelingfilling.store/feelings/text").toUriString();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     JSONObject body = new JSONObject();
@@ -136,6 +145,11 @@ public class ChattingServiceImpl implements ChattingService {
         Map.class);
     Map<String,Object> responseBody = response.getBody();
     log.info(responseBody.toString());
+    //응답 채팅 데이터에 저장하기
+
+
+    //--------------------------
+
     return AnalyzedResult.resultMap(responseBody);
   }
 }//ChattingServiceImpl
