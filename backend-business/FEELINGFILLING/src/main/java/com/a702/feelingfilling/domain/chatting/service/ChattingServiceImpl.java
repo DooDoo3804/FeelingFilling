@@ -1,5 +1,6 @@
 package com.a702.feelingfilling.domain.chatting.service;
 
+import com.a702.feelingfilling.domain.chatting.exception.CustomException;
 import com.a702.feelingfilling.domain.chatting.model.dto.AnalyzedResult;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChatInputDTO;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChattingDTO;
@@ -108,48 +109,79 @@ public class ChattingServiceImpl implements ChattingService {
 
   //4.텍스트 분석
   @Override
-  public AnalyzedResult analyze() {
-    int loginUserId = userService.getLoginUserId();
-    Sender senderWithNum = senderRepository.findBySenderId(loginUserId);
-    int num = senderWithNum.getNumOfUnAnalysed();
-    Sender sender = senderRepository.findAllBySenderIdAndPage(loginUserId, -num, num);
-    StringBuilder sb = new StringBuilder();
-    for(Chatting text : sender.getChattings()){
-      sb.append(text.getContent());
-      sb.append(" ");
+  public ChattingDTO analyze() {
+    Query query;
+    Update update;
+    String article;
+    int loginUserId;
+    try{
+      loginUserId = userService.getLoginUserId();
+      Sender senderWithNum = senderRepository.findBySenderId(loginUserId);
+      int num = senderWithNum.getNumOfUnAnalysed();
+      Sender sender = senderRepository.findAllBySenderIdAndPage(loginUserId, -num, num);
+      StringBuilder sb = new StringBuilder();
+
+      //분석안된 갯수 초기화해주기
+      query = Query.query(Criteria.where("_id").is(loginUserId));
+      update = new Update();
+      update.set("numOfUnAnalysed",0);
+      mongoTemplate.updateFirst(query,update,Sender.class);
+
+      for(Chatting text : sender.getChattings()){
+        //DB정보 바꿔주기
+        query = Query.query(Criteria.where("_id").is(text.getChattingId()));
+        update = new Update();
+        update.set("isAnalysed", true);
+        mongoTemplate.updateFirst(query,update,Chatting.class);
+        //전송할 값에 더하기
+        sb.append(text.getContent());
+        sb.append(" ");
+      }
+      article = sb.toString();
+      log.info("article : " + article);
+    }catch (Exception e){
+      throw new RuntimeException("분석할 text가 없습니다.");
     }
-    String article = sb.toString();
-    log.info("article : " + article);
-
-
-    //분석안된 갯수 초기화해주기
-    Query query = Query.query(Criteria.where("_id").is(loginUserId));
-    Update update = new Update();
-    update.set("numOfUnAnalysed",0);
-    mongoTemplate.updateFirst(query,update,Sender.class);
-
-
-    //Send Request to Django Server
-    RestTemplate template = new RestTemplate();
-    String uri = UriComponentsBuilder.fromHttpUrl("https://feelingfilling.store/feelings/text").toUriString();
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    JSONObject body = new JSONObject();
-    body.put("text",article);
-    HttpEntity<?> entity = new HttpEntity<>(body.toString(), headers);
-    log.info("요청보내기");
-    ResponseEntity<Map> response = template.exchange(
-        uri,
-        HttpMethod.POST,
-        entity,
-        Map.class);
-    Map<String,Object> responseBody = response.getBody();
-    log.info(responseBody.toString());
-    //응답 채팅 데이터에 저장하기
-
-
-    //--------------------------
-
-    return AnalyzedResult.resultMap(responseBody);
+    try{
+      //Send Request to Django Server
+      RestTemplate template = new RestTemplate();
+      String uri = UriComponentsBuilder.fromHttpUrl("https://feelingfilling.store/feelings/text").toUriString();
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      JSONObject body = new JSONObject();
+      body.put("text",article);
+      HttpEntity<?> entity = new HttpEntity<>(body.toString(), headers);
+      log.info("요청보내기");
+      ResponseEntity<Map> response = template.exchange(
+          uri,
+          HttpMethod.POST,
+          entity,
+          Map.class);
+      Map<String,Object> responseBody = response.getBody();
+      log.info(responseBody.toString());
+      AnalyzedResult res = AnalyzedResult.resultMap(responseBody);
+      //응답 채팅 데이터에 저장하기
+      Chatting newChat = Chatting.builder()
+          .type(2)
+          .content(res.getReact())
+          .chatDate(LocalDateTime.now())
+          .mood(res.getEmotion())
+          .amount(res.getAmount())
+          .userId(loginUserId)
+          .isAnalysed(true)
+          .build();
+      log.info("---------------");
+      chattingRepository.save(newChat);
+      log.info("newChat : "+newChat.toString());
+      //채팅을 사용자 리스트에 추가
+      query = Query.query(Criteria.where("_id").is(loginUserId));
+      update = new Update();
+      update.addToSet("chattings", newChat);
+      mongoTemplate.updateMulti(query,update,Sender.class);
+      return ChattingDTO.fromEntity(newChat);
+    }
+    catch (Exception e){
+      throw new RuntimeException("감정분석 실패");
+    }
   }
 }//ChattingServiceImpl
