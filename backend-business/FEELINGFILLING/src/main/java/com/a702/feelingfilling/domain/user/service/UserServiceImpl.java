@@ -80,7 +80,18 @@ public class UserServiceImpl implements UserService {
 
         return UserDTO.toDTO(userRepository.save(user));
     }
-
+    
+    @Override
+//    public boolean deleteUser() {
+        //int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+    public boolean deleteUser(Integer userId) {
+        User user = userRepository.findByUserId(userId);
+        if(user==null)
+            return false;
+        userRepository.delete(user);
+        return true;
+    }
+    
     @Override
     public List<Integer> getUserBadge(int userId) {
 //	public List<Integer> getUserBadge() {
