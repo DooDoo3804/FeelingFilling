@@ -18,6 +18,9 @@ public interface UserService {
     UserDTO getUser(int userId);
 
     UserDTO modifyUser(UserDTO userDTO);
+    
+//    boolean deleteUser();
+    boolean deleteUser(Integer userId);
 
     List<Integer> getUserBadge(int userId);
 
