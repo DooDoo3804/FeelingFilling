@@ -80,7 +80,9 @@ public class JwtTokenService implements InitializingBean {
 
     //토큰 유효성 검증 메서드
     public boolean verifyToken(String token) {
+        System.out.println("1");
         try {
+            System.out.println("2");
             log.info("토큰 검증 시작");
             Jwts.parser()
                     .setSigningKey(secretKey)
