@@ -33,7 +33,7 @@ public class ChattingController {
     Map<String,Object> resultMap = new HashMap<>();
     try{
       resultMap.put("message","SUCCESS");
-      resultMap.put("chattings",chattingService.createChat(chatInputDTO));
+      resultMap.put("chatting",chattingService.createChat(chatInputDTO));
       return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
     }catch (Exception e){
       resultMap.put("message",e.getMessage());
@@ -64,6 +64,22 @@ public class ChattingController {
     try{
       resultMap.put("message","SUCCESS");
       resultMap.put("chattings",chattingService.getChatList(page));
+      return ResponseEntity.ok().body(resultMap);
+    }catch (Exception e){
+      resultMap.put("message",e.getMessage());
+      return ResponseEntity.badRequest().body(resultMap);
+    }
+  }//addChat
+
+
+  //4. 텍스트 감정 분석 요청
+  @GetMapping("/analyze")
+  public ResponseEntity<?> analyze(){
+    log.info("텍스트 분석요청");
+    Map<String,Object> resultMap = new HashMap<>();
+    try{
+      resultMap.put("message","SUCCESS");
+      resultMap.put("result",chattingService.analyze());
       return ResponseEntity.ok().body(resultMap);
     }catch (Exception e){
       resultMap.put("message",e.getMessage());

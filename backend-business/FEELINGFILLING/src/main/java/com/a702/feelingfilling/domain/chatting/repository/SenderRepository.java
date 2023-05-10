@@ -17,6 +17,9 @@ public interface SenderRepository extends MongoRepository<Sender, Integer> {
   @Query(value = "{'senderId':?0}", fields = "{'chattings':{'$slice':  [?1 , ?2] } }")
   Sender findAllBySenderIdAndPage(int senderId, Integer start, Integer num);
 
+  @Query(value = "{'senderId':?0}", fields = "{'numOfUnAnalysed' :  1}")
+  Sender findBySenderId(int loginUserId);
+
 //  @Query(value = "{'senderId':?0}", fields = "{'$slice': ['chatting', '?1', '?2'] }")
 //  List<Object> findAllBySenderIdAndPage(int senderId, Integer start, Integer num);
 //    @Query("db.sender.aggregate([{ '$project' : { 'chattings': { '$slice': [ '$chattings', 3, 3 ] } } } ])")
