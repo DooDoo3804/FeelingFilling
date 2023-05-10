@@ -64,6 +64,7 @@ def analysis_text(request):
     """
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
+    check_chatting(1)
     """
         billing 요청
         0 // 1
@@ -251,7 +252,7 @@ def check_chatting(user_id):
     # 데이터베이스 선택
     db = client['feelingfilling']
     # 컬렉션 선택
-    collection = db['chatting']
+    collection = db['senders']
     # collection = db['senders']
 
     # 문서 생성 삽입
@@ -263,20 +264,23 @@ def check_chatting(user_id):
     # count를 0으로 바꿔준다.
     # 이후 voice 분석 진행
     # 비동기 처리?
-    post = collection.find_one({"user": user_id})
-    update_text = post['text']
-    if (post['count'] != 0):
-        # print("이거 수정해야함")
-        for i in range(post['count']):
-            # update_text[len(post['text']) - i] 의 TF를 F로 바꿈
-            pass
+    post = collection.find_one({"_id": 28})
+    print(post)
+    update_text = post['chattings']
+    # if (post['count'] != 0):
+    #     # print("이거 수정해야함")
+    #     for i in range(post['count']):
+    #         pass
+    #         # update_text[len(post['text']) - i] 의 TF를 F로 바꿈
 
     # db 업데이트 
-    filter = {"user" : user_id}
-    update1 = {'&set' : {'count' : 0}}
+    filter = {"_id" : 28}
+    update1 = {'$set' : {'numOfChat' : 2}}
     collection.update_one(filter, update1)
-    update2 = {'$set' : {'text' : update_text}}
-    collection.update_one(filter, update2)
+    # update2 = {'$set' : {'text' : update_text}}
+    # collection.update_one(filter, update2)
+    # update3 = {'$set' : {'numOfUnAnalysed' : 2}}
+    # collection.update_one(filter, update3)
 
     # 다중 문서 조회
     # for post in collection.find():
