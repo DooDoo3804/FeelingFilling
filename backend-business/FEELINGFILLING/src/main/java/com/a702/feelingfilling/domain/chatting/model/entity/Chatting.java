@@ -37,5 +37,6 @@ public class Chatting {
   private String mood;
   private int amount;
   private int userId;
+  private boolean isAnalysed;
 
 }

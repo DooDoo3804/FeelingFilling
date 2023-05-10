@@ -22,13 +22,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private JwtTokenService jwtTokenService;
+    private final JwtTokenService jwtTokenService;
 
-    public JwtFilter(JwtTokenService jwtTokenService) {
-        this.jwtTokenService = jwtTokenService;
-    }
+//    public JwtFilter(JwtTokenService jwtTokenService) {
+//        this.jwtTokenService = jwtTokenService;
+//    }
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -45,6 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
             //토큰이 있으면 검증을 시도
             accessToken = accessToken.replace("Bearer ", "");
             try {
+                log.info("---------------------------" + accessToken);
                 jwtTokenService.verifyToken(accessToken);
                 //토큰 검증이 통과했다면
                 log.info("유효한 토큰입니다.");
@@ -84,7 +86,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 setErrorResponse(response, "wrong_token");
             } catch (Exception e) {
                 //사용자 정보 꺼내기에 실패한경우 >> secret key는 맞는데 토큰의 내용 형식이 이상한 경우
-                log.warn("wrong_token");
+                log.warn("wrong_token2");
                 setErrorResponse(response, "wrong_token");
                 //response에 401코드에 "wrong_token"메세지
             }

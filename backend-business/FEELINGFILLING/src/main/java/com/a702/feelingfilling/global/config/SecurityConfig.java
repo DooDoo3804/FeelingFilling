@@ -31,8 +31,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 // 특정 주소 접근시 권한 및 인증을 위한 어노테이션(secured, pre~~) 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private JwtTokenService jwtTokenService;
-    private UserRepository userRepository;
+    private final JwtTokenService jwtTokenService;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -57,14 +56,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated(); //나머지 요청에 대해서는 전부 사용자 인증
 
         // jwt 토큰 필터 추가
-//        http.apply(new JwtFilter(jwtTokenService, userRepository),
+//        http.apply(new JwtFilter(jwtTokenService),
 //                UsernamePasswordAuthenticationFilter.class);
 
-        http.apply(new JwtSecurityConfig(jwtTokenService));
+        http.addFilterBefore(new JwtFilter(jwtTokenService),
+            UsernamePasswordAuthenticationFilter.class);
+
+//        http.apply(new JwtSecurityConfig(jwtTokenService));
         // cors
         http.cors().configurationSource(corsConfigurationSource());
     }
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

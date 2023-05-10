@@ -1,5 +1,7 @@
 package com.a702.feelingfilling.domain.user.service;
 
+import com.a702.feelingfilling.domain.chatting.model.entity.Sender;
+import com.a702.feelingfilling.domain.chatting.repository.SenderRepository;
 import com.a702.feelingfilling.domain.user.model.dto.*;
 import com.a702.feelingfilling.domain.user.model.entity.User;
 import com.a702.feelingfilling.domain.user.model.entity.UserBadge;
@@ -8,6 +10,8 @@ import com.a702.feelingfilling.domain.user.model.repository.UserRepository;
 import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +21,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserBadgeRepository userBadgeRepository;
     private final UserRepository userRepository;
+    private final SenderRepository senderRepository;
     private final JwtTokenService jwtTokenService;
     private int badgeCnt = 15;
 
@@ -33,6 +38,7 @@ public class UserServiceImpl implements UserService {
         // 이미 가입한 유저
         if (user.isPresent()) {
             User realUser = user.get();
+            log.info("기존 회원 입니다 : " + realUser.toString());
             JwtTokens jwtTokens = jwtTokenService.generateToken(realUser.getUserId(), realUser.getNickname(), realUser.getRole());
             return UserKakaoResponseDTO.builder().accessToken(jwtTokens.getAccessToken()).refreshToken(jwtTokens.getRefreshToken()).isNewJoin(false).build();
         } else {
@@ -49,6 +55,13 @@ public class UserServiceImpl implements UserService {
         if (max < min) throw new IllegalArgumentException("Unvalid Maximum Value");
         User user = UserJoinDTO.toUser(userJoinDTO);
         userRepository.save(user);
+        log.info("DB user 저장완료 : " + user.toString());
+        Sender newSender = Sender.builder().senderId(user.getUserId()).chattings(new ArrayList<>())
+            .numOfChat(0)
+            .numOfUnAnalysed(0)
+            .build();
+        senderRepository.save(newSender);
+        log.info("sender저장");
         return jwtTokenService.generateToken(user.getUserId(), user.getNickname(), user.getRole());
     }
 
