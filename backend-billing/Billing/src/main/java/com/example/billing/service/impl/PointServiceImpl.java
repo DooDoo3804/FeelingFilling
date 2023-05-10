@@ -3,6 +3,7 @@ package com.example.billing.service.impl;
 import com.example.billing.data.billingDB.entity.User;
 import com.example.billing.data.billingDB.entity.Withdrawal;
 import com.example.billing.data.billingDB.repository.UserRepository;
+import com.example.billing.data.billingDB.repository.WithdrawalRepository;
 import com.example.billing.data.dto.ServiceUserAndAmountDTO;
 import com.example.billing.data.dto.ServiceUserDTO;
 import com.example.billing.data.dto.WithdrawalDTO;
@@ -34,6 +35,7 @@ public class PointServiceImpl implements PointService {
             user.setPoint(balanceAfter);
             List<Withdrawal> withdrawalList = user.getWithdrawals();
             Withdrawal newWithdrawal = new Withdrawal("Kakao", amount);
+            newWithdrawal = WithdrawalRepository.save(newWithdrawal);
             withdrawalList.add(newWithdrawal);
 
             /*
