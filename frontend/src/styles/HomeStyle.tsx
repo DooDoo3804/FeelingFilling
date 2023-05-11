@@ -63,3 +63,19 @@ export const BtnText = styled.Text`
   font-family: 'NotoSansKR-Bold';
   color: ${Common.colors.white01};
 `;
+
+export const AdContainer = styled.View`
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+  padding: 70px 0px;
+  overflow: hidden;
+`;
+
+export const AdImage = styled.Image`
+  width: 350px;
+  height: 200px;
+  border-radius: 20px;
+  object-fit: cover;
+`;
