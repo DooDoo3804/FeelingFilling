@@ -64,6 +64,9 @@ import EmoSad from '../assets/emo_sad.png';
 import LinearGradient from 'react-native-linear-gradient';
 import {useAxios} from '../hooks/useAxios';
 import {Defs, LinearGradient as LG, Stop} from 'react-native-svg';
+//
+import {useSelector} from 'react-redux';
+import type {AppState, User} from '../redux';
 
 const AngerGradient = () => (
   <Defs>
@@ -117,13 +120,6 @@ interface TotalStatisticsDataType {
   month: string;
 }
 
-interface TotalStatisticsToDateDataType {
-  emotion: string;
-  amount: number;
-  count: number;
-  month: Date;
-}
-
 interface EmotionHighDataType {
   date: number;
   hour: number;
@@ -143,30 +139,35 @@ interface TotalAmountDataType {
 }
 
 const PersonalStats = () => {
+  const user = useSelector<AppState, User | null>(state => state.loggedUser);
   const {data, error} = useAxios<PersonalStatDataType>(
-    'http://3.38.191.128:8080/api/stat/user/1',
+    `https://feelingfilling.store/api/stat/user/${user?.id}`,
     'GET',
     null,
   );
   // 이번달 저금
   const [thisMonthSavingData, setThisMonthSavingData] = useState<
-    ThisMonthSavingDataType[]
-  >([]);
+    ThisMonthSavingDataType[] | null
+  >(null);
   // 6개월 저금 추이
   const [totalAngerStatisticsData, setTotalAngerStatisticsData] = useState<
-    TotalStatisticsToDateDataType[]
-  >([]);
+    TotalStatisticsDataType[] | null
+  >(null);
   const [totalJoyStatisticsData, setTotalJoyStatisticsData] = useState<
-    TotalStatisticsToDateDataType[]
-  >([]);
+    TotalStatisticsDataType[] | null
+  >(null);
   const [totalSadStatisticsData, setTotalSadStatisticsData] = useState<
-    TotalStatisticsToDateDataType[]
-  >([]);
+    TotalStatisticsDataType[] | null
+  >(null);
   // 이번달 감정적 고조
   const [thisMonthEmotionData, setThisMonthEmotionData] =
-    useState<EmotionHighDataToStringType>();
+    useState<EmotionHighDataToStringType | null>(null);
   // 누적 합계
-  const [totalAmountData, setTotalAmountData] = useState<TotalAmountDataType>();
+  const [totalAmountData, setTotalAmountData] =
+    useState<TotalAmountDataType | null>(null);
+
+  // 최근 6개월 저금 최고금액
+  const [maxMoney, setMaxMoney] = useState<number>(100000);
 
   useEffect(() => {
     // 이번달 저금
@@ -175,14 +176,17 @@ const PersonalStats = () => {
     }) as ThisMonthSavingDataType[];
     setThisMonthSavingData(sortedThisMonthData);
     // 6개월 저금 추이
-    const anger: TotalStatisticsToDateDataType[] = [];
-    const joy: TotalStatisticsToDateDataType[] = [];
-    const sad: TotalStatisticsToDateDataType[] = [];
+    const anger: TotalStatisticsDataType[] = [];
+    const joy: TotalStatisticsDataType[] = [];
+    const sad: TotalStatisticsDataType[] = [];
     for (let i = 0; i < 3; i++) {
       data?.userMonths[i].forEach(e => {
         const month = Number(e.month) % 100;
-        const year = Number((e.month + '').substring(0, 4));
-        const date = new Date(year, month - 1, 1);
+        const year = (e.month + '').substring(3, 4);
+        const date = year + (month < 10 ? '0' + month : month);
+        if (e.amount > maxMoney) {
+          setMaxMoney(e.amount);
+        }
         if (i === 0) {
           anger.push({
             emotion: e.emotion,
@@ -249,18 +253,14 @@ const PersonalStats = () => {
       burger: data?.burger,
     } as TotalAmountDataType;
     setTotalAmountData(totalAmountDatas);
-  }, [data, error]);
+  }, [data, error, maxMoney]);
 
   const priceConverter = (price: string) => {
     return price.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   const monthConverter = (month: string) => {
-    const date = new Date(Number(month));
-    if (date.getDate() >= 28) {
-      return date.getMonth() + 2 + '월';
-    }
-    return date.getMonth() + 1 + '월';
+    return month.substring(1, 3) + '월';
   };
 
   return (
@@ -273,7 +273,7 @@ const PersonalStats = () => {
           </LottieContainer1>
         </ThisMonthSavingTitleContainer>
         <ThisMonthSavingBodyContainer>
-          {thisMonthSavingData?.length > 0 ? (
+          {thisMonthSavingData && thisMonthSavingData?.length > 0 ? (
             <>
               <VictoryChart
                 padding={{top: 30, bottom: 180, left: 10, right: 220}}>
@@ -371,16 +371,17 @@ const PersonalStats = () => {
           </LottieContainer2>
         </TotalStatisticsTitleContainer>
         <TotalStatisticsBodyContainer>
-          {totalAngerStatisticsData?.length > 0 &&
-          totalJoyStatisticsData?.length > 0 &&
-          totalSadStatisticsData?.length > 0 ? (
+          {totalAngerStatisticsData &&
+          totalJoyStatisticsData &&
+          totalSadStatisticsData ? (
             <VictoryChart
+              maxDomain={{y: maxMoney}}
               height={250}
               style={{
                 background: {fill: '#F9F9F9'},
               }}
               domainPadding={{x: 5, y: 5}}
-              padding={{top: 1, bottom: 30, left: 70, right: 50}}>
+              padding={{top: 10, bottom: 30, left: 70, right: 50}}>
               <VictoryAxis
                 style={{
                   axis: {stroke: ''},
@@ -444,50 +445,54 @@ const PersonalStats = () => {
           )}
         </TotalStatisticsBodyContainer>
       </TotalStatisticsContainer>
-      <ThisMonthEmotionContainer>
-        <ThisMonthEmotionTitleContainer>
-          <TitleText>이번 달, 감정 최고조는?</TitleText>
-        </ThisMonthEmotionTitleContainer>
-        <ThisMonthEmotionBodyContainer>
-          <BestDateContainer>
-            <BestDateSmileContainer>
-              <LinearGradient
-                colors={['#FFB53F', '#FFF1DA']}
-                // eslint-disable-next-line react-native/no-inline-styles
-                style={{width: 100, height: 100, borderRadius: 50}}>
-                <Lottie
-                  source={require('../assets/emotion-changing.json')}
-                  autoPlay
-                  loop
-                />
-              </LinearGradient>
-            </BestDateSmileContainer>
-            <BestDateText>{thisMonthEmotionData?.date}</BestDateText>
-          </BestDateContainer>
-          <BestSamllContainer>
-            <BestHourContainer>
-              <BestHourLottie>
-                <Lottie
-                  source={require('../assets/sunny.json')}
-                  autoPlay
-                  loop
-                />
-              </BestHourLottie>
-              <BestHourText>{thisMonthEmotionData?.hour}</BestHourText>
-            </BestHourContainer>
-            <BestDayContainer>
-              <BestDayLottie>
-                <Lottie
-                  source={require('../assets/calendar-days.json')}
-                  autoPlay
-                  loop
-                />
-              </BestDayLottie>
-              <BestDayText>{thisMonthEmotionData?.day}</BestDayText>
-            </BestDayContainer>
-          </BestSamllContainer>
-        </ThisMonthEmotionBodyContainer>
-      </ThisMonthEmotionContainer>
+      {thisMonthEmotionData ? (
+        <ThisMonthEmotionContainer>
+          <ThisMonthEmotionTitleContainer>
+            <TitleText>이번 달, 감정 최고조는?</TitleText>
+          </ThisMonthEmotionTitleContainer>
+          <ThisMonthEmotionBodyContainer>
+            <BestDateContainer>
+              <BestDateSmileContainer>
+                <LinearGradient
+                  colors={['#FFB53F', '#FFF1DA']}
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  style={{width: 100, height: 100, borderRadius: 50}}>
+                  <Lottie
+                    source={require('../assets/emotion-changing.json')}
+                    autoPlay
+                    loop
+                  />
+                </LinearGradient>
+              </BestDateSmileContainer>
+              <BestDateText>{thisMonthEmotionData?.date}</BestDateText>
+            </BestDateContainer>
+            <BestSamllContainer>
+              <BestHourContainer>
+                <BestHourLottie>
+                  <Lottie
+                    source={require('../assets/sunny.json')}
+                    autoPlay
+                    loop
+                  />
+                </BestHourLottie>
+                <BestHourText>{thisMonthEmotionData?.hour}</BestHourText>
+              </BestHourContainer>
+              <BestDayContainer>
+                <BestDayLottie>
+                  <Lottie
+                    source={require('../assets/calendar-days.json')}
+                    autoPlay
+                    loop
+                  />
+                </BestDayLottie>
+                <BestDayText>{thisMonthEmotionData?.day}</BestDayText>
+              </BestDayContainer>
+            </BestSamllContainer>
+          </ThisMonthEmotionBodyContainer>
+        </ThisMonthEmotionContainer>
+      ) : (
+        ''
+      )}
       <CumulativeAmountContainer>
         <CumulativeAmountTitleContainer>
           <TitleText>저금 누적액</TitleText>
