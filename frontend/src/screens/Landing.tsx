@@ -8,6 +8,9 @@ import {
   KakaoOAuthToken,
 } from '@react-native-seoul/kakao-login';
 
+import {useSelector, useDispatch} from 'react-redux';
+import {tokenAction, loginAction} from '../redux';
+
 // import {useAxios} from '../hooks/useAxios';
 
 import {Common} from '../components/Common';
@@ -51,30 +54,83 @@ const NativeKakaoLogins: KakaoLoginModuleInterface = {
 
 const KakaoLoginButton = ({navigation}: {navigation: any}) => {
   // const [data, setData] = useState(null);
-  const [userId, setUserId] = useState(null);
+  // const [userId, setUserId] = useState(null);
+  // const refreshToken = useSelector<AppState, string>(
+  //   state => state.loggedUser.refresh_token,
+  // );
+  // const accessToken = useSelector<AppState, string>(
+  //   state => state.loggedUser.access_token,
+  // );
+
+  const dispatch = useDispatch();
+
+  const handleAccessToken = (
+    new_refreshtoken: string,
+    new_accesstoken: string,
+  ) => {
+    dispatch(tokenAction(new_refreshtoken, new_accesstoken));
+  };
+
+  const handleLogin = (
+    name: string,
+    id: number,
+    min_money: number,
+    max_money: number,
+    refresh_token: string,
+    access_token: string,
+  ) => {
+    dispatch(
+      loginAction({
+        name,
+        id,
+        min_money,
+        max_money,
+        refresh_token,
+        access_token,
+      }),
+    );
+  };
 
   const signInWithKakao = async (): Promise<void> => {
     try {
       const token: KakaoOAuthToken = await NativeKakaoLogins.login();
-      console.log(token);
-      // setData(token);
+      // console.log(token);
       const profile = await NativeKakaoLogins.getProfile();
       // console.log('User profile:', profile);
-      setUserId(profile.id);
+      // console.log(profile.id);
 
-      const res: AxiosResponse<T> = await axios.post(
-        'http://k8a702.p.ssafy.io:8080/api/user/kakao',
+      const res: AxiosResponse = await axios.post(
+        'https://feelingfilling.store/api/user/kakao',
+        {
+          id: profile.id,
+        },
         {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: {
-            kakaoId: profile.id,
-          },
         },
       );
+      // console.log(res.data);
       if (res.data.newJoin) {
         navigation.navigate('SignUp');
+      } else {
+        handleAccessToken(res.data.accessToken, res.data.refreshToken);
+        const userRes: AxiosResponse = await axios.get(
+          'https://feelingfilling.store/api/user',
+          {
+            headers: {
+              Authorization: `Bearer ${res.data.accessToken}`,
+            },
+          },
+        );
+        handleLogin(
+          userRes.data.user.nickname,
+          userRes.data.user.userId,
+          userRes.data.user.minimum,
+          userRes.data.user.maximum,
+          res.data.accessToken,
+          res.data.refreshToken,
+        );
       }
     } catch (err) {
       console.log(err);
