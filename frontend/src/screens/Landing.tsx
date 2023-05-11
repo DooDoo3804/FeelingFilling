@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {NativeModules, Button} from 'react-native';
+import {NativeModules} from 'react-native';
 import axios, {AxiosResponse, AxiosError} from 'axios';
 import Swiper from 'react-native-swiper';
 import Lottie from 'lottie-react-native';
@@ -8,7 +8,7 @@ import {
   KakaoOAuthToken,
 } from '@react-native-seoul/kakao-login';
 
-import {useAxios} from '../hooks/useAxios';
+// import {useAxios} from '../hooks/useAxios';
 
 import {Common} from '../components/Common';
 import font_logo from '../assets/font_logo.png';
@@ -25,11 +25,6 @@ import {
   KakaoLogo,
   BtnText,
 } from '../styles/LoginStyle';
-
-type FetchData<T> = {
-  data: T | null;
-  error: AxiosError | null;
-};
 
 const {RNKakaoLogins} = NativeModules;
 
@@ -140,7 +135,6 @@ const Landing = ({navigation}: {navigation: any}) => {
         </Swiper>
       </SwiperConatiner>
       <KakaoLoginButton navigation={navigation} />
-      <Button title="move" onPress={() => navigation.navigate('SignUp')} />
     </Container>
   );
 };

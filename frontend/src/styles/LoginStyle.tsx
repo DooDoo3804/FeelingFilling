@@ -3,12 +3,28 @@ import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {Common} from '../components/Common';
 
 export const Container = styled.View`
+  width: 100%;
   flex: 1;
   flex-direction: column;
   background-color: ${Common.colors.white01};
   justify-content: space-evenly;
   align-items: center;
   padding: 10px;
+`;
+
+export const SignupWrapper = styled.View<{height: number}>`
+  width: 100%;
+  min-height: ${(props: any) => props.height};
+  flex-direction: column;
+  background-color: ${Common.colors.white01};
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 10px;
+`;
+
+export const SignupContainer = styled.ScrollView`
+  background-color: ${Common.colors.white01};
+  width: 100%;
 `;
 
 export const KeyboardContainer = styled(TouchableWithoutFeedback)`
