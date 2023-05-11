@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
-
+import Swiper from 'react-native-swiper';
 import {useSelector} from 'react-redux';
 import type {AppState, User} from '../redux';
-// import {toggleProgress} from '../redux';
 
-import Swiper from 'react-native-swiper';
+import {useAxios} from '../hooks/useAxios';
 
 import {Common} from '../components/Common';
 import {
@@ -18,7 +17,6 @@ import {
   BalanceText,
   BtnText,
 } from '../styles/HomeStyle';
-
 import {
   SwiperConatiner,
   SwiperView,
@@ -26,10 +24,30 @@ import {
   LottieContainer,
 } from '../styles/LoginStyle';
 
+interface responseDataType {
+  message: string;
+  logs: savingListDataType[];
+}
+
+interface savingListDataType {
+  logTime: string;
+  emotion: string;
+  amount: number;
+  total: number;
+}
+
 const Home = ({navigation}: {navigation: any}) => {
   const [balanceView, setBalanceView] = useState(true);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth());
 
   const user = useSelector<AppState, User | null>(state => state.loggedUser);
+
+  const {data, refetch} = useAxios<responseDataType>(
+    `http://3.38.191.128:8080/api/log/${user?.id}/${year}/${month}`,
+    'GET',
+    null,
+  );
   // 로딩중 화면 설정하는 함수
   // const inProgress = useSelector<AppState, boolean>(state => state.inProgress);
   // const dispatch = useDispatch();
@@ -38,13 +56,24 @@ const Home = ({navigation}: {navigation: any}) => {
   //   dispatch(toggleProgress(!inProgress));
   // };
 
+  const priceConverter = (price: string) => {
+    return price.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   return (
     <Container>
       <Heading>나의 감정 적금</Heading>
       <MoneyWrapper>
-        <BalanceHeading>{user && user.name}님의 4월 적금</BalanceHeading>
+        <BalanceHeading>
+          {user && user.name}님의 {month + 1}월 적금
+        </BalanceHeading>
         {balanceView ? (
-          <BalanceText>181,818 원</BalanceText>
+          <BalanceText>
+            {data && data.logs.length > 0
+              ? priceConverter(data.logs[0].total + '')
+              : '0'}
+            원
+          </BalanceText>
         ) : (
           <HideText>잔액 숨김 중</HideText>
         )}
