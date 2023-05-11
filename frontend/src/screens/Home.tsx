@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 
-// import {useSelector, useDispatch} from 'react-redux';
+import {useSelector} from 'react-redux';
+import type {AppState, User} from '../redux';
 // import {toggleProgress} from '../redux';
-// import type {AppState} from '../redux';
 
 import Swiper from 'react-native-swiper';
 
@@ -28,6 +28,8 @@ import {
 
 const Home = ({navigation}: {navigation: any}) => {
   const [balanceView, setBalanceView] = useState(true);
+
+  const user = useSelector<AppState, User | null>(state => state.loggedUser);
   // 로딩중 화면 설정하는 함수
   // const inProgress = useSelector<AppState, boolean>(state => state.inProgress);
   // const dispatch = useDispatch();
@@ -40,7 +42,7 @@ const Home = ({navigation}: {navigation: any}) => {
     <Container>
       <Heading>나의 감정 적금</Heading>
       <MoneyWrapper>
-        <BalanceHeading>사용자님의 4월 적금</BalanceHeading>
+        <BalanceHeading>{user && user.name}님의 4월 적금</BalanceHeading>
         {balanceView ? (
           <BalanceText>181,818 원</BalanceText>
         ) : (
