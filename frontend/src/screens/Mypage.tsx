@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 
+import {useDispatch} from 'react-redux';
+import {logoutAction} from '../redux';
+
 import emo_happy from '../assets/emo_happy.png';
 import {Common} from '../components/Common';
 
@@ -21,7 +24,12 @@ import {
 } from '../styles/MypageStyle';
 
 const Mypage = ({navigation}: {navigation: any}) => {
+  const dispatch = useDispatch();
   const [badges, setBadges] = useState();
+
+  const handleLogout = () => {
+    dispatch(logoutAction());
+  };
 
   return (
     <Container>
@@ -56,7 +64,7 @@ const Mypage = ({navigation}: {navigation: any}) => {
         <SingleMenu>
           <PlainText>환급 정보 등록하기</PlainText>
         </SingleMenu>
-        <SingleMenu>
+        <SingleMenu onPress={() => handleLogout()}>
           <PlainText>로그아웃</PlainText>
         </SingleMenu>
         <SingleMenu>
