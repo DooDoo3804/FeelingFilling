@@ -385,8 +385,10 @@ def req_billing(token, amount, user_id):
                 'serviceName': "abcd",
             }
         )
-        success = resp.json()['result']
-        message = resp.json()['message']
+        # success = resp.json()['result']
+        # message = resp.json()['message']
+        success = resp.json()['result']['result']
+        message = resp.json()['result']['message']
     except Exception as e:
         print(e)
     return success, message
