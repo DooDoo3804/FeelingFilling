@@ -62,11 +62,8 @@ import EmoAngry from '../assets/emo_angry.png';
 import EmoHappy from '../assets/emo_happy.png';
 import EmoSad from '../assets/emo_sad.png';
 import LinearGradient from 'react-native-linear-gradient';
-import {useAxios} from '../hooks/useAxios';
+import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
 import {Defs, LinearGradient as LG, Stop} from 'react-native-svg';
-//
-import {useSelector} from 'react-redux';
-import type {AppState, User} from '../redux';
 
 const AngerGradient = () => (
   <Defs>
@@ -139,9 +136,8 @@ interface TotalAmountDataType {
 }
 
 const PersonalStats = () => {
-  const user = useSelector<AppState, User | null>(state => state.loggedUser);
-  const {data, error} = useAxios<PersonalStatDataType>(
-    `https://feelingfilling.store/api/stat/user/${user?.id}`,
+  const {data, error} = useAxiosWithRefreshToken<PersonalStatDataType>(
+    'https://feelingfilling.store/api/stat/user',
     'GET',
     null,
   );

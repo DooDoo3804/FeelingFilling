@@ -76,8 +76,8 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
     id: number,
     min_money: number,
     max_money: number,
-    refresh_token: string,
     access_token: string,
+    refresh_token: string,
   ) => {
     dispatch(
       loginAction({
@@ -85,8 +85,8 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
         id,
         min_money,
         max_money,
-        refresh_token,
         access_token,
+        refresh_token,
       }),
     );
   };
