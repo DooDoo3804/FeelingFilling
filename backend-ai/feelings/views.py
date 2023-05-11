@@ -4,7 +4,7 @@ import time
 import datetime
 import logging
 import jwt
-
+import openai
 from FEELINGFILLING_DJANGO import settings
 from pymongo import MongoClient
 from time import sleep
@@ -14,7 +14,8 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
-from .models import React, Chatting, Request, User
+from .models import Request, User
+from django.conf import settings
 
 """
     text 분석 요청 api
@@ -57,11 +58,10 @@ def analysis_text(request):
         번역 요청
     """
     feeling, score, trans = translation_text(text)
-
     """
         적금 금액 계산
     """
-    amount = cal_deposit(score)
+    amount = cal_deposit(score, user_id)
 
     """
         react 데이터 저장 (GPT 답변)
@@ -69,7 +69,8 @@ def analysis_text(request):
     """
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
-    check_chatting(user_id)
+    gpt_react = make_react(trans)
+    react_trans = translation_text_ko(gpt_react)
     """
         billing 요청
         0 // 1
@@ -80,18 +81,18 @@ def analysis_text(request):
     if success:
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = text, request_time = datetime.datetime.now(),
-                        translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                        translation = trans, react = react_trans, emotion = feeling, intensity = score,
                         amount = amount, success = 1)
         request.save()
         context = {
-            "react" : "GPT 답변",
+            "react" : react_trans,
             "emotion" : feeling,
             "amount" : amount,
             "success" : success
         }
     else :
         context = {
-            "react" : 0,
+            "react" : "ERROR",
             "emotion" : 0,
             "amount" : 0,
             "success" : success
@@ -195,8 +196,7 @@ def analysis_voice(request):
     # chatting에 react도 저장해야함??
     # 토큰 받아야함....?
 
-    # check_chatting(user_id)
-
+    check_chatting(user_id)
 
     """
         billing 요청
@@ -237,18 +237,34 @@ def analysis_voice(request):
 
 
 # 측정된 감정 정도에 따라 적금 금액 계산
-def cal_deposit(score):
-    user= User.objects.get(user_id = 1)
+def cal_deposit(score, user_id):
+    user= User.objects.get(user_id = user_id)
     min, max = user.minimum, user.maximum
-    amount = round((max - min + 1) * (score-0.333333))
+    amount = round((max - min + 1) * (score-0.333))
     print(amount)
     return amount
 
 
 # GPT // ChatBot react 생성 함수
-# 아직 미정
-def make_react():
-    pass
+def make_react(text):
+    print(text)
+    prompt = text + ". Tell me that I can do it to me when I was in this situation"
+    print(prompt)
+    openai.api_key = settings.OPEN_AI_API_KEY
+    model_engine = "text-ada-001"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
+    model_prompt = f"{prompt}\nModel: "
+
+    completions = openai.Completion.create(
+        engine=model_engine,
+        prompt=model_prompt,
+        max_tokens=50,
+        n=1,
+        stop=None,
+        temperature=0.7,
+    )
+    message = completions.choices[0].text.strip()
+    print(message)
+    return message
 
 
 # chatting에 insert 함수
@@ -297,18 +313,31 @@ def check_chatting(user_id):
 # 번역 함수
 def translation_text(text):
     google = Translator()
-    text = text
-
-    abs_translator = google.translate(text, dest="en")
+    input_text = text
+    print(input_text)
+    abs_translator = google.translate(input_text, dest="en")
 
     print("----------------------------------------------------------------")
     print("TRANSLATION")
-    print(f"""{text}
+    print(f"""{input_text}
     *****************************************************************
     {abs_translator.text}""")
     print("----------------------------------------------------------------")
 
     return analysis_emotion(abs_translator)
+
+def translation_text_ko(text):
+    google = Translator()
+    abs_translator = google.translate(text, src="en", dest="ko")
+
+    print("----------------------------------------------------------------")
+    print("TRANSLATION TO KOR")
+    print(f"""{text}
+    *****************************************************************
+    {abs_translator.text}""")
+    print("----------------------------------------------------------------")
+
+    return abs_translator.text
 
 
 # 감정 분석 함수
@@ -335,7 +364,7 @@ def analysis_emotion(translation_result):
         # anger joy sadness
         # disgust fear  neatral  surprise
         # 각 감정을 서비스 기준에 맞게 재집계
-        if (feeling == "neatral" or feeling == "joy") : scores[0] += score
+        if (feeling == "joy") : scores[0] += score
         elif (feeling == "sadness") : scores[1] += score
         elif (feeling == "anger") : scores[2] += score
         elif (feeling == "fear") :
@@ -347,6 +376,10 @@ def analysis_emotion(translation_result):
         elif (feeling == "disgust") :
             scores[1] += score * 0.65
             scores[2] += score * 0.35
+        elif (feeling == "neutral") :
+            scores[0] += score * 0.33
+            scores[1] += score * 0.33
+            scores[2] += score * 0.33
 
     # max 감정과 스코어 추출
     max_score = max(scores)
@@ -373,6 +406,8 @@ def req_billing(token, amount, user_id):
         )
         success = resp.json()['result']
         message = resp.json()['message']
+        # success = resp.json()['result']['result']
+        # message = resp.json()['result']['message']
     except Exception as e:
         print(e)
     return success, message
