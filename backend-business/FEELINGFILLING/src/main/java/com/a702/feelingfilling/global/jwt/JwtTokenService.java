@@ -99,6 +99,7 @@ public class JwtTokenService implements InitializingBean {
 
     //토큰 refresh 메서드
     public JwtTokens refreshAccessToken(String refreshToken) throws NotFoundException {
+        if (!getType(refreshToken).equals("refresh")) throw new IllegalArgumentException("Refresh Token이 아닙니다.");
         try {
             //리프레쉬 토큰에 담긴 사용자 정보
             int id = getUserId(refreshToken);

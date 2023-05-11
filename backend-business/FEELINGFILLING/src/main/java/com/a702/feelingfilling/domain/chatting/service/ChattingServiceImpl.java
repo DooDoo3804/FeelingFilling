@@ -100,9 +100,11 @@ public class ChattingServiceImpl implements ChattingService {
   public List<ChattingDTO> getChatList(int page){
     log.info("page : " + page);
     if(page<=0) throw new RuntimeException("Page는 1이상입니다");
+
     int loginUserId = userService.getLoginUserId();
-    Sender senderWithNum = senderRepository.findAnalyNumBySenderId(loginUserId);
-    int totalNum = senderWithNum.getNumOfUnAnalysed(); //총 채팅 개수
+    Sender senderWithNum = senderRepository.findChatNumBySenderId(loginUserId);
+    int totalNum = senderWithNum.getNumOfChat(); //총 채팅 개수
+    log.info("채팅 Total Num : " + totalNum);
     if((page-1)*PAGE_SIZE>=totalNum) throw new RuntimeException("채팅이 없습니다.");
     int start = PAGE_SIZE*page;
     int targetNum = PAGE_SIZE;
@@ -201,6 +203,7 @@ public class ChattingServiceImpl implements ChattingService {
       return ChattingDTO.fromEntity(newChat);
     }
     catch (Exception e){
+      log.info(e.getMessage());
       throw new RuntimeException("감정분석 실패");
     }
   }
@@ -211,10 +214,11 @@ public class ChattingServiceImpl implements ChattingService {
     Sender senderWithDate = senderRepository.findLastDateBySenderId(loginUserId);
     LocalDate lastDate = senderWithDate.getLastDate(); //마지막날
     if(lastDate.equals(LocalDate.now())) return;
-    log.info("날짜 변경 데이터 저장");
+    LocalDate today = LocalDate.now();
+    log.info("날짜 변경 데이터 저장 : " + today.toString());
     Chatting newChat = Chatting.builder()
         .type(3)
-        .content(LocalDate.now().toString())
+        .content(today.toString())
         .chatDate(LocalDateTime.now())
         .mood("default")
         .amount(0)
@@ -236,7 +240,7 @@ public class ChattingServiceImpl implements ChattingService {
     update.inc("numOfUnAnalysed");
     mongoTemplate.updateFirst(query,update,Sender.class);
     update = new Update();
-    update.set("lastDate", LocalDate.now());
+    update.set("lastDate", today);
     mongoTemplate.updateFirst(query,update,Sender.class);
   }
 }//ChattingServiceImpl

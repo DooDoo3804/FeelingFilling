@@ -32,6 +32,7 @@ public class UserController {
     private static final String FAIL = "fail";
     private static final String ALREADY_EXIST = "already exists";
 
+    private final JwtTokenService jwtTokenService;
     @PostMapping("/kakao")
     public ResponseEntity<?> kakaoLogin(@RequestBody UserKakaoRequestDTO userKakaoDTO) {
         log.info("카카오 로그인 : " + userKakaoDTO);
@@ -114,4 +115,30 @@ public class UserController {
 
         return new ResponseEntity<>(resultMap, status);
     }
+
+    //6. 뱃지 조회
+    @GetMapping("/user/token")
+    public ResponseEntity<?> tokenRefresh(@RequestHeader(value = "RefreshToken")String refreshToken) {
+        log.info("Token Refresh Request");
+        HttpStatus status = HttpStatus.OK;
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            jwtTokenService.verifyToken(refreshToken);
+            log.info("유효한 refresh 토큰");
+            //AccessToken 새로 생성하기
+            JwtTokens newTokens = jwtTokenService.refreshAccessToken(refreshToken);
+            resultMap.put("access-token", newTokens.getAccessToken());
+            resultMap.put("refresh-token", newTokens.getRefreshToken());
+            resultMap.put("message", SUCCESS);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
+        }
+        return new ResponseEntity<>(resultMap, status);
+    }
+
+
+
+
+
 }
