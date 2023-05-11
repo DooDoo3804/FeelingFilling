@@ -27,7 +27,6 @@ public class PointController {
         map.put("result", true);
         map.put("message", "조회에 성공하였습니다.");
         map.put("amount", amount);
-        return ResponseEntity.status(HttpStatus.OK).body()
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 

@@ -4,7 +4,6 @@ import com.example.billing.data.dto.*;
 import com.example.billing.service.KakaoPayService;
 import com.example.billing.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +34,7 @@ public class BillingController {
         Map<String, Object> map = new HashMap<>();
 
         map.put("result", true);
-        map.put("message", "구독 등록이 완료되었습니다.")
+        map.put("message", "구독 등록이 완료되었습니다.");
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
@@ -45,7 +44,7 @@ public class BillingController {
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", true);
-        map.put("message","입금에 성공하였습니다.")
+        map.put("message","입금에 성공하였습니다.");
         map.put("amount", serviceUserAndAmountDTO.getAmount());
        return new ResponseEntity<>(map, HttpStatus.OK);
     }
