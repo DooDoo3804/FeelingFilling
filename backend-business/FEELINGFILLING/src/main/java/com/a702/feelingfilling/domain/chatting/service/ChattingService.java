@@ -10,6 +10,6 @@ public interface ChattingService {
   ChattingDTO createChat(ChatInputDTO chatInputDTO);
   void removeChat(ObjectId chattingId);
   List<ChattingDTO> getChatList(int page);
-  AnalyzedResult analyze();
+  ChattingDTO analyze(String accessToken);
 
 }

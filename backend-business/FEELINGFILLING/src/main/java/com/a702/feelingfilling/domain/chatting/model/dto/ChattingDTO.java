@@ -3,6 +3,7 @@ package com.a702.feelingfilling.domain.chatting.model.dto;
 
 import com.a702.feelingfilling.domain.chatting.model.entity.Chatting;
 import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,4 +32,5 @@ public class ChattingDTO {
           .amount(entity.getAmount())
           .build();
   }
+
 }
