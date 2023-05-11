@@ -17,13 +17,12 @@ const store = makeStore();
 
 const AppWrapper = () => {
   const inProgress = useSelector<AppState, boolean>(state => state.inProgress);
+  const loggedIn = useSelector<AppState, boolean>(state => state.loggedIn);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <NavigationContainer>
-        {/* 나중에 상태관리로 AuthStack / MainTab 구분 */}
-        {/* <AuthStackNavigation /> */}
-        <Main />
+        {loggedIn ? <Main /> : <AuthStackNavigation />}
         {/* inProgress도 상태관리로 구분 */}
         {inProgress && <Spinner />}
       </NavigationContainer>
