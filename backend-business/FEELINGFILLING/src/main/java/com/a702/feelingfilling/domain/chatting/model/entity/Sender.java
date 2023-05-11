@@ -29,7 +29,7 @@ public class Sender {
   private int senderId;
   @DBRef
   private List<Chatting> chattings;
-  private long numOfChat;
+  private int numOfChat;
   private int numOfUnAnalysed;
   private LocalDate lastDate;
 }
