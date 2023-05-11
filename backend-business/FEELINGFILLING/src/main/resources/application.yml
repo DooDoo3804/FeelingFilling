@@ -37,6 +37,7 @@ spring:
           idle: 2
     host: redis
     port: 6379
+    password: mammoth77
 
 jwt:
   secret: makemoneyfromyouremotionandfeelbetter
