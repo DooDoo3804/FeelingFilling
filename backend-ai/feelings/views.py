@@ -14,7 +14,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.status import HTTP_201_CREATED, HTTP_200_OK
 from apscheduler.schedulers.background import BackgroundScheduler
-from .models import React, Chatting, Request, User
+from .models import Request, User
 
 """
     text 분석 요청 api
