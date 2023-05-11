@@ -18,7 +18,12 @@ public interface SenderRepository extends MongoRepository<Sender, Integer> {
   Sender findAllBySenderIdAndPage(int senderId, Integer start, Integer num);
 
   @Query(value = "{'senderId':?0}", fields = "{'numOfUnAnalysed' :  1}")
-  Sender findBySenderId(int loginUserId);
+  Sender findAnalyNumBySenderId(int loginUserId);
+
+  @Query(value = "{'senderId':?0}", fields = "{'numOfChat' :  1}")
+  Sender findChatNumBySenderId(int loginUserId);
+  @Query(value = "{'senderId':?0}", fields = "{'lastDate' :  1}")
+  Sender findLastDateBySenderId(int loginUserId);
 
 //  @Query(value = "{'senderId':?0}", fields = "{'$slice': ['chatting', '?1', '?2'] }")
 //  List<Object> findAllBySenderIdAndPage(int senderId, Integer start, Integer num);

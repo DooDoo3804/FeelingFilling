@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -74,12 +75,12 @@ public class ChattingController {
 
   //4. 텍스트 감정 분석 요청
   @GetMapping("/analyze")
-  public ResponseEntity<?> analyze(){
+  public ResponseEntity<?> analyze(@RequestHeader(value = "Authorization") String accessToken){
     log.info("텍스트 분석요청");
     Map<String,Object> resultMap = new HashMap<>();
     try{
       resultMap.put("message","SUCCESS");
-      resultMap.put("result",chattingService.analyze());
+      resultMap.put("result",chattingService.analyze(accessToken));
       return ResponseEntity.ok().body(resultMap);
     }catch (Exception e){
       resultMap.put("message",e.getMessage());

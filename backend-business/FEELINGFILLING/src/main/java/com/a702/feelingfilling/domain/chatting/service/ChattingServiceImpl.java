@@ -8,6 +8,7 @@ import com.a702.feelingfilling.domain.chatting.model.entity.Sender;
 import com.a702.feelingfilling.domain.chatting.repository.ChattingRepository;
 import com.a702.feelingfilling.domain.chatting.repository.SenderRepository;
 import com.a702.feelingfilling.domain.user.service.UserService;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.bytebuddy.asm.Advice.Local;
 import net.minidev.json.JSONObject;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,6 +29,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -46,6 +50,8 @@ public class ChattingServiceImpl implements ChattingService {
   public ChattingDTO createChat(ChatInputDTO chatInputDTO) {
     try{
       int userId = userService.getLoginUserId();
+      //먼저 마지막 날짜 비교
+      addDate(userId);
       Chatting newChat = Chatting.builder()
           .type(chatInputDTO.getType())
           .content(chatInputDTO.getContent())
@@ -66,6 +72,8 @@ public class ChattingServiceImpl implements ChattingService {
       //sender값에 채팅 갯수 업데이트하기
       update = new Update();
       update.inc("numOfChat");
+      mongoTemplate.updateFirst(query,update,Sender.class);
+      update = new Update();
       update.inc("numOfUnAnalysed");
       mongoTemplate.updateFirst(query,update,Sender.class);
       //---------------------------------------------------
@@ -91,11 +99,18 @@ public class ChattingServiceImpl implements ChattingService {
   //3.채팅 목록 조회
   public List<ChattingDTO> getChatList(int page){
     log.info("page : " + page);
+    if(page<=0) throw new RuntimeException("Page는 1이상입니다");
     int loginUserId = userService.getLoginUserId();
-//    int loginUserId = 2;
-    log.info("-----------------------");
+    Sender senderWithNum = senderRepository.findAnalyNumBySenderId(loginUserId);
+    int totalNum = senderWithNum.getNumOfUnAnalysed(); //총 채팅 개수
+    if((page-1)*PAGE_SIZE>=totalNum) throw new RuntimeException("채팅이 없습니다.");
     int start = PAGE_SIZE*page;
-    Sender sender = senderRepository.findAllBySenderIdAndPage(loginUserId, -start, PAGE_SIZE);
+    int targetNum = PAGE_SIZE;
+    if((page-1)*PAGE_SIZE<totalNum&&page*PAGE_SIZE>totalNum) {
+      start = totalNum;
+      targetNum = totalNum-(page-1)*PAGE_SIZE;
+    }
+    Sender sender = senderRepository.findAllBySenderIdAndPage(loginUserId, -start, targetNum);
     List<Chatting> chattings = sender.getChattings();
     log.info(chattings.toString());
     List<ChattingDTO> result = chattings.stream()
@@ -106,36 +121,122 @@ public class ChattingServiceImpl implements ChattingService {
 
   //4.텍스트 분석
   @Override
-  public AnalyzedResult analyze() {
-    int loginUserId = userService.getLoginUserId();
-    Sender senderWithNum = senderRepository.findBySenderId(loginUserId);
-    int num = senderWithNum.getNumOfUnAnalysed();
-    Sender sender = senderRepository.findAllBySenderIdAndPage(loginUserId, -num, num);
-    StringBuilder sb = new StringBuilder();
-    for(Chatting text : sender.getChattings()){
-      sb.append(text.getContent());
-      sb.append(" ");
+  public ChattingDTO analyze(String accessToken) {
+    Query query;
+    Update update;
+    String article;
+    int loginUserId;
+    try{
+      loginUserId = userService.getLoginUserId();
+      Sender senderWithNum = senderRepository.findAnalyNumBySenderId(loginUserId);
+      int num = senderWithNum.getNumOfUnAnalysed();
+      log.info("분석 대상 채팅 수 : " + num);
+      Sender sender = senderRepository.findAllBySenderIdAndPage(loginUserId, -num, num);
+      StringBuilder sb = new StringBuilder();
+
+      //분석안된 갯수 초기화해주기
+      query = Query.query(Criteria.where("_id").is(loginUserId));
+      update = new Update();
+      update.set("numOfUnAnalysed",0);
+      mongoTemplate.updateFirst(query,update,Sender.class);
+
+      for(Chatting text : sender.getChattings()){
+        //DB정보 바꿔주기
+        query = Query.query(Criteria.where("_id").is(text.getChattingId()));
+        update = new Update();
+        update.set("isAnalysed", true);
+        mongoTemplate.updateFirst(query,update,Chatting.class);
+        if(text.getType()==2 || text.getType()==3) continue;
+        //전송할 값에 더하기
+        sb.append(text.getContent());
+        sb.append(" ");
+      }
+      article = sb.toString();
+      log.info("article : " + article);
+    }catch (Exception e){
+      throw new RuntimeException("분석할 text가 없습니다.");
     }
-    String article = sb.toString();
-    log.info("article : " + article);
+    try{
+      //Send Request to Django Server
+      RestTemplate template = new RestTemplate();
+      String uri = UriComponentsBuilder.fromHttpUrl("https://feelingfilling.store/feelings/text").toUriString();
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      headers.set("Authorization", accessToken);
+      JSONObject body = new JSONObject();
+      body.put("text",article);
+      HttpEntity<?> entity = new HttpEntity<>(body.toString(), headers);
+      log.info("요청보내기");
+      ResponseEntity<Map> response = template.exchange(
+          uri,
+          HttpMethod.POST,
+          entity,
+          Map.class);
+      Map<String,Object> responseBody = response.getBody();
+      log.info(responseBody.toString());
+      AnalyzedResult res = AnalyzedResult.resultMap(responseBody);
+      //응답 채팅 데이터에 저장하기
+      addDate(loginUserId);
+      Chatting newChat = Chatting.builder()
+          .type(2)
+          .content(res.getReact())
+          .chatDate(LocalDateTime.now())
+          .mood(res.getEmotion())
+          .amount(res.getAmount())
+          .userId(loginUserId)
+          .isAnalysed(true)
+          .build();
+      log.info("---------------");
+      chattingRepository.save(newChat);
+      log.info("newChat : "+newChat.toString());
+      //채팅을 사용자 리스트에 추가
+      query = Query.query(Criteria.where("_id").is(loginUserId));
+      update = new Update();
+      update.addToSet("chattings", newChat);
+      mongoTemplate.updateMulti(query,update,Sender.class);
+      //sender값에 채팅 갯수 업데이트하기
+      update = new Update();
+      update.inc("numOfChat");
+      mongoTemplate.updateFirst(query,update,Sender.class);
+      return ChattingDTO.fromEntity(newChat);
+    }
+    catch (Exception e){
+      throw new RuntimeException("감정분석 실패");
+    }
+  }
 
-    //Send Request to Django Server
-
-    RestTemplate template = new RestTemplate();
-    String uri = UriComponentsBuilder.fromHttpUrl("http://k8a702.p.ssafy.io/feeling/text").toUriString();
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    JSONObject body = new JSONObject();
-    body.put("text",article);
-    HttpEntity<?> entity = new HttpEntity<>(body.toString(), headers);
-    log.info("요청보내기");
-    ResponseEntity<Map> response = template.exchange(
-        uri,
-        HttpMethod.POST,
-        entity,
-        Map.class);
-    Map<String,Object> responseBody = response.getBody();
-    log.info(responseBody.toString());
-    return AnalyzedResult.resultMap(responseBody);
+//  //자정에 메세지 추가하는 메서드
+//  @Scheduled(cron= "0 0 0 * * *")
+  public void addDate(int loginUserId){
+    Sender senderWithDate = senderRepository.findLastDateBySenderId(loginUserId);
+    LocalDate lastDate = senderWithDate.getLastDate(); //마지막날
+    if(lastDate.equals(LocalDate.now())) return;
+    log.info("날짜 변경 데이터 저장");
+    Chatting newChat = Chatting.builder()
+        .type(3)
+        .content(LocalDate.now().toString())
+        .chatDate(LocalDateTime.now())
+        .mood("default")
+        .amount(0)
+        .userId(loginUserId)
+        .isAnalysed(false)
+        .build();
+    chattingRepository.save(newChat);
+    log.info("newChat : "+newChat.toString());
+    //채팅을 사용자 리스트에 추가
+    Query query = Query.query(Criteria.where("_id").is(loginUserId));
+    Update update = new Update();
+    update.addToSet("chattings", newChat);
+    mongoTemplate.updateMulti(query,update,Sender.class);
+    //sender값에 채팅 갯수 업데이트하기
+    update = new Update();
+    update.inc("numOfChat");
+    mongoTemplate.updateFirst(query,update,Sender.class);
+    update = new Update();
+    update.inc("numOfUnAnalysed");
+    mongoTemplate.updateFirst(query,update,Sender.class);
+    update = new Update();
+    update.set("lastDate", LocalDate.now());
+    mongoTemplate.updateFirst(query,update,Sender.class);
   }
 }//ChattingServiceImpl
