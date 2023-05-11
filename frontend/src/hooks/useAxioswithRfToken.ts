@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import axios, {AxiosResponse, AxiosError} from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
 import {toggleProgress, tokenAction} from '../redux';
@@ -7,16 +7,17 @@ import type {AppState} from '../redux';
 type FetchData<T> = {
   data: T | null;
   error: AxiosError | null;
+  refetch: (newUrl?: string) => void;
 };
 
 export const useAxiosWithRefreshToken = <T>(
-  url: string,
+  initialUrl: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
   request_config: JSON | null = null,
 ): FetchData<T> => {
+  const [url, setUrl] = useState<string>(initialUrl);
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<AxiosError | null>(null);
-  const inProgress = useSelector<AppState, boolean>(state => state.inProgress);
   const refreshToken = useSelector<AppState, string>(
     state => state.loggedUser.refresh_token,
   );
@@ -28,8 +29,8 @@ export const useAxiosWithRefreshToken = <T>(
 
   const dispatch = useDispatch();
 
-  const handleProgress = () => {
-    dispatch(toggleProgress(!inProgress));
+  const handleProgress = (progress: boolean) => {
+    dispatch(toggleProgress(progress));
   };
 
   const handleAccessToken = (
@@ -39,64 +40,72 @@ export const useAxiosWithRefreshToken = <T>(
     dispatch(tokenAction(new_refreshtoken, new_accesstoken));
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      handleProgress();
-
-      try {
-        const config = {
-          headers: {Authorization: `Bearer ${accessToken}`},
-          body: request_config,
-        };
-        const res: AxiosResponse<T> = await axios.request<T>({
-          url,
-          method,
-          ...config,
-        });
-        setData(res.data);
-      } catch (err: any) {
-        if (err.response?.status === 401) {
-          try {
-            const refreshConfig = {
-              data: {refresh_token: refreshToken},
-            };
-            const refreshRes: AxiosResponse<{
-              refresh_token: string;
-              access_token: string;
-            }> = await axios.get<{refresh_token: string; access_token: string}>(
-              `${BACKEND_URL}/token`,
-              refreshConfig,
-            );
-            const newConfig = {
-              headers: {
-                Authorization: `Bearer ${refreshRes.data.access_token}`,
-              },
-              body: request_config,
-            };
-            const newRes: AxiosResponse<T> = await axios.request<T>({
-              url,
-              method,
-              ...newConfig,
-            });
-            handleAccessToken(
-              refreshRes.data.refresh_token,
-              refreshRes.data.access_token,
-            );
-            setData(newRes.data);
-          } catch (refreshErr: any) {
-            setError(refreshErr);
-            // 로그인 구현되면 로그아웃 시키기
-          }
-        } else {
-          setError(err);
+  const fetchData = useCallback(async () => {
+    handleProgress(true);
+    try {
+      const body = {request_config};
+      const res: AxiosResponse<T> = await axios.request<T>({
+        url,
+        method,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        data: body,
+      });
+      setData(res.data);
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        try {
+          const refreshConfig = {
+            data: {refresh_token: refreshToken},
+          };
+          const refreshRes: AxiosResponse<{
+            refresh_token: string;
+            access_token: string;
+          }> = await axios.get<{refresh_token: string; access_token: string}>(
+            `${BACKEND_URL}/token`,
+            refreshConfig,
+          );
+          const newConfig = {
+            headers: {
+              Authorization: `Bearer ${refreshRes.data.access_token}`,
+            },
+            body: request_config,
+          };
+          const newRes: AxiosResponse<T> = await axios.request<T>({
+            url,
+            method,
+            ...newConfig,
+          });
+          handleAccessToken(
+            refreshRes.data.refresh_token,
+            refreshRes.data.access_token,
+          );
+          setData(newRes.data);
+        } catch (refreshErr: any) {
+          setError(refreshErr);
+          // 로그인 구현되면 로그아웃 시키기
         }
+      } else {
+        setError(err);
       }
-      handleProgress();
-    };
-    fetchData();
-  }, [url, refreshToken]);
+    }
+    handleProgress(false);
+  }, [url, accessToken, refreshToken]);
 
-  return {data, error};
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const refetch = (newUrl?: string) => {
+    if (newUrl) {
+      setUrl(newUrl);
+    } else {
+      fetchData();
+    }
+  };
+
+  return {data, error, refetch};
 };
 
 // 다음과 같이 import하여 사용
