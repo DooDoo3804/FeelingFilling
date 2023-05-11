@@ -30,6 +30,7 @@ public class UserController {
     private static final String FAIL = "fail";
     private static final String ALREADY_EXIST = "already exists";
 
+    private final JwtTokenService jwtTokenService;
     @PostMapping("/kakao")
     public ResponseEntity<?> kakaoLogin(@RequestBody UserKakaoRequestDTO userKakaoDTO) {
         log.info("카카오 로그인 : " + userKakaoDTO);
