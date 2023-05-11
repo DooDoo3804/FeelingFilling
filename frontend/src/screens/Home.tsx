@@ -16,13 +16,14 @@ import {
   BalanceBtn,
   BalanceText,
   BtnText,
+  AdImage,
+  AdContainer,
 } from '../styles/HomeStyle';
-import {
-  SwiperConatiner,
-  SwiperView,
-  SwiperText,
-  LottieContainer,
-} from '../styles/LoginStyle';
+import {SwiperConatiner, SwiperView} from '../styles/LoginStyle';
+
+import ad1 from '../assets/ad_1.png';
+import ad2 from '../assets/ad_2.png';
+import ad3 from '../assets/ad_3.png';
 
 interface responseDataType {
   message: string;
@@ -48,6 +49,7 @@ const Home = ({navigation}: {navigation: any}) => {
     'GET',
     null,
   );
+
   // 로딩중 화면 설정하는 함수
   // const inProgress = useSelector<AppState, boolean>(state => state.inProgress);
   // const dispatch = useDispatch();
@@ -55,6 +57,10 @@ const Home = ({navigation}: {navigation: any}) => {
   // const handleProgress = () => {
   //   dispatch(toggleProgress(!inProgress));
   // };
+
+  // console.log(data.logs);
+  // console.log(data);
+  // console.log(text, error);
 
   const priceConverter = (price: string) => {
     return price.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -98,18 +104,19 @@ const Home = ({navigation}: {navigation: any}) => {
           autoplayTimeout={3}
           activeDotColor={Common.colors.selectGrey}>
           <SwiperView>
-            <LottieContainer></LottieContainer>
-            <SwiperText>감정을 다스리고, 돈도 모아보세요.</SwiperText>
+            <AdContainer>
+              <AdImage source={ad1} />
+            </AdContainer>
           </SwiperView>
           <SwiperView>
-            <LottieContainer></LottieContainer>
-            <SwiperText>나의 감정 점수와 통계를 확인해요.</SwiperText>
+            <AdContainer>
+              <AdImage source={ad2} />
+            </AdContainer>
           </SwiperView>
           <SwiperView>
-            <LottieContainer></LottieContainer>
-            <SwiperText>
-              한 달이 지나면 모은 돈을 돌려받을 수 있어요.
-            </SwiperText>
+            <AdContainer>
+              <AdImage source={ad3} />
+            </AdContainer>
           </SwiperView>
         </Swiper>
       </SwiperConatiner>
