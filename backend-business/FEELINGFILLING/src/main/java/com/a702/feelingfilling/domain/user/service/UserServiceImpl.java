@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -75,16 +76,12 @@ public class UserServiceImpl implements UserService {
         UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return loginUser.getId();
     }
-
-    //	public UserDTO getUser(){
-//		UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		User userEntity = userRepository.findByUserId(loginUser.getId());
-    public UserDTO getUser(int userId) {
-        User userEntity = userRepository.findByUserId(userId);
-
+    @Override
+    public UserDTO getUser(){
+		UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User userEntity = userRepository.findByUserId(loginUser.getId());
         return UserDTO.toDTO(userEntity);
     }
-
 
     @Override
     public UserDTO modifyUser(UserDTO userDTO) {
@@ -98,7 +95,16 @@ public class UserServiceImpl implements UserService {
 
         return UserDTO.toDTO(userRepository.save(user));
     }
-
+    
+    @Override
+    public int deleteUser() {
+        int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+    User user = userRepository.findByUserId(userId);
+        if(user==null)
+            return -1;
+        userRepository.delete(user);
+        return userId;
+}
     @Override
     public List<Integer> getUserBadge(int userId) {
 //	public List<Integer> getUserBadge() {
@@ -112,5 +118,26 @@ public class UserServiceImpl implements UserService {
 
         return badge;
     }
-
+    
+    @Override
+    public List<UserBriefDTO> getUserListForAdmin() {
+        List<UserBriefDTO> userDTOList = userRepository.findAll().stream().map(UserBriefDTO::toDTO).collect(Collectors.toList());
+        return userDTOList;
+    }
+    
+    @Override
+    public UserDetailDTO getUserForAdmin(Integer userId) {
+        User userEntity = userRepository.findByUserId(userId);
+        
+        return UserDetailDTO.toDTO(userEntity);
+    }
+    
+    @Override
+    public boolean deleteUserForAdmin(Integer userId) {
+        User user = userRepository.findByUserId(userId);
+        if(user==null)
+            return false;
+        userRepository.delete(user);
+        return true;
+    }
 }
