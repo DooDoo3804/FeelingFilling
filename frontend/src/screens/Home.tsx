@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
 
-// import {useSelector, useDispatch} from 'react-redux';
+import {useSelector} from 'react-redux';
+import type {AppState, User} from '../redux';
 // import {toggleProgress} from '../redux';
-// import type {AppState} from '../redux';
 
+import Swiper from 'react-native-swiper';
+
+import {Common} from '../components/Common';
 import {
   Container,
   Heading,
@@ -16,8 +19,17 @@ import {
   BtnText,
 } from '../styles/HomeStyle';
 
+import {
+  SwiperConatiner,
+  SwiperView,
+  SwiperText,
+  LottieContainer,
+} from '../styles/LoginStyle';
+
 const Home = ({navigation}: {navigation: any}) => {
   const [balanceView, setBalanceView] = useState(true);
+
+  const user = useSelector<AppState, User | null>(state => state.loggedUser);
   // 로딩중 화면 설정하는 함수
   // const inProgress = useSelector<AppState, boolean>(state => state.inProgress);
   // const dispatch = useDispatch();
@@ -30,7 +42,7 @@ const Home = ({navigation}: {navigation: any}) => {
     <Container>
       <Heading>나의 감정 적금</Heading>
       <MoneyWrapper>
-        <BalanceHeading>사용자님의 4월 적금</BalanceHeading>
+        <BalanceHeading>{user && user.name}님의 4월 적금</BalanceHeading>
         {balanceView ? (
           <BalanceText>181,818 원</BalanceText>
         ) : (
@@ -49,6 +61,29 @@ const Home = ({navigation}: {navigation: any}) => {
           </BalanceBtn>
         </BtnWrapper>
       </MoneyWrapper>
+      <SwiperConatiner>
+        <Swiper
+          showsButtons={false}
+          autoplay
+          loop
+          autoplayTimeout={3}
+          activeDotColor={Common.colors.selectGrey}>
+          <SwiperView>
+            <LottieContainer></LottieContainer>
+            <SwiperText>감정을 다스리고, 돈도 모아보세요.</SwiperText>
+          </SwiperView>
+          <SwiperView>
+            <LottieContainer></LottieContainer>
+            <SwiperText>나의 감정 점수와 통계를 확인해요.</SwiperText>
+          </SwiperView>
+          <SwiperView>
+            <LottieContainer></LottieContainer>
+            <SwiperText>
+              한 달이 지나면 모은 돈을 돌려받을 수 있어요.
+            </SwiperText>
+          </SwiperView>
+        </Swiper>
+      </SwiperConatiner>
     </Container>
   );
 };
