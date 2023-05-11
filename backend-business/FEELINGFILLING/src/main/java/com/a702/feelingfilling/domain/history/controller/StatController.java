@@ -2,6 +2,7 @@ package com.a702.feelingfilling.domain.history.controller;
 
 import com.a702.feelingfilling.domain.history.model.dto.*;
 import com.a702.feelingfilling.domain.history.service.StatService;
+import com.a702.feelingfilling.domain.user.model.dto.UserLoginDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -34,12 +36,13 @@ public class StatController {
 	
 		
 	@ApiOperation(value = "유저 통계", notes = "유저 통계 API", response = Map.class)
-	@GetMapping("/user/{userId}")
-	public ResponseEntity<?> getUserStat(@PathVariable Integer userId){
+	@GetMapping("/user")
+	public ResponseEntity<?> getUserStat(){
 		HttpStatus status = HttpStatus.OK;
 		Map<String, Object> resultMap = new HashMap<>();
 		
 		try{
+			int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 			//이번 달 저금
 			UserStat[] stats = statService.getUserThisMonth(userId);
 			resultMap.put("userThisMonth",stats);
