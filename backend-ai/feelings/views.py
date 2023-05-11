@@ -4,7 +4,7 @@ import time
 import datetime
 import logging
 import jwt
-
+import openai
 from FEELINGFILLING_DJANGO import settings
 from pymongo import MongoClient
 from time import sleep
@@ -195,8 +195,7 @@ def analysis_voice(request):
     # chatting에 react도 저장해야함??
     # 토큰 받아야함....?
 
-    # check_chatting(user_id)
-
+    check_chatting(user_id)
 
     """
         billing 요청
@@ -248,6 +247,24 @@ def cal_deposit(score):
 # GPT // ChatBot react 생성 함수
 # 아직 미정
 def make_react():
+    
+    openai.api_key = "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"
+
+    prompt = "Hello, how are you?"
+    model_engine = "text-davinci-002"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
+    model_prompt = f"{prompt}\nModel: "
+
+    completions = openai.Completion.create(
+        engine=model_engine,
+        prompt=model_prompt,
+        max_tokens=50,
+        n=1,
+        stop=None,
+        temperature=0.7,
+    )
+
+    message = completions.choices[0].text.strip()
+    print(message)
     pass
 
 
