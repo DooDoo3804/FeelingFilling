@@ -77,18 +77,6 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
-class Chatting(models.Model):
-    chatting_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey('User', models.DO_NOTHING)
-    content = models.TextField()
-    chat_date = models.DateTimeField()
-    type = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'chatting'
-
-
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)
@@ -134,21 +122,31 @@ class DjangoSession(models.Model):
         db_table = 'django_session'
 
 
-class React(models.Model):
-    react_id = models.AutoField(primary_key=True)
-    chatting = models.ForeignKey(Chatting, models.DO_NOTHING)
-    content = models.CharField(max_length=200)
-    emotion = models.CharField(max_length=20)
+class History(models.Model):
+    history_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey('User', models.DO_NOTHING)
+    type = models.IntegerField()
+    emotion = models.CharField(max_length=20, blank=True, null=True)
     amount = models.PositiveIntegerField()
+    request_time = models.DateTimeField()
+    total = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'react'
+        db_table = 'history'
+
+
+class Month(models.Model):
+    m = models.IntegerField(primary_key=True)
+
+    class Meta:
+        managed = False
+        db_table = 'month'
 
 
 class Report(models.Model):
     report_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey('User', models.DO_NOTHING)
+    user_id = models.PositiveIntegerField()
     content = models.CharField(max_length=200)
 
     class Meta:
@@ -162,7 +160,7 @@ class Request(models.Model):
     content = models.TextField()
     request_time = models.DateTimeField()
     translation = models.TextField()
-    react = models.CharField(max_length=200, blank=True, null=True)
+    react = models.TextField(blank=True, null=True)
     emotion = models.CharField(max_length=20, blank=True, null=True)
     intensity = models.FloatField(blank=True, null=True)
     amount = models.PositiveIntegerField(blank=True, null=True)
@@ -174,7 +172,7 @@ class Request(models.Model):
 
 
 class User(models.Model):
-    user_id = models.PositiveIntegerField(primary_key=True)
+    user_id = models.AutoField(primary_key=True)
     id_oauth2 = models.CharField(max_length=20)
     nickname = models.CharField(max_length=20)
     role = models.CharField(max_length=20)
@@ -191,7 +189,7 @@ class UserBadge(models.Model):
     user_badge_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, models.DO_NOTHING)
     badge_id = models.PositiveIntegerField()
-    achived_date = models.DateTimeField()
+    achieved_date = models.DateTimeField()
 
     class Meta:
         managed = False
