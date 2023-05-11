@@ -5,6 +5,7 @@ import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserKakaoRequestDTO;
 import com.a702.feelingfilling.domain.user.model.dto.UserKakaoResponseDTO;
 import com.a702.feelingfilling.domain.user.service.UserService;
+import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
