@@ -247,9 +247,6 @@ def cal_deposit(score):
 # GPT // ChatBot react 생성 함수
 # 아직 미정
 def make_react():
-    
-    openai.api_key = "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"
-
     prompt = "Hello, how are you?"
     model_engine = "text-davinci-002"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
     model_prompt = f"{prompt}\nModel: "
