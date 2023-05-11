@@ -69,7 +69,7 @@ def analysis_text(request):
     """
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
-    check_chatting(user_id)
+    gpt_react = check_chatting(user_id)
     """
         billing 요청
         0 // 1
@@ -80,18 +80,18 @@ def analysis_text(request):
     if success:
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = text, request_time = datetime.datetime.now(),
-                        translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                        translation = trans, react = gpt_react, emotion = feeling, intensity = score,
                         amount = amount, success = 1)
         request.save()
         context = {
-            "react" : "GPT 답변",
+            "react" : gpt_react,
             "emotion" : feeling,
             "amount" : amount,
             "success" : success
         }
     else :
         context = {
-            "react" : 0,
+            "react" : "ERROR",
             "emotion" : 0,
             "amount" : 0,
             "success" : success
@@ -246,7 +246,7 @@ def cal_deposit(score):
 
 # GPT // ChatBot react 생성 함수
 # 아직 미정
-def make_react():
+def make_react(text):
     prompt = "Hello, how are you?"
     model_engine = "text-davinci-002"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
     model_prompt = f"{prompt}\nModel: "
@@ -262,7 +262,7 @@ def make_react():
 
     message = completions.choices[0].text.strip()
     print(message)
-    pass
+    return message
 
 
 # chatting에 insert 함수
