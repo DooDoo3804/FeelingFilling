@@ -10,6 +10,7 @@ services:
       SERVER_MODE: prod
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      OPEN_AI_API_KEY: ${OPEN_AI_API_KEY}
     # command: python manage.py runserver 0.0.0.0:8000 --noreload
     ports:
       - "8000:8000"
