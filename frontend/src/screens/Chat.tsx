@@ -50,6 +50,8 @@ import {
   PlayButton,
   RecordingDisplayView,
 } from '../styles/ChatStyle';
+import {useAxios} from '../hooks/useAxios';
+import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
 /////// png ///////
 import ChatMoneyPng from '../assets/chat_money.png';
 import EmoAngry from '../assets/emo_angry.png';
@@ -66,7 +68,26 @@ export const clickSave = () => {
   console.log(sendingText + '적금혀');
 };
 
+interface ChatDataType {
+  chattingId: number;
+  content: string;
+  chatDate: string;
+  type: number;
+  mood: string;
+  amount: number;
+}
+
+interface getParam {
+  page: number;
+}
+
 const Chat = () => {
+  // const {data, error} = useAxiosWithRefreshToken<ChatForDayDataType[]>(
+  //   'http://3.38.191.128:8080/api/chatting?page=1',
+  //   'GET',
+  //   null,
+  // );
+
   // modal control
   const [errorModalView, setErrorModalView] = useState<boolean>(false);
   const [okModalView, setOkModalView] = useState<boolean>(false);
@@ -232,7 +253,7 @@ const Chat = () => {
           chattingId: '3',
           content: '응? 내가 가만 안둘라요',
           chatDate: '2023-04-21T16:35:30.388',
-          type: '0', //0, 1, 2
+          type: '0', //0, 1, 2, 3
           mood: '', //2일떄만
           amount: '', //2일때만
         },
