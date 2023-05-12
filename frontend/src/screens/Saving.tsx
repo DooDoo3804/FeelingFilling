@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {useAxios} from '../hooks/useAxios';
+import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {Common} from '../components/Common';
 import {
@@ -38,11 +38,13 @@ interface savingListDataType {
 }
 
 const Saving = () => {
+  const uri = 'https://feelingfilling.store/api/log';
+
   const now = new Date();
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
-  const {data, refetch} = useAxios<responseDataType>(
-    `http://3.38.191.128:8080/api/log/${1}/${year}/${month}`,
+  const {data, refetch} = useAxiosWithRefreshToken<responseDataType>(
+    `${uri}/${year}/${month}`,
     'GET',
     null,
   );
@@ -62,11 +64,11 @@ const Saving = () => {
 
   const prevMonth = () => {
     if (month === 0) {
-      refetch(`http://3.38.191.128:8080/api/log/${1}/${year - 1}/${11}`);
+      refetch(`${uri}/${year - 1}/${11}`);
       setYear(year - 1);
       setMonth(11);
     } else {
-      refetch(`http://3.38.191.128:8080/api/log/${1}/${year}/${month}`);
+      refetch(`${uri}/${year}/${month}`);
       setMonth(month - 1);
     }
     const savingList = data?.logs as savingListDataType[];
@@ -76,22 +78,20 @@ const Saving = () => {
   const nextMonth = () => {
     if (year < now.getFullYear()) {
       if (month === 11) {
-        refetch(`http://3.38.191.128:8080/api/log/${1}/${year + 1}/${1}`);
+        refetch(`${uri}/${year + 1}/${1}`);
         setYear(year + 1);
         setMonth(0);
       } else {
-        refetch(
-          `http://3.38.191.128:8080/api/log/${1}/${year - 1}/${month + 2}`,
-        );
+        refetch(`${uri}/${year - 1}/${month + 2}`);
         setMonth(month + 1);
       }
     } else if (year === now.getFullYear() && month < now.getMonth()) {
       if (month === 12) {
-        refetch(`http://3.38.191.128:8080/api/log/${1}/${year + 1}/${1}`);
+        refetch(`${uri}/${year + 1}/${1}`);
         setYear(year + 1);
         setMonth(0);
       } else {
-        refetch(`http://3.38.191.128:8080/api/log/${1}/${year}/${month + 2}`);
+        refetch(`${uri}/${year}/${month + 2}`);
         setMonth(month + 1);
       }
     }
@@ -135,7 +135,6 @@ const Saving = () => {
           </SavingItemTail>
         </SavingItemContainer>,
       );
-      console.log(e);
     });
     return result;
   };
