@@ -2,8 +2,9 @@ import React, {useState} from 'react';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 
-import {useDispatch} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {logoutAction} from '../redux';
+import type {AppState, User} from '../redux';
 
 import emo_happy from '../assets/emo_happy.png';
 import {Common} from '../components/Common';
@@ -27,6 +28,8 @@ const Mypage = ({navigation}: {navigation: any}) => {
   const dispatch = useDispatch();
   const [badges, setBadges] = useState();
 
+  const user = useSelector<AppState, User | null>(state => state.loggedUser);
+
   const handleLogout = () => {
     dispatch(logoutAction());
   };
@@ -37,7 +40,7 @@ const Mypage = ({navigation}: {navigation: any}) => {
       <ProfileContainer onPress={() => navigation.navigate('UserInfo')}>
         <ProfileWrapper>
           <EmotionImage source={emo_happy} />
-          <Heading>사용자 님</Heading>
+          <Heading>{user && user.name} 님</Heading>
         </ProfileWrapper>
         <ProfileWrapper>
           <EntypoIcon
