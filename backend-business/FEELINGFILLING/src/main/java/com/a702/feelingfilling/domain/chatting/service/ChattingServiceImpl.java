@@ -208,8 +208,7 @@ public class ChattingServiceImpl implements ChattingService {
     }
   }
 
-//  //자정에 메세지 추가하는 메서드
-//  @Scheduled(cron= "0 0 0 * * *")
+  //메세지 날짜 변경 시 추가 메서드
   public void addDate(int loginUserId){
     Sender senderWithDate = senderRepository.findLastDateBySenderId(loginUserId);
     LocalDate lastDate = senderWithDate.getLastDate(); //마지막날
