@@ -14,7 +14,7 @@ public class AnalyzedResult {
   private String react; //반응
   private String emotion; //감정
   private int amount; //금액
-  boolean success; //적립여부
+  private boolean success; //적립여부
 
   public static AnalyzedResult resultMap(Map response){
     return AnalyzedResult.builder()

@@ -1,5 +1,6 @@
 package com.a702.feelingfilling.domain.chatting.controller;
 
+import com.a702.feelingfilling.domain.chatting.model.dto.AnalyzedResult;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChatInputDTO;
 import com.a702.feelingfilling.domain.chatting.service.ChattingService;
 import io.swagger.annotations.Api;
@@ -85,6 +86,21 @@ public class ChattingController {
     }catch (Exception e){
       resultMap.put("message",e.getMessage());
       return ResponseEntity.badRequest().body(resultMap);
+    }
+  }//addChat
+
+  //5. 음성분석 결과 전달
+  @PostMapping("/voice")
+  public ResponseEntity<?> voice(@RequestBody AnalyzedResult analyzedResult){
+    log.info("음성 분석 결과 수신 - " +analyzedResult);
+    Map<String,Object> resultMap = new HashMap<>();
+    try{
+      chattingService.voice(analyzedResult);
+      resultMap.put("message","SUCCESS");
+      return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
+    }catch (Exception e){
+      resultMap.put("message",e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultMap);
     }
   }//addChat
 }
