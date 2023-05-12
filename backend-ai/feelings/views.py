@@ -31,13 +31,11 @@ def analysis_text(request):
     # 받아온 text 데이터
     start = time.time()
     # 토큰 decode해서 userid 추출
-    print(request.headers.get('Authorization', None))
     try:
         token = request.headers.get('Authorization', None)[6::]
     except Exception as e:
         print(e)
         return HttpResponse(status=401, content='Authentication failed')
-    print(token)
     user_id = decode_jwt_token(token)
     if not user_id:
             # jwt 검증 실패시 예외 처리
