@@ -5,6 +5,7 @@ import datetime
 import logging
 import jwt
 import openai
+from bson import ObjectId
 from FEELINGFILLING_DJANGO import settings
 from pymongo import MongoClient
 from time import sleep
@@ -70,6 +71,7 @@ def analysis_text(request):
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
     gpt_react = make_react(trans)
+    check_chatting(user_id)
     """
         billing 요청
         0 // 1
@@ -280,7 +282,7 @@ def check_chatting(user_id):
     db = client['feelingfilling']
     # 컬렉션 선택
     collection = db['senders']
-    # collection = db['senders']
+    ch_collection = db['chattings']
 
     # 문서 생성 삽입
     # chat = {"user": 1, "text": [text], "date": datetime.datetime.now(), "count" : 3}
@@ -292,18 +294,30 @@ def check_chatting(user_id):
     # 이후 voice 분석 진행
     # 비동기 처리?
     post = collection.find_one({"_id": user_id})
-    print(post)
-    update_text = post['chattings']
-    # if (post['count'] != 0):
-    #     # print("이거 수정해야함")
-    #     for i in range(post['count']):
-    #         pass
-    #         # update_text[len(post['text']) - i] 의 TF를 F로 바꿈
+    
+    last_date = post['lastDate']
+    now_date = datetime.datetime.now()
+    # 날짜 다른 경우 업데이트
+    if (last_date.year != now_date.year or
+        last_date.month != now_date.month or
+        last_date.day != now_date.day) :
 
-    # db 업데이트 
-    filter = {"_id" : user_id}
-    update1 = {'$set' : {'numOfChat' : 2}}
-    collection.update_one(filter, update1)
+        filter = {"_id" : user_id}
+        update1 = {'$set' : {'lastDate' : datetime.datetime.now()}}
+        collection.update_one(filter, update1)
+
+    update_text = post['chattings']
+    text_id_list = []
+    if (post['numOfUnAnalysed'] != 0):
+        for i in range(post['numOfUnAnalysed']):
+             filter = {"_id" : ObjectId(update_text[len(post['chattings']) - i - 1].id) }
+             update = { "$set" : {"isAnalysed" : True} }
+             ch_collection.update_one(filter, update1)
+
+    # db 업데이트   
+    # filter = {"_id" : user_id}
+    # update1 = {'$set' : {'numOfChat' : 2}}
+    # collection.update_one(filter, update1)
     # update2 = {'$set' : {'text' : update_text}}
     # collection.update_one(filter, update2)
     # update3 = {'$set' : {'numOfUnAnalysed' : 2}}
