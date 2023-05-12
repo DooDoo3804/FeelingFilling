@@ -1,9 +1,6 @@
 package com.a702.feelingfilling.domain.user.controller;
 
-import com.a702.feelingfilling.domain.user.model.dto.UserDTO;
-import com.a702.feelingfilling.domain.user.model.dto.UserJoinDTO;
-import com.a702.feelingfilling.domain.user.model.dto.UserKakaoRequestDTO;
-import com.a702.feelingfilling.domain.user.model.dto.UserKakaoResponseDTO;
+import com.a702.feelingfilling.domain.user.model.dto.*;
 import com.a702.feelingfilling.domain.user.service.UserService;
 import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
@@ -14,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -110,14 +108,15 @@ public class UserController {
         }
     }
     //6. 뱃지 조회
-    @GetMapping("/badge/{userId}")
-//	@PreAuthorize(("hasRole('ROLE_ADMIN')"))
-    public ResponseEntity<?> getUserBadge(@PathVariable int userId) {
+    @GetMapping("/badge")
+//	@PreAuthorize(("hasRole('ROLE_ADMIN')") or ("hasRole('ROLE_USER')"))
+    public ResponseEntity<?> getUserBadge() {
         log.info("회원 뱃지 조회 요청");
         HttpStatus status = HttpStatus.OK;
         Map<String, Object> resultMap = new HashMap<>();
 
         try {
+            int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
             List<Integer> badges = userService.getUserBadge(userId);
             resultMap.put("badges", badges);
             log.debug("회원 뱃지 조회 ,", badges);
