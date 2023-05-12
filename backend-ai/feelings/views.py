@@ -247,7 +247,7 @@ def cal_deposit(score, user_id):
 # GPT // ChatBot react 생성 함수
 def make_react(text):
     print(text)
-    prompt = text + ". Tell me that I can do it to me when I was in this situation. 한국말로 해봐"
+    prompt = text + ". 위로하거나 맞장구 쳐주는 말을 한국어로 해줘, 짧게 한 두 문장으로"
     print(prompt)
     openai.api_key = settings.OPEN_AI_API_KEY
     model_engine = "text-davinci-003"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
