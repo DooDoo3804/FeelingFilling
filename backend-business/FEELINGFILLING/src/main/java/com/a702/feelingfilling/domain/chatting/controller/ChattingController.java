@@ -80,7 +80,7 @@ public class ChattingController {
     Map<String,Object> resultMap = new HashMap<>();
     try{
       resultMap.put("message","SUCCESS");
-      resultMap.put("result",chattingService.analyze(accessToken));
+      resultMap.put("chatting",chattingService.analyze(accessToken));
       return ResponseEntity.ok().body(resultMap);
     }catch (Exception e){
       resultMap.put("message",e.getMessage());
