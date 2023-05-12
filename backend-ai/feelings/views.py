@@ -81,7 +81,7 @@ def analysis_text(request):
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = text, request_time = datetime.datetime.now(),
                         translation = trans, react = gpt_react, emotion = feeling, intensity = score,
-                        amount = amount, success = 1)
+                        amount = amount, success = success)
         request.save()
         context = {
             "react" : gpt_react,
@@ -247,21 +247,27 @@ def cal_deposit(score, user_id):
 # GPT // ChatBot react 생성 함수
 def make_react(text):
     print(text)
-    prompt = text + ". Tell me that I can do it to me when I was in this situation. 한국말로 해봐"
+    prompt = text + ". 위로하거나 맞장구 쳐주는 말을 한국어로 해줘, 짧게 한 두 문장으로"
     print(prompt)
     openai.api_key = settings.OPEN_AI_API_KEY
-    model_engine = "text-davinci-003"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
+    model_engine = "GPT-3.5-turbo"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
     model_prompt = f"{prompt}\nModel: "
-
-    completions = openai.Completion.create(
-        engine=model_engine,
-        prompt=model_prompt,
-        max_tokens=500,
-        n=1,
-        stop=None,
+    completions = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+        {"role": "user", "content": prompt}
+        ],
         temperature=0.7,
     )
-    message = completions.choices[0].text.strip()
+    # completions = openai.ChatCompletion.create(
+    #     engine=model_engine,
+    #     prompt=model_prompt,
+    #     max_tokens=500,
+    #     n=1,
+    #     stop=None,
+    #     temperature=0.7,
+    # )
+    message = completions.choices[0].message.content
     print(message)
     return message
 
@@ -383,8 +389,12 @@ def req_billing(token, amount, user_id):
     try:
         resp = requests.post(
             'http://13.124.31.137:8702/billing/subscription',
+            headers = {
+                  "Content-Type": "application/json",
+                "Authorization": "Bearer " + jwt_token
+            },
             json={
-                'amount' : 10,
+                'amount' : amount,
                 'serviceUserId': 1,
                 'serviceName': "abcd",
             }
