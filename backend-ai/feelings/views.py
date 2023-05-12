@@ -178,23 +178,25 @@ def analysis_voice(request):
     # 뒤에서부터 해당 개수 F로 바꿔주고 0으로 전환
     # chatting에 react도 저장해야함??
     # 토큰 받아야함....?
-
-    check_chatting(user_id)
+    gpt_react = make_react(trans)
 
     """
         billing 요청
     """
     success, message = req_billing(token, amount, user_id)
     print(message)
+
+    # billing에 요청한 이후에 진행해야함.....?
+    check_chatting(user_id, gpt_react, feeling, amount, success)
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                        translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                        translation = trans, react = gpt_react, emotion = feeling, intensity = score,
                         amount = amount, success = success)
         request.save()
         context = {
-            "react" : "GPT 답변",
+            "react" : gpt_react,
             "emotion" : feeling,
             "amount" : amount,
             "success" : success
@@ -202,7 +204,7 @@ def analysis_voice(request):
     # 실패한 경우
     else :
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                translation = trans, react = "GPT 답변", emotion = "", intensity = 0,
+                translation = trans, react = gpt_react, emotion = "", intensity = 0,
                 amount = 0, success = success)
         request.save()
         context = {
@@ -260,7 +262,7 @@ def make_react(text):
 def check_chatting(user_id, gpt_react, feeling, amount, success):
     try:
         resp = requests.post(
-            'http://13.124.31.137:8702/api/',
+            'http://3.38.191.128:3306/api/',
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": "bearer " + jwt_token
