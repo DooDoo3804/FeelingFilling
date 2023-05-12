@@ -27,9 +27,9 @@ import java.util.Map;
 public class LogController {
 	
 	public static final Logger logger = LoggerFactory.getLogger(LogController.class);
-	private static final String SUCCESS = "success";
-	private static final String FAIL = "fail";
-	private static final String ALREADY_EXIST = "already exists";
+	private static final String SUCCESS = "SUCCESS";
+	private static final String FAIL = "FAIL";
+	private static final String ALREADY_EXIST = "ALREADY EXIST";
 	
 	@Autowired
 	private LogService logService;

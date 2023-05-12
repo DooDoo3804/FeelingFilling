@@ -25,9 +25,9 @@ import java.util.Map;
 public class StatController {
 	
 	public static final Logger logger = LoggerFactory.getLogger(StatController.class);
-	private static final String SUCCESS = "success";
-	private static final String FAIL = "fail";
-	private static final String ALREADY_EXIST = "already exists";
+	private static final String SUCCESS = "SUCCESS";
+	private static final String FAIL = "FAIL";
+	private static final String ALREADY_EXIST = "ALREADY EXIST";
 	private static final int burger = 6500;
 	private static final int coffee = 4500;
 	
