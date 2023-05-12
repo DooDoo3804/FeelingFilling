@@ -89,7 +89,7 @@ def analysis_text(request):
             "success" : success
         }
 
-    check_chatting(user_id, gpt_react, feeling, amount, success)
+    # 
 
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
@@ -129,7 +129,7 @@ def analysis_voice(request):
             # 파일 TTS 요청
             resp = requests.post(
                 'https://openapi.vito.ai/v1/transcribe',
-                headers={'Authorization': 'bearer ' + jwt_token},
+                headers={'Authorization': 'Bearer ' + jwt_token},
                 data={'config': json.dumps(config)},
                 files={'file': (voice.name, voice.read())},
             )
@@ -139,7 +139,7 @@ def analysis_voice(request):
             while True:
                 resp = requests.get(
                     'https://openapi.vito.ai/v1/transcribe/'+id,
-                    headers={'Authorization': 'bearer '+jwt_token},
+                    headers={'Authorization': 'Bearer '+jwt_token},
                 )
                 resp.raise_for_status()
                 if resp.json()['status'] == "completed":
@@ -187,7 +187,7 @@ def analysis_voice(request):
     print(message)
 
     # billing에 요청한 이후에 진행해야함.....?
-    check_chatting(user_id, gpt_react, feeling, amount, success)
+    check_chatting(gpt_react, feeling, amount, success)
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
@@ -213,7 +213,7 @@ def analysis_voice(request):
             "amount" : 0,
             "success" : success
         }
-
+    check_chatting(token, gpt_react, feeling, amount, success)
 
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
@@ -259,13 +259,13 @@ def make_react(text):
 
 
 # chatting에 insert 함수
-def check_chatting(user_id, gpt_react, feeling, amount, success):
+def check_chatting(token, gpt_react, feeling, amount, success):
     try:
         resp = requests.post(
             'https://feelingfilling.store/api/chatting/voice',
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": "bearer " + jwt_token
+                "Authorization": "Bearer " + token
             },
             json = {
                 "react" : gpt_react,
@@ -276,7 +276,7 @@ def check_chatting(user_id, gpt_react, feeling, amount, success):
         )
     except Exception as e:
         print(e)
-
+    print(resp)
     return 1
     # MongoDB 클라이언트 생성
     # client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
@@ -428,7 +428,7 @@ def req_billing(token, amount, user_id):
             'http://13.124.31.137:8702/billing/subscription',
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": "bearer " + jwt_token
+                "Authorization": "Bearer " + token
             },
             json={
                 'amount' : amount,
