@@ -107,10 +107,8 @@ public class UserServiceImpl implements UserService {
 }
     @Override
     public List<Integer> getUserBadge(int userId) {
-//	public List<Integer> getUserBadge() {
-        //int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         List<Integer> badge = new ArrayList<>();
-        List<UserBadge> badges = userBadgeRepository.findByUser_UserId(userId);
+        List<UserBadge> badges = userBadgeRepository.findByUser_UserIdOrderByAchievedDateDesc(userId);
 
         for (UserBadge userBadge : badges) {
             badge.add(userBadge.getBadgeId());

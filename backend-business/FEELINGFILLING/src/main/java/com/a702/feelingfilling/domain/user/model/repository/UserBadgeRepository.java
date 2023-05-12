@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface UserBadgeRepository extends JpaRepository<UserBadge, Integer> {
-	List<UserBadge> findByUser_UserId(int userId);
+	List<UserBadge> findByUser_UserIdOrderByAchievedDateDesc(int userId);
 }
