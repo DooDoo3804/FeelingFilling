@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -17,7 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-@RestController("/logs")
+@RestController
+@RequestMapping("/logs")
 public class LogController {
 
     private final LoggingService loggingService;
@@ -45,8 +47,27 @@ public class LogController {
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
-//    @PostMapping("/period/subscription")
-//    public ResponseEntity<Map<String,Object>> getSubscriptionLogsByPeriod(TimePeriodDTO timePeriodDTO){
-//
-//    }
+    @PostMapping("/period/subscription")
+    public ResponseEntity<Map<String,Object>> getSubscriptionLogsByPeriod(TimePeriodDTO timePeriodDTO){
+        List<KakaoPayApproveLogDocument> logs = loggingService.findSubscriptionLogsByPeriod(timePeriodDTO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("log", logs);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @PostMapping("/period/deposit")
+    public ResponseEntity<Map<String,Object>> getDepositLogsByPeriod(TimePeriodDTO timePeriodDTO){
+        List<DepositLogDocument> logs = loggingService.findDepositLogsByPeriod(timePeriodDTO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("log", logs);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @PostMapping("/period/withdrawal")
+    public ResponseEntity<Map<String,Object>> getWithdrawalLogsByPeriod(TimePeriodDTO timePeriodDTO){
+        List<WithdrawalLogDocument> logs = loggingService.findWithdrawalLogsByPeriod(timePeriodDTO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("log", logs);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
 }

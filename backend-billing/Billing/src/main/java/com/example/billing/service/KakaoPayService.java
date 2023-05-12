@@ -1,19 +1,12 @@
 package com.example.billing.service;
 
-import com.example.billing.data.billingDB.entity.Action;
-import com.example.billing.data.billingDB.entity.Deposit;
-import com.example.billing.data.billingDB.entity.KakaoOrder;
-import com.example.billing.data.billingDB.entity.User;
-import com.example.billing.data.billingDB.repository.ActionRepository;
-import com.example.billing.data.billingDB.repository.DepositRepository;
-import com.example.billing.data.billingDB.repository.KakaoOrderRepository;
-import com.example.billing.data.billingDB.repository.UserRepository;
-import com.example.billing.data.dto.KakaoApproveDTO;
-import com.example.billing.data.dto.KakaoReadyDTO;
-import com.example.billing.data.dto.ServiceUserAndAmountDTO;
-import com.example.billing.data.dto.UserDTO;
+import com.example.billing.data.billingDB.entity.*;
+import com.example.billing.data.billingDB.repository.*;
+import com.example.billing.data.dto.*;
+import com.example.billing.data.loggingDB.document.CancellationLogDocument;
 import com.example.billing.data.loggingDB.document.DepositLogDocument;
 import com.example.billing.data.loggingDB.document.KakaoPayApproveLogDocument;
+import com.example.billing.data.loggingDB.repository.CancellationLogRepository;
 import com.example.billing.data.loggingDB.repository.DepositLogRepository;
 import com.example.billing.data.loggingDB.repository.KakaoPayApproveLogRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,14 +34,13 @@ public class KakaoPayService {
 
     private final KakaoOrderRepository kakaoOrderRepository;
     private final ActionRepository actionRepository;
-
     private final UserRepository userRepository;
-
     private final DepositRepository depositRepository;
-
+    private final CancellationRepository cancellationRepository;
     private final KakaoPayApproveLogRepository kakaoPayApproveLogRepository;
-
     private final DepositLogRepository depositLogRepository;
+    private final CancellationLogRepository cancellationLogRepository;
+
     public KakaoReadyDTO kakaoPayReady(UserDTO userDTO) {
         User user = User.builder()
                 .userId(userDTO.getUserId())
@@ -141,9 +133,9 @@ public class KakaoPayService {
         return kakaoApproveDTO;
     }
 
-    public void kakaoPaySubscription(ServiceUserAndAmountDTO paySubscriptionDTO){
-        User user = userRepository.findUserByServiceNameAndServiceUserId(paySubscriptionDTO.getServiceName(), paySubscriptionDTO.getServiceUserId());
-        int amount = paySubscriptionDTO.getAmount();
+    public boolean kakaoPaySubscription(ServiceUserAndAmountDTO serviceUserAndAmountDTO){
+        User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserAndAmountDTO.getServiceName(), serviceUserAndAmountDTO.getServiceUserId());
+        int amount = serviceUserAndAmountDTO.getAmount();
 
         KakaoOrder newOrder = new KakaoOrder();
         newOrder.setUser(user);
@@ -206,5 +198,97 @@ public class KakaoPayService {
                 .build();
 
         depositLogRepository.save(depositLog);
+
+        return true;
+    }
+
+    public boolean kakaoPayInactivate(ServiceUserDTO serviceUserDTO){
+        User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);
+        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        // 카카오페이 요청 양식
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("cid", cid);
+        parameters.add("sid", user.getSid());
+
+        // 파라미터, 헤더
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
+
+        // 외부에 보낼 url
+        RestTemplate restTemplate = new RestTemplate();
+
+        //RestTemplate가 snake_case도 camelCase로 자동 mapping한다.
+        KakaoInactiveDTO kakaoInactiveDTO = restTemplate.postForObject(
+                "https://kapi.kakao.com/v1/payment/manage/subscription/inactive",
+                requestEntity,
+                KakaoInactiveDTO.class);
+
+        user.setSid("");
+
+        return true;
+    }
+
+    public boolean kakaoPayCancel(CancelDepositDTO cancelDepositDTO){
+        User user = userRepository.findUserByServiceNameAndServiceUserId(cancelDepositDTO.getServiceName(), cancelDepositDTO.getServiceUserId());
+        int amount = cancelDepositDTO.getAmount();
+        KakaoOrder kakaoOrder = kakaoOrderRepository.getKakaoOrderByOrderId(cancelDepositDTO.getOrderId());
+        // 서버로 요청할 Header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);
+        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        // 카카오페이 요청 양식
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("cid", cid);
+        parameters.add("tid", kakaoOrder.getTid());
+        parameters.add("cancel_amount", String.valueOf(amount));
+        parameters.add("cancel_tax_free_amount", String.valueOf(amount));
+
+
+        // 파라미터, 헤더
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
+
+        // 외부에 보낼 url
+        RestTemplate restTemplate = new RestTemplate();
+
+        KakaoCancelDTO kakaoCancelDTO = restTemplate.postForObject(
+                "https://kapi.kakao.com/v1/payment/cancel",
+                requestEntity,
+                KakaoCancelDTO.class);
+
+        Action action = new Action();
+        action.setAid(kakaoCancelDTO.getAid());
+        action = actionRepository.save(action);
+
+        //lazyloading 때문에 먼저 호출한 후 set을 적용해야 한다..
+        List<Action> actions = kakaoOrder.getActions();
+        actions.add(action);
+        user.setPoint(user.getPoint() - amount);
+
+        Cancellation cancellation = new Cancellation("KakaoPay", amount);
+        cancellation = cancellationRepository.save(cancellation);
+        user.getCancellations().add(cancellation);
+
+        CancellationLogDocument cancellationLog = CancellationLogDocument.builder()
+                .userId(user.getUserId())
+                .serviceName(user.getServiceName())
+                .serviceUserId(user.getServiceUserId())
+                .sid(user.getSid())
+                .balance(user.getPoint())
+                .status("Success")
+                .orderId(kakaoOrder.getOrderId())
+                .tid(kakaoOrder.getTid())
+                .aid(action.getAid())
+                .cancellationId(cancellation.getCancellationId())
+                .cancellationMethod(cancellation.getCancellationMethod())
+                .cancellationAmount(cancellation.getCancellationAmount())
+                .build();
+
+        cancellationLogRepository.save(cancellationLog);
+
+        return true;
     }
 }

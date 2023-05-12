@@ -12,6 +12,9 @@ import com.example.billing.service.LoggingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -40,16 +43,43 @@ public class LoggingServiceImpl implements LoggingService {
 
     @Override
     public List<KakaoPayApproveLogDocument> findSubscriptionLogsByPeriod(TimePeriodDTO timePeriodDTO) {
-        return null;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date from = format.parse(timePeriodDTO.getFrom());
+            Date to = format.parse(timePeriodDTO.getTo());
+            List<KakaoPayApproveLogDocument> logs = kakaoPayApproveLogRepository.findByCreatedDateBetween(from, to);
+            return logs;
+        }catch (ParseException e){
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     @Override
     public List<DepositLogDocument> findDepositLogsByPeriod(TimePeriodDTO timePeriodDTO) {
-        return null;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date from = format.parse(timePeriodDTO.getFrom());
+            Date to = format.parse(timePeriodDTO.getTo());
+            List<DepositLogDocument> logs = depositLogRepository.findByCreatedDateBetween(from, to);
+            return logs;
+        }catch (ParseException e){
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     @Override
     public List<WithdrawalLogDocument> findWithdrawalLogsByPeriod(TimePeriodDTO timePeriodDTO) {
-        return null;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date from = format.parse(timePeriodDTO.getFrom());
+            Date to = format.parse(timePeriodDTO.getTo());
+            List<WithdrawalLogDocument> logs = withdrawalLogRepository.findByCreatedDateBetween(from, to);
+            return logs;
+        }catch (ParseException e){
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }
