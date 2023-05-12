@@ -32,7 +32,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final SenderRepository senderRepository;
     private final JwtTokenService jwtTokenService;
-    private int badgeCnt = 15;
 
     @Override
     public UserKakaoResponseDTO kakaoLogin(UserKakaoRequestDTO kakaoDTO) {
@@ -85,9 +84,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO modifyUser(UserDTO userDTO) {
-        //int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
 
-        User user = userRepository.findByUserId(userDTO.getUserId());
+        User user = userRepository.findByUserId(userId);
 
         user.setMaximum(userDTO.getMaximum());
         user.setMinimum(userDTO.getMinimum());
@@ -104,9 +103,11 @@ public class UserServiceImpl implements UserService {
             return -1;
         userRepository.delete(user);
         return userId;
-}
+    }
+    
     @Override
-    public List<Integer> getUserBadge(int userId) {
+    public List<Integer> getUserBadge() {
+        int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         List<Integer> badge = new ArrayList<>();
         List<UserBadge> badges = userBadgeRepository.findByUser_UserIdOrderByAchievedDateDesc(userId);
 
