@@ -20,14 +20,6 @@ from django.conf import settings
 
 """
     text 분석 요청 api
-
-    spring으로부터 요청 받음
-    text를 영어로 번역 v
-    번역한 영어를 모델에 넣고 감정 분석을 진행 v
-    분석된 값을 기반으로 적금할 금액 계산 v
-    req_billing을 통해 billing에 요청 x
-    billing으로 부터 성공 여부를 받고 request에 저장 v
-    반환문 및 적금된 금액을 반환 (spring 한테)
 """
 
 jwt_token = ""
@@ -39,6 +31,7 @@ def analysis_text(request):
     # 받아온 text 데이터
     start = time.time()
     # 토큰 decode해서 userid 추출
+    print(request.headers.get('Authorization', None))
     try:
         token = request.headers.get('Authorization', None)[6::]
     except Exception as e:
@@ -71,7 +64,6 @@ def analysis_text(request):
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
     gpt_react = make_react(trans)
-    check_chatting(user_id)
     """
         billing 요청
         0 // 1
@@ -99,6 +91,8 @@ def analysis_text(request):
             "success" : success
         }
 
+    check_chatting(user_id, gpt_react, feeling, amount, success)
+
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
@@ -107,16 +101,6 @@ def analysis_text(request):
 
 """
     voice 분석 요청 api
-
-    front로 부터 요청 받음 x
-    voice파일을 stt api에 요청보냄 v
-    stt 결과를 받음 v
-    결과를 영어로 번역 v
-    번역한 영어를 모델에 넣고 감정 분석을 진행 v
-    분석된 값을 기반으로 적금할 금액 계산 v
-    req_billing을 통해 billing에 요청 x
-    billing으로 부터 성공 여부를 받고 request에 저장 v
-    반환문 및 적금된 금액을 반환 (front 한테) x
 """
 # 음성 번역 api
 # post 요청
@@ -275,58 +259,97 @@ def make_react(text):
 
 
 # chatting에 insert 함수
-def check_chatting(user_id):
+def check_chatting(user_id, gpt_react, feeling, amount, success):
+    try:
+        resp = requests.post(
+            'http://13.124.31.137:8702/api/',
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "bearer " + jwt_token
+            },
+            json = {
+                "react" : gpt_react,
+                "emotion" : feeling,
+                "amount" : amount,
+                "success" : success
+            }
+        )
+    except Exception as e:
+        print(e)
+
+    return 1
     # MongoDB 클라이언트 생성
-    client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
-    # 데이터베이스 선택
-    db = client['feelingfilling']
-    # 컬렉션 선택
-    collection = db['senders']
-    ch_collection = db['chattings']
+    # client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
+    # # 데이터베이스 선택
+    # db = client['feelingfilling']
+    # # 컬렉션 선택
+    # collection = db['senders']
+    # ch_collection = db['chattings']
 
-    # 문서 생성 삽입
-    # chat = {"user": 1, "text": [text], "date": datetime.datetime.now(), "count" : 3}
-    # result = collection.insert_one(chat)
+    # # 문서 생성 삽입
+    # # chat = {"user": 1, "text": [text], "date": datetime.datetime.now(), "count" : 3}
+    # # result = collection.insert_one(chat)
 
-    # # 단일 문서 조회
-    # 만약 count? 가 0이 아니라면 뒤에서 부터 이를 보두 F로 바꿔주고
-    # count를 0으로 바꿔준다.
-    # 이후 voice 분석 진행
-    # 비동기 처리?
-    post = collection.find_one({"_id": user_id})
+    # # # 단일 문서 조회
+    # # 만약 count? 가 0이 아니라면 뒤에서 부터 이를 보두 F로 바꿔주고
+    # # count를 0으로 바꿔준다.
+    # # 이후 voice 분석 진행
+    # # 비동기 처리?
+    # post = collection.find_one({"_id": user_id})
     
-    last_date = post['lastDate']
-    now_date = datetime.datetime.now()
-    # 날짜 다른 경우 업데이트
-    if (last_date.year != now_date.year or
-        last_date.month != now_date.month or
-        last_date.day != now_date.day) :
+    # last_date = post['lastDate']
+    # now_date = datetime.datetime.now()
+    # # 날짜 다른 경우 업데이트 및 chatting에 삽입
 
-        filter = {"_id" : user_id}
-        update1 = {'$set' : {'lastDate' : datetime.datetime.now()}}
-        collection.update_one(filter, update1)
+    # update_text = post['chattings']
+    # if (post['numOfUnAnalysed'] != 0):
+    #     for i in range(post['numOfUnAnalysed']):
+    #          filter = {"_id" : ObjectId(update_text[len(post['chattings']) - i - 1].id) }
+    #          update = { "$set" : {"isAnalysed" : True} }
+    #          ch_collection.update_one(filter, update)
 
-    update_text = post['chattings']
-    text_id_list = []
-    if (post['numOfUnAnalysed'] != 0):
-        for i in range(post['numOfUnAnalysed']):
-             filter = {"_id" : ObjectId(update_text[len(post['chattings']) - i - 1].id) }
-             update = { "$set" : {"isAnalysed" : True} }
-             ch_collection.update_one(filter, update1)
+    # # db 업데이트
+    # if (last_date.year != now_date.year or
+    #     last_date.month != now_date.month or
+    #     last_date.day != now_date.day) :
 
-    # db 업데이트   
+    #     filter = {"_id" : user_id}
+    #     update1 = {'$set' : {'lastDate' : datetime.datetime.now()}}
+    #     collection.update_one(filter, update1)
+
+    #     chat = {
+    #         "type": 3,
+    #         "content" : datetime.datetime.now().strftime('%Y-%m-%d'),
+    #         'mood' : "default",
+    #         "amount" : 0,
+    #         "userId" : user_id,
+    #         "chatDate" : datetime.datetime.now(),
+    #         "isAnalysed" : True,
+    #     }
+    #     ch_collection.insert_one(chat)
+
     # filter = {"_id" : user_id}
-    # update1 = {'$set' : {'numOfChat' : 2}}
+    # update1 = {'$set' : {'numOfUnAnalysed' : 0}}
     # collection.update_one(filter, update1)
-    # update2 = {'$set' : {'text' : update_text}}
-    # collection.update_one(filter, update2)
-    # update3 = {'$set' : {'numOfUnAnalysed' : 2}}
-    # collection.update_one(filter, update3)
 
-    # 다중 문서 조회
-    # for post in collection.find():
-    #     print(post)
-    return post
+    # update2 = {'$set' : {'numOfChat' : post['numOfChat'] + 1}}
+    # collection.update_one(filter, update2)
+
+    # chat = {
+    #         "type": 0,
+    #         "content" : text,
+    #         'mood' : "default",
+    #         "amount" : amount,
+    #         "userId" : user_id,
+    #         "chatDate" : datetime.datetime.now(),
+    #         "isAnalysed" : True,
+    # }
+    # ch_collection.insert_one(chat)
+
+    # # 다중 문서 조회
+    # # for post in collection.find():
+    # #     print(post)
+    # return post
 
 
 # 번역 함수
@@ -404,8 +427,8 @@ def req_billing(token, amount, user_id):
         resp = requests.post(
             'http://13.124.31.137:8702/billing/subscription',
             headers = {
-                  "Content-Type": "application/json",
-                "Authorization": "Bearer " + jwt_token
+                "Content-Type": "application/json",
+                "Authorization": "bearer " + jwt_token
             },
             json={
                 'amount' : amount,
@@ -415,8 +438,6 @@ def req_billing(token, amount, user_id):
         )
         success = resp.json()['result']
         message = resp.json()['message']
-        # success = resp.json()['result']['result']
-        # message = resp.json()['result']['message']
     except Exception as e:
         print(e)
     return success, message
