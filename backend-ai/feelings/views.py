@@ -5,6 +5,7 @@ import datetime
 import logging
 import jwt
 import openai
+from bson import ObjectId
 from FEELINGFILLING_DJANGO import settings
 from pymongo import MongoClient
 from time import sleep
@@ -19,14 +20,6 @@ from django.conf import settings
 
 """
     text 분석 요청 api
-
-    spring으로부터 요청 받음
-    text를 영어로 번역 v
-    번역한 영어를 모델에 넣고 감정 분석을 진행 v
-    분석된 값을 기반으로 적금할 금액 계산 v
-    req_billing을 통해 billing에 요청 x
-    billing으로 부터 성공 여부를 받고 request에 저장 v
-    반환문 및 적금된 금액을 반환 (spring 한테)
 """
 
 jwt_token = ""
@@ -43,7 +36,6 @@ def analysis_text(request):
     except Exception as e:
         print(e)
         return HttpResponse(status=401, content='Authentication failed')
-    print(token)
     user_id = decode_jwt_token(token)
     if not user_id:
             # jwt 검증 실패시 예외 처리
@@ -97,6 +89,8 @@ def analysis_text(request):
             "success" : success
         }
 
+    check_chatting(user_id, gpt_react, feeling, amount, success)
+
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
@@ -105,16 +99,6 @@ def analysis_text(request):
 
 """
     voice 분석 요청 api
-
-    front로 부터 요청 받음 x
-    voice파일을 stt api에 요청보냄 v
-    stt 결과를 받음 v
-    결과를 영어로 번역 v
-    번역한 영어를 모델에 넣고 감정 분석을 진행 v
-    분석된 값을 기반으로 적금할 금액 계산 v
-    req_billing을 통해 billing에 요청 x
-    billing으로 부터 성공 여부를 받고 request에 저장 v
-    반환문 및 적금된 금액을 반환 (front 한테) x
 """
 # 음성 번역 api
 # post 요청
@@ -194,23 +178,25 @@ def analysis_voice(request):
     # 뒤에서부터 해당 개수 F로 바꿔주고 0으로 전환
     # chatting에 react도 저장해야함??
     # 토큰 받아야함....?
-
-    check_chatting(user_id)
+    gpt_react = make_react(trans)
 
     """
         billing 요청
     """
     success, message = req_billing(token, amount, user_id)
     print(message)
+
+    # billing에 요청한 이후에 진행해야함.....?
+    check_chatting(user_id, gpt_react, feeling, amount, success)
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                        translation = trans, react = "GPT 답변", emotion = feeling, intensity = score,
+                        translation = trans, react = gpt_react, emotion = feeling, intensity = score,
                         amount = amount, success = success)
         request.save()
         context = {
-            "react" : "GPT 답변",
+            "react" : gpt_react,
             "emotion" : feeling,
             "amount" : amount,
             "success" : success
@@ -218,7 +204,7 @@ def analysis_voice(request):
     # 실패한 경우
     else :
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                translation = trans, react = "GPT 답변", emotion = "", intensity = 0,
+                translation = trans, react = gpt_react, emotion = "", intensity = 0,
                 amount = 0, success = success)
         request.save()
         context = {
@@ -273,46 +259,97 @@ def make_react(text):
 
 
 # chatting에 insert 함수
-def check_chatting(user_id):
+def check_chatting(user_id, gpt_react, feeling, amount, success):
+    try:
+        resp = requests.post(
+            'https://feelingfilling.store/api/chatting/voice',
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "bearer " + jwt_token
+            },
+            json = {
+                "react" : gpt_react,
+                "emotion" : feeling,
+                "amount" : amount,
+                "success" : success
+            }
+        )
+    except Exception as e:
+        print(e)
+
+    return 1
     # MongoDB 클라이언트 생성
-    client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
-    # 데이터베이스 선택
-    db = client['feelingfilling']
-    # 컬렉션 선택
-    collection = db['senders']
+    # client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
+    # # 데이터베이스 선택
+    # db = client['feelingfilling']
+    # # 컬렉션 선택
     # collection = db['senders']
+    # ch_collection = db['chattings']
 
-    # 문서 생성 삽입
-    # chat = {"user": 1, "text": [text], "date": datetime.datetime.now(), "count" : 3}
-    # result = collection.insert_one(chat)
+    # # 문서 생성 삽입
+    # # chat = {"user": 1, "text": [text], "date": datetime.datetime.now(), "count" : 3}
+    # # result = collection.insert_one(chat)
 
-    # # 단일 문서 조회
-    # 만약 count? 가 0이 아니라면 뒤에서 부터 이를 보두 F로 바꿔주고
-    # count를 0으로 바꿔준다.
-    # 이후 voice 분석 진행
-    # 비동기 처리?
-    post = collection.find_one({"_id": user_id})
-    print(post)
-    update_text = post['chattings']
-    # if (post['count'] != 0):
-    #     # print("이거 수정해야함")
-    #     for i in range(post['count']):
-    #         pass
-    #         # update_text[len(post['text']) - i] 의 TF를 F로 바꿈
+    # # # 단일 문서 조회
+    # # 만약 count? 가 0이 아니라면 뒤에서 부터 이를 보두 F로 바꿔주고
+    # # count를 0으로 바꿔준다.
+    # # 이후 voice 분석 진행
+    # # 비동기 처리?
+    # post = collection.find_one({"_id": user_id})
+    
+    # last_date = post['lastDate']
+    # now_date = datetime.datetime.now()
+    # # 날짜 다른 경우 업데이트 및 chatting에 삽입
 
-    # db 업데이트 
-    filter = {"_id" : user_id}
-    update1 = {'$set' : {'numOfChat' : 2}}
-    collection.update_one(filter, update1)
-    # update2 = {'$set' : {'text' : update_text}}
+    # update_text = post['chattings']
+    # if (post['numOfUnAnalysed'] != 0):
+    #     for i in range(post['numOfUnAnalysed']):
+    #          filter = {"_id" : ObjectId(update_text[len(post['chattings']) - i - 1].id) }
+    #          update = { "$set" : {"isAnalysed" : True} }
+    #          ch_collection.update_one(filter, update)
+
+    # # db 업데이트
+    # if (last_date.year != now_date.year or
+    #     last_date.month != now_date.month or
+    #     last_date.day != now_date.day) :
+
+    #     filter = {"_id" : user_id}
+    #     update1 = {'$set' : {'lastDate' : datetime.datetime.now()}}
+    #     collection.update_one(filter, update1)
+
+    #     chat = {
+    #         "type": 3,
+    #         "content" : datetime.datetime.now().strftime('%Y-%m-%d'),
+    #         'mood' : "default",
+    #         "amount" : 0,
+    #         "userId" : user_id,
+    #         "chatDate" : datetime.datetime.now(),
+    #         "isAnalysed" : True,
+    #     }
+    #     ch_collection.insert_one(chat)
+
+    # filter = {"_id" : user_id}
+    # update1 = {'$set' : {'numOfUnAnalysed' : 0}}
+    # collection.update_one(filter, update1)
+
+    # update2 = {'$set' : {'numOfChat' : post['numOfChat'] + 1}}
     # collection.update_one(filter, update2)
-    # update3 = {'$set' : {'numOfUnAnalysed' : 2}}
-    # collection.update_one(filter, update3)
 
-    # 다중 문서 조회
-    # for post in collection.find():
-    #     print(post)
-    return post
+    # chat = {
+    #         "type": 0,
+    #         "content" : text,
+    #         'mood' : "default",
+    #         "amount" : amount,
+    #         "userId" : user_id,
+    #         "chatDate" : datetime.datetime.now(),
+    #         "isAnalysed" : True,
+    # }
+    # ch_collection.insert_one(chat)
+
+    # # 다중 문서 조회
+    # # for post in collection.find():
+    # #     print(post)
+    # return post
 
 
 # 번역 함수
@@ -390,8 +427,8 @@ def req_billing(token, amount, user_id):
         resp = requests.post(
             'http://13.124.31.137:8702/billing/subscription',
             headers = {
-                  "Content-Type": "application/json",
-                "Authorization": "Bearer " + jwt_token
+                "Content-Type": "application/json",
+                "Authorization": "bearer " + jwt_token
             },
             json={
                 'amount' : amount,
@@ -401,8 +438,6 @@ def req_billing(token, amount, user_id):
         )
         success = resp.json()['result']
         message = resp.json()['message']
-        # success = resp.json()['result']['result']
-        # message = resp.json()['result']['message']
     except Exception as e:
         print(e)
     return success, message
