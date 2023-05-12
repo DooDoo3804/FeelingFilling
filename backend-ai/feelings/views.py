@@ -81,7 +81,7 @@ def analysis_text(request):
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = text, request_time = datetime.datetime.now(),
                         translation = trans, react = gpt_react, emotion = feeling, intensity = score,
-                        amount = amount, success = 1)
+                        amount = amount, success = success)
         request.save()
         context = {
             "react" : gpt_react,
@@ -389,8 +389,12 @@ def req_billing(token, amount, user_id):
     try:
         resp = requests.post(
             'http://13.124.31.137:8702/billing/subscription',
+            headers = {
+                  "Content-Type": "application/json",
+                "Authorization": "Bearer " + jwt_token
+            },
             json={
-                'amount' : 10,
+                'amount' : amount,
                 'serviceUserId': 1,
                 'serviceName': "abcd",
             }
