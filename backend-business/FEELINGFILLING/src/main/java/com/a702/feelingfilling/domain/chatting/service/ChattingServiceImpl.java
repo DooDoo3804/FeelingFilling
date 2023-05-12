@@ -1,5 +1,6 @@
 package com.a702.feelingfilling.domain.chatting.service;
 
+import com.a702.feelingfilling.domain.chatting.exception.CustomException;
 import com.a702.feelingfilling.domain.chatting.model.dto.AnalyzedResult;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChatInputDTO;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChattingDTO;
@@ -159,6 +160,7 @@ public class ChattingServiceImpl implements ChattingService {
     }catch (Exception e){
       throw new RuntimeException("분석할 text가 없습니다.");
     }
+    Chatting newChat = null;
     try{
       //Send Request to Django Server
       RestTemplate template = new RestTemplate();
@@ -178,9 +180,10 @@ public class ChattingServiceImpl implements ChattingService {
       Map<String,Object> responseBody = response.getBody();
       log.info(responseBody.toString());
       AnalyzedResult res = AnalyzedResult.resultMap(responseBody);
+      if(!res.isSuccess()) throw new CustomException("fail");
       //응답 채팅 데이터에 저장하기
       addDate(loginUserId);
-      Chatting newChat = Chatting.builder()
+      newChat = Chatting.builder()
           .type(2)
           .content(res.getReact())
           .chatDate(LocalDateTime.now())
@@ -189,12 +192,10 @@ public class ChattingServiceImpl implements ChattingService {
           .userId(loginUserId)
           .isAnalysed(true)
           .build();
-      updateInfo(newChat,loginUserId);
-      return ChattingDTO.fromEntity(newChat);
     }
     catch (Exception e){
       log.info(e.getMessage());
-      Chatting newChat = Chatting.builder()
+      newChat = Chatting.builder()
           .type(4)
           .content("감정 분석 실패")
           .chatDate(LocalDateTime.now())
@@ -203,10 +204,50 @@ public class ChattingServiceImpl implements ChattingService {
           .userId(loginUserId)
           .isAnalysed(true)
           .build();
+    }
+    finally {
       updateInfo(newChat,loginUserId);
+      resetAnalyze(loginUserId);
       return ChattingDTO.fromEntity(newChat);
     }
   }
+
+  @Override
+  public void voice(AnalyzedResult res) {
+    try{
+      int loginUserId = userService.getLoginUserId();
+      addDate(loginUserId);
+      Chatting newChat;
+      if(!res.isSuccess()){
+        newChat = Chatting.builder()
+            .type(4)
+            .content("음성 분석 실패")
+            .chatDate(LocalDateTime.now())
+            .mood("fail")
+            .amount(0)
+            .userId(loginUserId)
+            .isAnalysed(true)
+            .build();
+      }else{
+        newChat = Chatting.builder()
+            .type(2)
+            .content(res.getReact())
+            .chatDate(LocalDateTime.now())
+            .mood(res.getEmotion())
+            .amount(res.getAmount())
+            .userId(loginUserId)
+            .isAnalysed(true)
+            .build();
+      }
+      updateInfo(newChat,loginUserId);
+      log.info("음성 분석 값 저장 완료");
+      resetAnalyze(loginUserId);
+    }catch (Exception e){
+      log.info(e.getMessage());
+      throw e;
+    }
+  }
+
   //채팅 생성해서 추가할때 정보 업데이트 메서드
   public void updateInfo(Chatting newChat, int loginUserId){
     chattingRepository.save(newChat);
@@ -249,6 +290,12 @@ public class ChattingServiceImpl implements ChattingService {
     mongoTemplate.updateFirst(query,update,Sender.class);
     update = new Update();
     update.set("lastDate", today);
+    mongoTemplate.updateFirst(query,update,Sender.class);
+  }
+  void resetAnalyze(int loginUserId){
+    Query query = Query.query(Criteria.where("_id").is(loginUserId));
+    Update update = new Update();
+    update.set("numOfUnAnalysed",0);
     mongoTemplate.updateFirst(query,update,Sender.class);
   }
 }//ChattingServiceImpl
