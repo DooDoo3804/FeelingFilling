@@ -143,6 +143,7 @@ public class ChattingServiceImpl implements ChattingService {
       mongoTemplate.updateFirst(query,update,Sender.class);
 
       for(Chatting text : sender.getChattings()){
+        if(text.isAnalysed()==true) continue;
         //DB정보 바꿔주기
         query = Query.query(Criteria.where("_id").is(text.getChattingId()));
         update = new Update();
@@ -188,25 +189,39 @@ public class ChattingServiceImpl implements ChattingService {
           .userId(loginUserId)
           .isAnalysed(true)
           .build();
-      log.info("---------------");
-      chattingRepository.save(newChat);
-      log.info("newChat : "+newChat.toString());
-      //채팅을 사용자 리스트에 추가
-      query = Query.query(Criteria.where("_id").is(loginUserId));
-      update = new Update();
-      update.addToSet("chattings", newChat);
-      mongoTemplate.updateMulti(query,update,Sender.class);
-      //sender값에 채팅 갯수 업데이트하기
-      update = new Update();
-      update.inc("numOfChat");
-      mongoTemplate.updateFirst(query,update,Sender.class);
+      updateInfo(newChat,loginUserId);
       return ChattingDTO.fromEntity(newChat);
     }
     catch (Exception e){
       log.info(e.getMessage());
-      throw new RuntimeException("감정분석 실패");
+      Chatting newChat = Chatting.builder()
+          .type(4)
+          .content("감정 분석 실패")
+          .chatDate(LocalDateTime.now())
+          .mood("fail")
+          .amount(0)
+          .userId(loginUserId)
+          .isAnalysed(true)
+          .build();
+      updateInfo(newChat,loginUserId);
+      return ChattingDTO.fromEntity(newChat);
     }
   }
+  //채팅 생성해서 추가할때 정보 업데이트 메서드
+  public void updateInfo(Chatting newChat, int loginUserId){
+    chattingRepository.save(newChat);
+    log.info("newChat : "+newChat.toString());
+    //채팅을 사용자 리스트에 추가
+    Query query = Query.query(Criteria.where("_id").is(loginUserId));
+    Update update = new Update();
+    update.addToSet("chattings", newChat);
+    mongoTemplate.updateMulti(query,update,Sender.class);
+    //sender값에 채팅 갯수 업데이트하기
+    update = new Update();
+    update.inc("numOfChat");
+    mongoTemplate.updateFirst(query,update,Sender.class);
+  }
+
 
   //메세지 날짜 변경 시 추가 메서드
   public void addDate(int loginUserId){
@@ -224,17 +239,11 @@ public class ChattingServiceImpl implements ChattingService {
         .userId(loginUserId)
         .isAnalysed(false)
         .build();
-    chattingRepository.save(newChat);
     log.info("newChat : "+newChat.toString());
     //채팅을 사용자 리스트에 추가
+    updateInfo(newChat, loginUserId);
     Query query = Query.query(Criteria.where("_id").is(loginUserId));
     Update update = new Update();
-    update.addToSet("chattings", newChat);
-    mongoTemplate.updateMulti(query,update,Sender.class);
-    //sender값에 채팅 갯수 업데이트하기
-    update = new Update();
-    update.inc("numOfChat");
-    mongoTemplate.updateFirst(query,update,Sender.class);
     update = new Update();
     update.inc("numOfUnAnalysed");
     mongoTemplate.updateFirst(query,update,Sender.class);
