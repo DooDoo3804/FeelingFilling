@@ -21,7 +21,7 @@ public class AnalyzedResult {
         .react(response.get("react").toString())
         .emotion(response.get("emotion").toString())
         .amount((int) response.get("amount"))
-        .success((int)response.get("success")==1? true:false)
+        .success((boolean)response.get("success"))
         .build();
   }
 }
