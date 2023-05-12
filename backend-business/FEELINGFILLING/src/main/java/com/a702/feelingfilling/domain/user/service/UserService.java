@@ -19,7 +19,7 @@ public interface UserService {
 //    boolean deleteUser();
     int deleteUser();
 
-    List<Integer> getUserBadge(int userId);
+    List<Integer> getUserBadge();
     
     List<UserBriefDTO> getUserListForAdmin();
     UserDetailDTO getUserForAdmin(Integer userId);
