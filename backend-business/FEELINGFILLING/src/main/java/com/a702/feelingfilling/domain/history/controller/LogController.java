@@ -2,6 +2,7 @@ package com.a702.feelingfilling.domain.history.controller;
 
 import com.a702.feelingfilling.domain.history.model.dto.LogDTO;
 import com.a702.feelingfilling.domain.history.service.LogService;
+import com.a702.feelingfilling.domain.user.model.dto.UserLoginDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -25,24 +27,25 @@ import java.util.Map;
 public class LogController {
 	
 	public static final Logger logger = LoggerFactory.getLogger(LogController.class);
-	private static final String SUCCESS = "success";
-	private static final String FAIL = "fail";
-	private static final String ALREADY_EXIST = "already exists";
+	private static final String SUCCESS = "SUCCESS";
+	private static final String FAIL = "FAIL";
+	private static final String ALREADY_EXIST = "ALREADY EXIST";
 	
 	@Autowired
 	private LogService logService;
 	
 		
 	@ApiOperation(value = "월별 거래내역 조회", notes = "월별 거래내역 조회 API", response = Map.class)
-	@GetMapping("/{userId}/{year}//{month}")
-	public ResponseEntity<?> getUserMonthLog(@ApiParam("유저아이디") @PathVariable Integer userId
-			,@ApiParam("년도")  @PathVariable int year
+	@GetMapping("/{year}/{month}")
+	public ResponseEntity<?> getUserMonthLog(@ApiParam("년도")  @PathVariable int year
 			,@ApiParam("월")  @PathVariable int month){
 		HttpStatus status = HttpStatus.OK;
 		Map<String, Object> resultMap = new HashMap<>();
 		
 		try{
 			//이번 달 저금
+			int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+			
 			List<LogDTO> logs = logService.getUserMonthLog(userId,year,month);
 			resultMap.put("logs",logs);
 			logger.debug("% 회원의 %d월 거래내역 : ", userId, month, logs);
