@@ -262,7 +262,7 @@ def make_react(text):
 def check_chatting(user_id, gpt_react, feeling, amount, success):
     try:
         resp = requests.post(
-            'http://3.38.191.128:3306/api/',
+            'https://feelingfilling.store/api/chatting/voice',
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": "bearer " + jwt_token
