@@ -70,7 +70,6 @@ def analysis_text(request):
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
     gpt_react = make_react(trans)
-    react_trans = translation_text_ko(gpt_react)
     """
         billing 요청
         0 // 1
@@ -81,11 +80,11 @@ def analysis_text(request):
     if success:
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = text, request_time = datetime.datetime.now(),
-                        translation = trans, react = react_trans, emotion = feeling, intensity = score,
+                        translation = trans, react = gpt_react, emotion = feeling, intensity = score,
                         amount = amount, success = 1)
         request.save()
         context = {
-            "react" : react_trans,
+            "react" : gpt_react,
             "emotion" : feeling,
             "amount" : amount,
             "success" : success
@@ -248,16 +247,16 @@ def cal_deposit(score, user_id):
 # GPT // ChatBot react 생성 함수
 def make_react(text):
     print(text)
-    prompt = text + ". Tell me that I can do it to me when I was in this situation"
+    prompt = text + ". Tell me that I can do it to me when I was in this situation. 한국말로 해봐"
     print(prompt)
     openai.api_key = settings.OPEN_AI_API_KEY
-    model_engine = "text-ada-001"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
+    model_engine = "text-davinci-003"  # 대신에 "text-ada-002"를 사용할 수 있습니다.
     model_prompt = f"{prompt}\nModel: "
 
     completions = openai.Completion.create(
         engine=model_engine,
         prompt=model_prompt,
-        max_tokens=50,
+        max_tokens=500,
         n=1,
         stop=None,
         temperature=0.7,
@@ -325,20 +324,6 @@ def translation_text(text):
     print("----------------------------------------------------------------")
 
     return analysis_emotion(abs_translator)
-
-def translation_text_ko(text):
-    google = Translator()
-    abs_translator = google.translate(text, src="en", dest="ko")
-
-    print("----------------------------------------------------------------")
-    print("TRANSLATION TO KOR")
-    print(f"""{text}
-    *****************************************************************
-    {abs_translator.text}""")
-    print("----------------------------------------------------------------")
-
-    return abs_translator.text
-
 
 # 감정 분석 함수
 def analysis_emotion(translation_result): 
