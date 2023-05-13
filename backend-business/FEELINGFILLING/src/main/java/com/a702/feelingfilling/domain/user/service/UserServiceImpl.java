@@ -9,6 +9,8 @@ import com.a702.feelingfilling.domain.user.model.repository.UserBadgeRepository;
 import com.a702.feelingfilling.domain.user.model.repository.UserRepository;
 import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +54,16 @@ public class UserServiceImpl implements UserService {
         int min = userJoinDTO.getMinimum();
         if (min < 0) throw new IllegalArgumentException("Unvalid Minimum Value");
         if (max < min) throw new IllegalArgumentException("Unvalid Maximum Value");
+        if(userRepository.findByIdOAuth2(userJoinDTO.getKakaoId()).isPresent()){
+            throw new IllegalArgumentException("기존 회원입니다.");
+        }
         User user = UserJoinDTO.toUser(userJoinDTO);
         userRepository.save(user);
         log.info("DB user 저장완료 : " + user.toString());
         Sender newSender = Sender.builder().senderId(user.getUserId()).chattings(new ArrayList<>())
             .numOfChat(0)
             .numOfUnAnalysed(0)
+            .lastDate(LocalDate.now().minusDays(1))
             .build();
         senderRepository.save(newSender);
         log.info("sender저장");

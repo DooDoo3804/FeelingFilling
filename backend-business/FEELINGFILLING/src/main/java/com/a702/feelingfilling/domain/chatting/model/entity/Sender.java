@@ -1,6 +1,8 @@
 package com.a702.feelingfilling.domain.chatting.model.entity;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,4 +31,5 @@ public class Sender {
   private List<Chatting> chattings;
   private long numOfChat;
   private int numOfUnAnalysed;
+  private LocalDate lastDate;
 }
