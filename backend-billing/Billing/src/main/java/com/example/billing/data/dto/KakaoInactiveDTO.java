@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class KakaoInactiveDTO {
-    String cid;
-    String sid;
-    String status;
-    String createdAt;
-    String inactivatedAt;
-    String lastApprovedAt;
+    private String cid;
+    private String sid;
+    private String status;
+    private String createdAt;
+    private String inactivatedAt;
+    private String lastApprovedAt;
 }

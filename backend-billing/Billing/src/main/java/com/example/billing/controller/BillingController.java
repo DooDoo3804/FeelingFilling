@@ -20,17 +20,17 @@ public class BillingController {
     private final UserService userService;
 
     @PostMapping("/subscription/active")
-    public ResponseEntity<Map<String,Object>> startSubscription(@RequestBody ServiceUserDTO serviceUserDTO){
+    public ResponseEntity<Map<String, Object>> startSubscription(@RequestBody ServiceUserDTO serviceUserDTO) {
         UserDTO userDTO = userService.createUser(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
-        KakaoReadyDTO kakaoReadyDTO= kakaoPayService.kakaoPayReady(userDTO);
+        KakaoReadyDTO kakaoReadyDTO = kakaoPayService.kakaoPayReady(userDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("url", kakaoReadyDTO.getNext_redirect_mobile_url());
         return new ResponseEntity<>(map, HttpStatus.FOUND);
     }
 
     @GetMapping("/subscription/success")
-    public ResponseEntity<Map<String,Object>> approveSubscription(int orderId,String pg_token){
-        KakaoApproveDTO kakaoApproveDTO= kakaoPayService.kakaoPayApprove(orderId, pg_token);
+    public ResponseEntity<Map<String, Object>> approveSubscription(int orderId, String pg_token) {
+        KakaoApproveDTO kakaoApproveDTO = kakaoPayService.kakaoPayApprove(orderId, pg_token);
         Map<String, Object> map = new HashMap<>();
 
         map.put("result", true);
@@ -39,13 +39,64 @@ public class BillingController {
     }
 
     @PostMapping("/subscription")
-    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO){
-       kakaoPayService.kakaoPaySubscription(serviceUserAndAmountDTO);
+    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO) {
+        kakaoPayService.kakaoPaySubscription(serviceUserAndAmountDTO);
 
         Map<String, Object> map = new HashMap<>();
         map.put("result", true);
-        map.put("message","입금에 성공하였습니다.");
+        map.put("message", "입금에 성공하였습니다.");
         map.put("amount", serviceUserAndAmountDTO.getAmount());
-       return new ResponseEntity<>(map, HttpStatus.OK);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @PostMapping("/subscription/inactive")
+    public ResponseEntity<Map<String, Object>> subscriptionInactivate(@RequestBody ServiceUserDTO serviceUserDTO) {
+        KakaoInactiveDTO kakaoInactiveDTO = kakaoPayService.kakaoPayInactivate(serviceUserDTO);
+
+        Map<String, Object> map = new HashMap<>();
+        if (kakaoInactiveDTO.getStatus().equals("INACTIVE")) {
+            map.put("result", true);
+            map.put("message", "정기 결제가 취소되었습니다.");
+        } else {
+            map.put("result", false);
+            map.put("message", "정기 결제 취소 실패");
+        }
+        map.put("createdAt", kakaoInactiveDTO.getCreatedAt());
+        map.put("inactivatedAt", kakaoInactiveDTO.getInactivatedAt());
+        map.put("lastApprovedAt", kakaoInactiveDTO.getLastApprovedAt());
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @PostMapping("/subscription/status")
+    public ResponseEntity<Map<String, Object>> subscriptionStatus(@RequestBody ServiceUserDTO serviceUserDTO) {
+        KakaoPayCheckDTO kakaoPayCheckDTO = kakaoPayService.kakaoPayCheck(serviceUserDTO);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("available", kakaoPayCheckDTO.isAvailable());
+        map.put("status", kakaoPayCheckDTO.getStatus());
+        map.put("createdAt", kakaoPayCheckDTO.getCreatedAt());
+        map.put("inactivatedAt", kakaoPayCheckDTO.getInactivatedAt());
+        map.put("lastApprovedAt", kakaoPayCheckDTO.getLastApprovedAt());
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<Map<String, Object>> cancelPayment(@RequestBody CancelDepositDTO cancelDepositDTO){
+        KakaoCancelDTO kakaoCancelDTO = kakaoPayService.kakaoPayCancel(cancelDepositDTO);
+
+        Map<String, Object> map = new HashMap<>();
+        if (kakaoCancelDTO.getStatus().equals("PART_CANCEL_PAYMENT")||kakaoCancelDTO.getStatus().equals(("CANCEL_PAYMENT"))) {
+            map.put("result", true);
+            map.put("message", "결제가 취소되었습니다.");
+        } else {
+            map.put("result", false);
+            map.put("message", "결제 취소 실패");
+        }
+        map.put("approvedCancelAmount", kakaoCancelDTO.getApprovedCancelAmount().getTotal());
+        map.put("createdAt", kakaoCancelDTO.getCreatedAt());
+        map.put("approvedAt", kakaoCancelDTO.getApprovedAt());
+        map.put("canceledAt", kakaoCancelDTO.getCanceledAt());
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }

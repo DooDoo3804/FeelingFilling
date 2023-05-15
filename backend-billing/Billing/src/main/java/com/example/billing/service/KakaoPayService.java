@@ -5,9 +5,11 @@ import com.example.billing.data.billingDB.repository.*;
 import com.example.billing.data.dto.*;
 import com.example.billing.data.loggingDB.document.CancellationLogDocument;
 import com.example.billing.data.loggingDB.document.DepositLogDocument;
+import com.example.billing.data.loggingDB.document.InactiveLogDocumnet;
 import com.example.billing.data.loggingDB.document.KakaoPayApproveLogDocument;
 import com.example.billing.data.loggingDB.repository.CancellationLogRepository;
 import com.example.billing.data.loggingDB.repository.DepositLogRepository;
+import com.example.billing.data.loggingDB.repository.InactiveLogRepository;
 import com.example.billing.data.loggingDB.repository.KakaoPayApproveLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +42,8 @@ public class KakaoPayService {
     private final KakaoPayApproveLogRepository kakaoPayApproveLogRepository;
     private final DepositLogRepository depositLogRepository;
     private final CancellationLogRepository cancellationLogRepository;
+
+    private final InactiveLogRepository inactiveLogRepository;
 
     public KakaoReadyDTO kakaoPayReady(UserDTO userDTO) {
         User user = User.builder()
@@ -202,7 +206,7 @@ public class KakaoPayService {
         return true;
     }
 
-    public boolean kakaoPayInactivate(ServiceUserDTO serviceUserDTO){
+    public KakaoInactiveDTO kakaoPayInactivate(ServiceUserDTO serviceUserDTO){
         User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
 
         HttpHeaders headers = new HttpHeaders();
@@ -228,10 +232,22 @@ public class KakaoPayService {
 
         user.setSid("");
 
-        return true;
+        InactiveLogDocumnet inactiveLog = InactiveLogDocumnet.builder()
+                .userId(user.getUserId())
+                .serviceName(user.getServiceName())
+                .serviceUserId(user.getServiceUserId())
+                .status(kakaoInactiveDTO.getStatus())
+                .createdAt(kakaoInactiveDTO.getCreatedAt())
+                .inactivatedAt(kakaoInactiveDTO.getInactivatedAt())
+                .lastApprovedAt(kakaoInactiveDTO.getLastApprovedAt())
+                .build();
+
+        inactiveLogRepository.save(inactiveLog);
+
+        return kakaoInactiveDTO;
     }
 
-    public boolean kakaoPayCancel(CancelDepositDTO cancelDepositDTO){
+    public KakaoCancelDTO kakaoPayCancel(CancelDepositDTO cancelDepositDTO){
         User user = userRepository.findUserByServiceNameAndServiceUserId(cancelDepositDTO.getServiceName(), cancelDepositDTO.getServiceUserId());
         int amount = cancelDepositDTO.getAmount();
         KakaoOrder kakaoOrder = kakaoOrderRepository.getKakaoOrderByOrderId(cancelDepositDTO.getOrderId());
@@ -289,6 +305,33 @@ public class KakaoPayService {
 
         cancellationLogRepository.save(cancellationLog);
 
-        return true;
+        return kakaoCancelDTO;
+    }
+
+    public KakaoPayCheckDTO kakaoPayCheck(ServiceUserDTO serviceUserDTO){
+        User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);
+        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        // 카카오페이 요청 양식
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("cid", cid);
+        parameters.add("sid", user.getSid());
+
+        // 파라미터, 헤더
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
+
+        // 외부에 보낼 url
+        RestTemplate restTemplate = new RestTemplate();
+
+        //RestTemplate가 snake_case도 camelCase로 자동 mapping한다.
+        KakaoPayCheckDTO kakaoPayCheckDTO = restTemplate.postForObject(
+                "https://kapi.kakao.com/v1/payment/manage/subscription/status",
+                requestEntity,
+                KakaoPayCheckDTO.class);
+
+        return kakaoPayCheckDTO;
     }
 }

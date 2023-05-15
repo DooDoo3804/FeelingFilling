@@ -3,9 +3,11 @@ package com.example.billing.service.impl;
 import com.example.billing.data.dto.ServiceUserDTO;
 import com.example.billing.data.dto.TimePeriodDTO;
 import com.example.billing.data.loggingDB.document.DepositLogDocument;
+import com.example.billing.data.loggingDB.document.InactiveLogDocumnet;
 import com.example.billing.data.loggingDB.document.KakaoPayApproveLogDocument;
 import com.example.billing.data.loggingDB.document.WithdrawalLogDocument;
 import com.example.billing.data.loggingDB.repository.DepositLogRepository;
+import com.example.billing.data.loggingDB.repository.InactiveLogRepository;
 import com.example.billing.data.loggingDB.repository.KakaoPayApproveLogRepository;
 import com.example.billing.data.loggingDB.repository.WithdrawalLogRepository;
 import com.example.billing.service.LoggingService;
@@ -23,6 +25,7 @@ public class LoggingServiceImpl implements LoggingService {
     private final KakaoPayApproveLogRepository kakaoPayApproveLogRepository;
     private final DepositLogRepository depositLogRepository;
     private final WithdrawalLogRepository withdrawalLogRepository;
+    private final InactiveLogRepository inactiveLogRepository;
     @Override
     public List<KakaoPayApproveLogDocument> findSubscriptionLogsByUser(ServiceUserDTO serviceUserDTO){
         List<KakaoPayApproveLogDocument> logs = kakaoPayApproveLogRepository.findByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
@@ -38,6 +41,12 @@ public class LoggingServiceImpl implements LoggingService {
     @Override
     public List<WithdrawalLogDocument> findWithdrawalLogsByUser(ServiceUserDTO serviceUserDTO) {
         List<WithdrawalLogDocument> logs = withdrawalLogRepository.findByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
+        return logs;
+    }
+
+    @Override
+    public List<InactiveLogDocumnet> findInactiveLogsByUser(ServiceUserDTO serviceUserDTO) {
+        List<InactiveLogDocumnet> logs = inactiveLogRepository.findByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
         return logs;
     }
 
@@ -82,4 +91,17 @@ public class LoggingServiceImpl implements LoggingService {
             return null;
         }
     }
+
+    @Override
+    public List<InactiveLogDocumnet> findInactiveLogsByPeriod(TimePeriodDTO timePeriodDTO) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date from = format.parse(timePeriodDTO.getFrom());
+            Date to = format.parse(timePeriodDTO.getTo());
+            List<InactiveLogDocumnet> logs = inactiveLogRepository.findByCreatedDateBetween(from, to);
+            return logs;
+        }catch (ParseException e){
+            System.out.println(e.getMessage());
+            return null;
+        }}
 }

@@ -3,6 +3,7 @@ package com.example.billing.controller;
 import com.example.billing.data.dto.ServiceUserDTO;
 import com.example.billing.data.dto.TimePeriodDTO;
 import com.example.billing.data.loggingDB.document.DepositLogDocument;
+import com.example.billing.data.loggingDB.document.InactiveLogDocumnet;
 import com.example.billing.data.loggingDB.document.KakaoPayApproveLogDocument;
 import com.example.billing.data.loggingDB.document.WithdrawalLogDocument;
 import com.example.billing.service.LoggingService;
@@ -47,6 +48,14 @@ public class LogController {
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
+    @PostMapping("/user/inactive")
+    public ResponseEntity<Map<String,Object>> getInactiveLogsByUser(ServiceUserDTO serviceUserDTO){
+        List<InactiveLogDocumnet> logs = loggingService.findInactiveLogsByUser(serviceUserDTO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("log", logs);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
     @PostMapping("/period/subscription")
     public ResponseEntity<Map<String,Object>> getSubscriptionLogsByPeriod(TimePeriodDTO timePeriodDTO){
         List<KakaoPayApproveLogDocument> logs = loggingService.findSubscriptionLogsByPeriod(timePeriodDTO);
@@ -66,6 +75,14 @@ public class LogController {
     @PostMapping("/period/withdrawal")
     public ResponseEntity<Map<String,Object>> getWithdrawalLogsByPeriod(TimePeriodDTO timePeriodDTO){
         List<WithdrawalLogDocument> logs = loggingService.findWithdrawalLogsByPeriod(timePeriodDTO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("log", logs);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @PostMapping("/period/inactive")
+    public ResponseEntity<Map<String,Object>> getInactiveLogsByPeriod(TimePeriodDTO timePeriodDTO){
+        List<InactiveLogDocumnet> logs = loggingService.findInactiveLogsByPeriod(timePeriodDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
         return new ResponseEntity<>(map, HttpStatus.OK);
