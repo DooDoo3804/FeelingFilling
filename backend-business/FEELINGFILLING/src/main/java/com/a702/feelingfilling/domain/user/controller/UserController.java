@@ -79,7 +79,7 @@ public class UserController {
     //4. 정보수정
     @PutMapping
 //	@PreAuthorize("hasRole('ROLE_AMDIN') or hasRole('ROLE_USER')" )
-    public ResponseEntity<?> modifyUser(UserDTO userDTO) {
+    public ResponseEntity<?> modifyUser(@RequestBody UserDTO userDTO) {
         log.info("회원 정보 수정 요청");
         Map<String, Object> resultMap = new HashMap<>();
         try {
