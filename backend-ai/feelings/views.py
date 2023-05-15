@@ -135,6 +135,7 @@ def analysis_voice(request):
     try:
         # 파일 받기
         voice = request.FILES.get('file')
+        print(voice)
         if voice is not None:
             config = {
                 "diarization": {
