@@ -167,7 +167,7 @@ def analysis_voice(request):
                     print(f'Retrying after 1 seconds...')
                     sleep(1)
             # print(resp.json()['results']['utterances'][0]['msg'])
-            if (resp.json()['results']['utterances'] == None):
+            if (resp.json()['results']['utterances'] == []):
                 return HttpResponse(status=400, content='Bad Request. None Audio file')
         else : print("파일 없음!")
     except Exception as e:
