@@ -364,7 +364,7 @@ def analysis_emotion(translation_result):
 def req_billing(token, amount):
     try:
         resp = requests.post(
-            'http://13.124.31.137:8702/billing/subscription',
+            'http://3.34.190.244:8702/billing/subscription',
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + token
