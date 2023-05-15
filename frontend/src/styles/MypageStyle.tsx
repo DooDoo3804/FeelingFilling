@@ -70,8 +70,12 @@ export const BadgeContainer = styled.View`
   flex-direction: row;
   height: 80px;
   padding: 0px 10px;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
+`;
+
+export const SingleBadgeWrapper = styled.View`
+  margin: 0px 28px;
 `;
 
 export const NoBadge = styled.Text`
