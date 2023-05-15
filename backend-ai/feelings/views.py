@@ -74,23 +74,34 @@ def analysis_text(request):
         billing 요청
         0 // 1
     """
-    print(gpt_react)
+
+    new_text = ""
+    for gr in gpt_react:
+        if gr in ["\'", "\""]:
+            continue
+        else :
+            new_text += gr
+    
+    print(new_text)
+    
+    
     try :
         success, message = req_billing(token, amount, user_id)
     except Exception as e:
         print(e)
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
     
+
     print(message)
     # success = req_billing(token, amount, user_id)
     if success:
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = text, request_time = datetime.datetime.now(),
-                        translation = trans, react = gpt_react, emotion = feeling, intensity = score,
+                        translation = trans, react = new_text, emotion = feeling, intensity = score,
                         amount = amount, success = success)
         request.save()
         context = {
-            "react" : gpt_react,
+            "react" : new_text,
             "emotion" : feeling,
             "amount" : amount,
             "success" : success
@@ -211,14 +222,24 @@ def analysis_voice(request):
 
     check_chatting(token, gpt_react, feeling, amount, success)
 
+    new_text = ""
+    for gr in gpt_react:
+        if gr in ["\'", "\""]:
+            continue
+        else :
+            new_text += gr
+    
+    print(new_text)
+
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                        translation = trans, react = gpt_react, emotion = feeling, intensity = score,
+                        translation = trans, react = new_text, emotion = feeling, intensity = score,
                         amount = amount, success = success)
         request.save()
         context = {
+            "react" : new_text,
             "type" : 1,
             "chatDate" : datetime.datetime.now(),
             "userId" : user_id,
@@ -227,10 +248,11 @@ def analysis_voice(request):
     # 실패한 경우
     else :
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                translation = trans, react = gpt_react, emotion = "", intensity = 0,
+                translation = trans, react = new_text, emotion = "", intensity = 0,
                 amount = 0, success = success)
         request.save()
         context = {
+            "react" : new_text,
             "type" : 1,
             "chatDate" : datetime.datetime.now(),
             "userId" : user_id,
