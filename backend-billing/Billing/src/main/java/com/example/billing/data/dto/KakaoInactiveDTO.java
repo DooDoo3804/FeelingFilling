@@ -7,7 +7,7 @@ public class KakaoInactiveDTO {
     private String cid;
     private String sid;
     private String status;
-    private String createdAt;
-    private String inactivatedAt;
-    private String lastApprovedAt;
+    private String created_at;
+    private String inactivated_at;
+    private String lastApproved_at;
 }

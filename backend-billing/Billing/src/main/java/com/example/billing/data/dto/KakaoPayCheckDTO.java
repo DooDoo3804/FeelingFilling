@@ -10,7 +10,7 @@ public class KakaoPayCheckDTO {
     private String cid;
     private String sid;
     private String status;
-    private Date createdAt;
-    private Date lastApprovedAt;
-    private Date inactivatedAt;
+    private Date created_at;
+    private Date last_approved_at;
+    private Date inactivated_at;
 }
