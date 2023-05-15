@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface CancellationLogRepository extends MongoRepository<CancellationLogDocument, String> {
-    public List<CancellationLogDocument> findByServiceNameAndsAndServiceUserId(String serviceName, int serviceUserId);
+    public List<CancellationLogDocument> findByServiceNameAndAndServiceUserId(String serviceName, int serviceUserId);
     public List<CancellationLogDocument> findByCreatedDateBetween(Date from, Date to);
 }
