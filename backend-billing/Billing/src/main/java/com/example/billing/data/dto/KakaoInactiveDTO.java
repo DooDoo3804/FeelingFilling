@@ -9,5 +9,5 @@ public class KakaoInactiveDTO {
     private String status;
     private String created_at;
     private String inactivated_at;
-    private String lastApproved_at;
+    private String last_approved_at;
 }

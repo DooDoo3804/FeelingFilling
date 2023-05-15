@@ -237,9 +237,9 @@ public class KakaoPayService {
                 .serviceName(user.getServiceName())
                 .serviceUserId(user.getServiceUserId())
                 .status(kakaoInactiveDTO.getStatus())
-                .createdAt(kakaoInactiveDTO.getCreatedAt())
-                .inactivatedAt(kakaoInactiveDTO.getInactivatedAt())
-                .lastApprovedAt(kakaoInactiveDTO.getLastApprovedAt())
+                .createdAt(kakaoInactiveDTO.getCreated_at())
+                .inactivatedAt(kakaoInactiveDTO.getInactivated_at())
+                .lastApprovedAt(kakaoInactiveDTO.getLast_approved_at())
                 .build();
 
         inactiveLogRepository.save(inactiveLog);
