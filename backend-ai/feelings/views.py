@@ -165,12 +165,12 @@ def analysis_voice(request):
                     # 응답이 오지 않은 경우 1초 후 재요청
                     print(f'Retrying after 1 seconds...')
                     sleep(1)
-            print(resp.json())
+            print(resp.json()['results']['utterances'][0]['msg'])
             
         else : print("파일 없음!")
     except Exception as e:
         print(e)
-    text = resp.json()
+    text = resp.json()['results']['utterances'][0]['msg']
 
     user = User.objects.get(user_id = user_id)
 
