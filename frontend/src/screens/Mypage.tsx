@@ -28,22 +28,6 @@ import {
 } from '../styles/MypageStyle';
 
 import {badgeList} from './Badges';
-import meet01 from '../assets/badges/badge_meet01.png';
-import meet02 from '../assets/badges/badge_meet02.png';
-import angry01 from '../assets/badges/badge_angry01.png';
-import angry02 from '../assets/badges/badge_angry02.png';
-import angry03 from '../assets/badges/badge_angry03.png';
-import gloomy01 from '../assets/badges/badge_gloomy01.png';
-import gloomy02 from '../assets/badges/badge_gloomy02.png';
-import gloomy03 from '../assets/badges/badge_gloomy03.png';
-import happy01 from '../assets/badges/badge_happy01.png';
-import happy02 from '../assets/badges/badge_happy02.png';
-import happy03 from '../assets/badges/badge_happy03.png';
-import money01 from '../assets/badges/badge_money01.png';
-import money02 from '../assets/badges/badge_money02.png';
-import money03 from '../assets/badges/badge_money03.png';
-import nomoney from '../assets/badges/badge_nomoney.png';
-import default01 from '../assets/badges/badge_default.png';
 
 interface ApiResponse {
   message: string;
@@ -52,7 +36,7 @@ interface ApiResponse {
 
 const Mypage = ({navigation}: {navigation: any}) => {
   const dispatch = useDispatch();
-  const [badges, setBadges] = useState<number[]>(null);
+  const [badges, setBadges] = useState<number[]>([]);
 
   const user = useSelector<AppState, User | null>(state => state.loggedUser);
 
