@@ -73,9 +73,9 @@ public class KakaoPayService {
         parameters.add("total_amount", "0");
         parameters.add("vat_amount", "0");
         parameters.add("tax_free_amount", "0");
-        parameters.add("approval_url", "http://13.124.31.137:8702/billing/subscription/success?orderId="+newOrder.getOrderId()); // 성공 시 redirect url
-        parameters.add("cancel_url", "http://13.124.31.137:8702/payment/cancel"); // 취소 시 redirect url
-        parameters.add("fail_url", "http://13.124.31.137:8702/payment/fail"); // 실패 시 redirect url
+        parameters.add("approval_url", "http://3.34.190.244:8702/billing/subscription/success?orderId="+newOrder.getOrderId()); // 성공 시 redirect url
+        parameters.add("cancel_url", "http://3.34.190.244:8702/payment/cancel"); // 취소 시 redirect url
+        parameters.add("fail_url", "http://3.34.190.244:8702/payment/fail"); // 실패 시 redirect url
 
         // 파라미터, 헤더
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
