@@ -78,6 +78,8 @@ public class BillingController {
         map.put("createdAt", kakaoPayCheckDTO.getCreatedAt());
         map.put("inactivatedAt", kakaoPayCheckDTO.getInactivatedAt());
         map.put("lastApprovedAt", kakaoPayCheckDTO.getLastApprovedAt());
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @PostMapping("/cancel")
