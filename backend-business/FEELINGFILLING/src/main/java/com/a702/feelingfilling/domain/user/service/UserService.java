@@ -25,4 +25,5 @@ public interface UserService {
     UserDetailDTO getUserForAdmin(Integer userId);
     boolean deleteUserForAdmin(Integer userId);
 
+    String registerBill();
 }

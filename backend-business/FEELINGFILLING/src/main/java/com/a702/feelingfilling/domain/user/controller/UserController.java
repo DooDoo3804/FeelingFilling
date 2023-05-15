@@ -184,4 +184,21 @@ public class UserController {
             return ResponseEntity.badRequest().body(resultMap);
         }
     }
+
+    //10. 결제 등록
+    @GetMapping("/register")
+    public ResponseEntity<?> registerBill(){
+        log.info("결제 등록 요청");
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            String url = userService.registerBill();
+            resultMap.put("url", url);
+            resultMap.put("message", SUCCESS);
+            return ResponseEntity.status(HttpStatus.OK).body(resultMap);
+        } catch (Exception e) {
+            log.error("결제 등록 에러 발생 : {}",e);
+            resultMap.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(resultMap);
+        }
+    }
 }
