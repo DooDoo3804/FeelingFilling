@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Document(collection = "deposit")
 @AllArgsConstructor
 @Builder
-@EnableMongoAuditing
 public class DepositLogDocument {
     @Id
     private String _id;

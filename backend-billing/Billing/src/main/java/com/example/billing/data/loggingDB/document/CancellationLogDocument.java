@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Document(collection = "cancellation")
 @AllArgsConstructor
 @Builder
-@EnableMongoAuditing
 public class CancellationLogDocument {
     @Id
     private String _id;

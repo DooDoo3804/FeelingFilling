@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Document(collection = "kakao_pay_approvement")
 @AllArgsConstructor
 @Builder
-@EnableMongoAuditing
 public class KakaoPayApproveLogDocument {
     @Id
     private String _id;

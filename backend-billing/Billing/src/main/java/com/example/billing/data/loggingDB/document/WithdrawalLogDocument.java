@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @Document(collection = "withdrawal")
 @AllArgsConstructor
 @Builder
-@EnableMongoAuditing
 public class WithdrawalLogDocument {
     @Id
     private String _id;

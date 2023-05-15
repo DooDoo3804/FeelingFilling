@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Document(collection = "inactive")
 @AllArgsConstructor
 @Builder
-@EnableMongoAuditing
 public class InactiveLogDocumnet {
     @Id
     private String _id;
