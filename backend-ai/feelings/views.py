@@ -167,7 +167,8 @@ def analysis_voice(request):
                     print(f'Retrying after 1 seconds...')
                     sleep(1)
             print(resp.json()['results']['utterances'][0]['msg'])
-            
+            if (resp.json()['results']['utterances'] == None):
+                return HttpResponse(status=400, content='Bad Request. None Audio file')
         else : print("파일 없음!")
     except Exception as e:
         print(e)
@@ -187,7 +188,7 @@ def analysis_voice(request):
     """
         적금 금액 계산
     """
-    amount = cal_deposit(score)
+    amount = cal_deposit(score, user_id)
     
     """
         react 데이터 저장 (GPT 답변)
