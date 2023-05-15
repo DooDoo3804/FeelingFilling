@@ -1,5 +1,6 @@
 package com.a702.feelingfilling.domain.user.service;
 
+import com.a702.feelingfilling.domain.chatting.exception.CustomException;
 import com.a702.feelingfilling.domain.chatting.model.entity.Sender;
 import com.a702.feelingfilling.domain.chatting.repository.SenderRepository;
 import com.a702.feelingfilling.domain.user.model.dto.*;
@@ -11,9 +12,16 @@ import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -138,5 +148,33 @@ public class UserServiceImpl implements UserService {
             return false;
         userRepository.delete(user);
         return true;
+    }
+
+    @Override
+    public String registerBill(){
+        try{
+            int loginUserId = getLoginUserId();
+            RestTemplate template = new RestTemplate();
+            String uri = UriComponentsBuilder.fromHttpUrl("http://3.34.190.244:8702/billing/subscription/active").toUriString();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.set("Authorization", accessToken);
+            JSONObject body = new JSONObject();
+            body.put("serviceName","FeelingFilling");
+            body.put("serviceUserId",loginUserId);
+            HttpEntity<?> entity = new HttpEntity<>(body.toString(), headers);
+            log.info("요청보내기");
+            ResponseEntity<Map> response = template.exchange(
+                uri,
+                HttpMethod.POST,
+                entity,
+                Map.class);
+            Map<String,Object> responseBody = response.getBody();
+            log.info(responseBody.toString());
+            return responseBody.get("url").toString();
+        }catch (Exception e){
+            throw new CustomException("결제 등록 요청 실패");
+        }
+
     }
 }
