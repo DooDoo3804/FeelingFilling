@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {Alert} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 
@@ -34,6 +35,10 @@ interface ApiResponse {
   badges: number[];
 }
 
+interface DelResponse {
+  message: string;
+}
+
 const Mypage = ({navigation}: {navigation: any}) => {
   const dispatch = useDispatch();
   const [badges, setBadges] = useState<number[]>([]);
@@ -42,6 +47,12 @@ const Mypage = ({navigation}: {navigation: any}) => {
 
   const {data, error} = useAxiosWithRefreshToken<ApiResponse>(
     'https://feelingfilling.store/api/user/badge',
+    'GET',
+    null,
+  );
+
+  const deleteRequest = useAxiosWithRefreshToken<DelResponse>(
+    'https://feelingfilling.store/api/user',
     'GET',
     null,
   );
@@ -73,6 +84,23 @@ const Mypage = ({navigation}: {navigation: any}) => {
     }
 
     return result;
+  };
+
+  const handleDelete = () => {
+    console.log('dd');
+    const {delData, delError} = deleteRequest;
+    console.log(delData, delError);
+  };
+
+  const deleteUser = () => {
+    Alert.alert(
+      '회원 탈퇴',
+      '탈퇴 후 모든 정보는 복구할 수 없습니다.\n정말 탈퇴하시겠어요?',
+      [
+        {text: '확인', onPress: () => handleDelete()},
+        {text: '취소', style: 'cancel'},
+      ],
+    );
   };
 
   return (
@@ -111,7 +139,7 @@ const Mypage = ({navigation}: {navigation: any}) => {
         <SingleMenu onPress={() => handleLogout()}>
           <PlainText>로그아웃</PlainText>
         </SingleMenu>
-        <SingleMenu>
+        <SingleMenu onPress={() => deleteUser()}>
           <PlainText>회원탈퇴</PlainText>
         </SingleMenu>
       </MenuList>
