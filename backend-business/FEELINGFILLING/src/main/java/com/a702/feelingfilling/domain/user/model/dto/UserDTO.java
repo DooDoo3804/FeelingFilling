@@ -13,13 +13,16 @@ public class UserDTO {
 	String nickname;
 	int minimum;
 	int maximum;
+
+	boolean isBilled;
 	
-	public static UserDTO toDTO(User user){
+	public static UserDTO toDTO(User user, boolean isBilled){
 		return UserDTO.builder()
 				.userId(user.getUserId())
 				.nickname(user.getNickname())
 				.minimum(user.getMinimum())
 				.maximum(user.getMaximum())
+				.isBilled(isBilled)
 				.build();
 	}
 }
