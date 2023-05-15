@@ -74,8 +74,9 @@ def analysis_text(request):
         billing 요청
         0 // 1
     """
+    print(gpt_react)
     try :
-        success, message = req_billing(token, amount)
+        success, message = req_billing(token, amount, user_id)
     except Exception as e:
         print(e)
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
@@ -200,7 +201,7 @@ def analysis_voice(request):
         billing 요청
     """
     try :
-        success, message = req_billing(token, amount)
+        success, message = req_billing(token, amount, user_id)
     except Exception as e:
         print(e)
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
@@ -361,7 +362,7 @@ def analysis_emotion(translation_result):
 
 # Billing에 요청 함수
 # def req_billing(token, amount, user_id):
-def req_billing(token, amount):
+def req_billing(token, amount, user_id):
     try:
         resp = requests.post(
             'http://3.34.190.244:8702/billing/subscription',
@@ -371,8 +372,8 @@ def req_billing(token, amount):
             },
             json={
                 'amount' : amount,
-                'serviceUserId': 1,
-                'serviceName': "abcd",
+                'serviceUserId': user_id,
+                'serviceName': "Feelingfilling",
             }
         )
         success = resp.json()['result']
