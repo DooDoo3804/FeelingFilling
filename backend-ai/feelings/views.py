@@ -49,7 +49,11 @@ def analysis_text(request):
     """
         번역 요청
     """
-    feeling, score, trans = translation_text(text)
+    try :
+        feeling, score, trans = translation_text(text)
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=500, content='Translation failed. Please try again')
     """
         적금 금액 계산
     """
@@ -61,12 +65,21 @@ def analysis_text(request):
     """
     # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
     # react.save()
-    gpt_react = make_react(trans)
+    try : 
+        gpt_react = make_react(trans)
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=500, content='React API failed. Please try again')
     """
         billing 요청
         0 // 1
     """
-    success, message = req_billing(token, amount, user_id)
+    try :
+        success, message = req_billing(token, amount, user_id)
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=500, content='Req Billing failed. Please try again')
+    
     print(message)
     # success = req_billing(token, amount, user_id)
     if success:
