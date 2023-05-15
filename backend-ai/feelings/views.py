@@ -75,7 +75,7 @@ def analysis_text(request):
         0 // 1
     """
     try :
-        success, message = req_billing(token, amount, user_id)
+        success, message = req_billing(token, amount)
     except Exception as e:
         print(e)
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
@@ -190,13 +190,6 @@ def analysis_voice(request):
     """
         react 데이터 저장 (GPT 답변)
     """
-    # react = React(chatting = chatting, content = "GPT 답변!", emotion = feeling, amount = amount)
-    # react.save()
-        
-    # mongo db 조회해서 userid로 조회 및 count가 0 이 아니라면
-    # 뒤에서부터 해당 개수 F로 바꿔주고 0으로 전환
-    # chatting에 react도 저장해야함??
-    # 토큰 받아야함....?
     try : 
         gpt_react = make_react(trans)
     except Exception as e:
@@ -207,7 +200,7 @@ def analysis_voice(request):
         billing 요청
     """
     try :
-        success, message = req_billing(token, amount, user_id)
+        success, message = req_billing(token, amount)
     except Exception as e:
         print(e)
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
@@ -368,7 +361,7 @@ def analysis_emotion(translation_result):
 
 # Billing에 요청 함수
 # def req_billing(token, amount, user_id):
-def req_billing(token, amount, user_id):
+def req_billing(token, amount):
     try:
         resp = requests.post(
             'http://13.124.31.137:8702/billing/subscription',
@@ -415,8 +408,6 @@ def init_setting():
     STT JWT TOKEN
     인증 요청
     token의 만료 기간은 6시간
-    주기적으로 token이 갱신될 수 있도록 /v1/authenticate 을 통해 token을 갱신해야 합니다.
-    갱신은 스케줄링을 통해 작성
     client_id / client_secret 환경변수로 빼거나 따로 작성!!
 """
 
@@ -427,8 +418,8 @@ def get_jwt():
     print("start schd")
     resp = requests.post(
         'https://openapi.vito.ai/v1/authenticate',
-        data={'client_id': "cnmeuourK_cZS7UMpGwG",
-              'client_secret': "8XHGuP-vT3HJNK0R9zfxeK97eciLUcHF5jPKyhsz"}
+        data={'client_id': settings.CLIENT_ID,
+              'client_secret': settings.CLIENT_SECRET}
     )
     resp.raise_for_status()
     jwt_token = resp.json()['access_token']
