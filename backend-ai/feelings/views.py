@@ -209,6 +209,8 @@ def analysis_voice(request):
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
     print(message)
 
+    check_chatting(token, gpt_react, feeling, amount, success)
+
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
@@ -217,10 +219,10 @@ def analysis_voice(request):
                         amount = amount, success = success)
         request.save()
         context = {
-            "react" : gpt_react,
-            "emotion" : feeling,
-            "amount" : amount,
-            "success" : success
+            "type" : 1,
+            "chatDate" : datetime.datetime.now(),
+            "userId" : user_id,
+            "isAnalysed" : success
         }
     # 실패한 경우
     else :
@@ -229,13 +231,11 @@ def analysis_voice(request):
                 amount = 0, success = success)
         request.save()
         context = {
-            "react" : 0,
-            "emotion" : 0,
-            "amount" : 0,
-            "success" : success
+            "type" : 1,
+            "chatDate" : datetime.datetime.now(),
+            "userId" : user_id,
+            "isAnalysed" : success
         }
-
-    check_chatting(token, gpt_react, feeling, amount, success)
 
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
