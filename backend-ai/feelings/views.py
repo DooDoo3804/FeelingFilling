@@ -363,8 +363,9 @@ def analysis_emotion(translation_result):
             scores[1] += score * 0.35
             scores[2] += score * 0.65
         elif (feeling == "surprise") :
-            scores[1] += score * 0.5
-            scores[2] += score * 0.5
+            scores[0] += score * 0.33
+            scores[1] += score * 0.33
+            scores[2] += score * 0.33
         elif (feeling == "disgust") :
             scores[1] += score * 0.65
             scores[2] += score * 0.35
