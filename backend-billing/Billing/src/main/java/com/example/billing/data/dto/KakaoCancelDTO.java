@@ -30,7 +30,7 @@ public class KakaoCancelDTO {
     private String status;
     private Amount amount;
     //이번 취소액
-    private ApprovedCancelAmount approvedCancel_amount;
+    private ApprovedCancelAmount approved_cancel_amount;
     //누적 취소액
     private CanceledAmount canceled_amount;
 

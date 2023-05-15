@@ -61,9 +61,9 @@ public class BillingController {
             map.put("result", false);
             map.put("message", "정기 결제 취소 실패");
         }
-        map.put("createdAt", kakaoInactiveDTO.getCreatedAt());
-        map.put("inactivatedAt", kakaoInactiveDTO.getInactivatedAt());
-        map.put("lastApprovedAt", kakaoInactiveDTO.getLastApprovedAt());
+        map.put("createdAt", kakaoInactiveDTO.getCreated_at());
+        map.put("inactivatedAt", kakaoInactiveDTO.getInactivated_at());
+        map.put("lastApprovedAt", kakaoInactiveDTO.getLast_approved_at());
 
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
@@ -75,9 +75,9 @@ public class BillingController {
         Map<String, Object> map = new HashMap<>();
         map.put("available", kakaoPayCheckDTO.isAvailable());
         map.put("status", kakaoPayCheckDTO.getStatus());
-        map.put("createdAt", kakaoPayCheckDTO.getCreatedAt());
-        map.put("inactivatedAt", kakaoPayCheckDTO.getInactivatedAt());
-        map.put("lastApprovedAt", kakaoPayCheckDTO.getLastApprovedAt());
+        map.put("createdAt", kakaoPayCheckDTO.getCreated_at());
+        map.put("inactivatedAt", kakaoPayCheckDTO.getInactivated_at());
+        map.put("lastApprovedAt", kakaoPayCheckDTO.getLast_approved_at());
 
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
@@ -94,10 +94,10 @@ public class BillingController {
             map.put("result", false);
             map.put("message", "결제 취소 실패");
         }
-        map.put("approvedCancelAmount", kakaoCancelDTO.getApprovedCancelAmount().getTotal());
-        map.put("createdAt", kakaoCancelDTO.getCreatedAt());
-        map.put("approvedAt", kakaoCancelDTO.getApprovedAt());
-        map.put("canceledAt", kakaoCancelDTO.getCanceledAt());
+        map.put("approvedCancelAmount", kakaoCancelDTO.getApproved_cancel_amount().getTotal());
+        map.put("createdAt", kakaoCancelDTO.getCanceled_at());
+        map.put("approvedAt", kakaoCancelDTO.getApproved_at());
+        map.put("canceledAt", kakaoCancelDTO.getCanceled_at());
 
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
