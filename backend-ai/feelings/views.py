@@ -272,14 +272,6 @@ def make_react(text):
         ],
         temperature=0.7,
     )
-    # completions = openai.ChatCompletion.create(
-    #     engine=model_engine,
-    #     prompt=model_prompt,
-    #     max_tokens=500,
-    #     n=1,
-    #     stop=None,
-    #     temperature=0.7,
-    # )
     message = completions.choices[0].message.content
     print(message)
     return message
@@ -305,79 +297,6 @@ def check_chatting(token, gpt_react, feeling, amount, success):
         print(e)
     print(resp)
     return 1
-    # MongoDB 클라이언트 생성
-    # client = MongoClient('mongodb://root:mammoth77@3.38.191.128:27017/?authMechanism=DEFAULT/')
-    # # 데이터베이스 선택
-    # db = client['feelingfilling']
-    # # 컬렉션 선택
-    # collection = db['senders']
-    # ch_collection = db['chattings']
-
-    # # 문서 생성 삽입
-    # # chat = {"user": 1, "text": [text], "date": datetime.datetime.now(), "count" : 3}
-    # # result = collection.insert_one(chat)
-
-    # # # 단일 문서 조회
-    # # 만약 count? 가 0이 아니라면 뒤에서 부터 이를 보두 F로 바꿔주고
-    # # count를 0으로 바꿔준다.
-    # # 이후 voice 분석 진행
-    # # 비동기 처리?
-    # post = collection.find_one({"_id": user_id})
-    
-    # last_date = post['lastDate']
-    # now_date = datetime.datetime.now()
-    # # 날짜 다른 경우 업데이트 및 chatting에 삽입
-
-    # update_text = post['chattings']
-    # if (post['numOfUnAnalysed'] != 0):
-    #     for i in range(post['numOfUnAnalysed']):
-    #          filter = {"_id" : ObjectId(update_text[len(post['chattings']) - i - 1].id) }
-    #          update = { "$set" : {"isAnalysed" : True} }
-    #          ch_collection.update_one(filter, update)
-
-    # # db 업데이트
-    # if (last_date.year != now_date.year or
-    #     last_date.month != now_date.month or
-    #     last_date.day != now_date.day) :
-
-    #     filter = {"_id" : user_id}
-    #     update1 = {'$set' : {'lastDate' : datetime.datetime.now()}}
-    #     collection.update_one(filter, update1)
-
-    #     chat = {
-    #         "type": 3,
-    #         "content" : datetime.datetime.now().strftime('%Y-%m-%d'),
-    #         'mood' : "default",
-    #         "amount" : 0,
-    #         "userId" : user_id,
-    #         "chatDate" : datetime.datetime.now(),
-    #         "isAnalysed" : True,
-    #     }
-    #     ch_collection.insert_one(chat)
-
-    # filter = {"_id" : user_id}
-    # update1 = {'$set' : {'numOfUnAnalysed' : 0}}
-    # collection.update_one(filter, update1)
-
-    # update2 = {'$set' : {'numOfChat' : post['numOfChat'] + 1}}
-    # collection.update_one(filter, update2)
-
-    # chat = {
-    #         "type": 0,
-    #         "content" : text,
-    #         'mood' : "default",
-    #         "amount" : amount,
-    #         "userId" : user_id,
-    #         "chatDate" : datetime.datetime.now(),
-    #         "isAnalysed" : True,
-    # }
-    # ch_collection.insert_one(chat)
-
-    # # 다중 문서 조회
-    # # for post in collection.find():
-    # #     print(post)
-    # return post
-
 
 # 번역 함수
 def translation_text(text):
