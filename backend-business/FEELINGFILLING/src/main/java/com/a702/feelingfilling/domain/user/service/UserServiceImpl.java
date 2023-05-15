@@ -87,11 +87,33 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public UserDTO getUser(){
-		UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User userEntity = userRepository.findByUserId(loginUser.getId());
-        return UserDTO.toDTO(userEntity);
+		    UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		    User userEntity = userRepository.findByUserId(loginUser.getId());
+        boolean isBilled = getBillStatus(loginUser.getId());
+        return UserDTO.toDTO(userEntity, isBilled);
     }
 
+    public boolean getBillStatus(int loginUserId){
+        RestTemplate template = new RestTemplate();
+        String uri = UriComponentsBuilder.fromHttpUrl("http://3.34.190.244:8702/billing/subscription/status").toUriString();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.set("Authorization", accessToken);
+        JSONObject body = new JSONObject();
+        body.put("serviceName","FeelingFilling");
+        body.put("serviceUserId",loginUserId);
+        HttpEntity<?> entity = new HttpEntity<>(body.toString(), headers);
+        log.info("요청보내기");
+        ResponseEntity<Map> response = template.exchange(
+            uri,
+            HttpMethod.POST,
+            entity,
+            Map.class);
+        Map<String,Object> responseBody = response.getBody();
+        log.info(responseBody.toString());
+        boolean isBilled = (boolean) responseBody.get("available");
+        return isBilled;
+    }
     @Override
     public UserDTO modifyUser(UserDTO userDTO) {
         int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
@@ -102,7 +124,7 @@ public class UserServiceImpl implements UserService {
         user.setMinimum(userDTO.getMinimum());
         user.setNickname(userDTO.getNickname());
 
-        return UserDTO.toDTO(userRepository.save(user));
+        return UserDTO.toDTO(userRepository.save(user),getBillStatus(userId));
     }
     
     @Override

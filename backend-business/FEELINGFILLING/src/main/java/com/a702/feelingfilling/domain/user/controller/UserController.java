@@ -66,7 +66,7 @@ public class UserController {
         Map<String, Object> resultMap;
         try {
             resultMap = new HashMap<>();
-			resultMap.put("user", userService.getUser());
+			      resultMap.put("user", userService.getUser());
             resultMap.put("message", SUCCESS);
             return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
         } catch (Exception e) {

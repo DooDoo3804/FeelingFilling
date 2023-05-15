@@ -212,12 +212,24 @@ public class ChattingServiceImpl implements ChattingService {
     }
   }
 
+  //음성 분석 결과 반영하기
   @Override
   public void voice(AnalyzedResult res) {
     try{
       int loginUserId = userService.getLoginUserId();
       addDate(loginUserId);
       Chatting newChat;
+      Chatting voice;
+      voice = Chatting.builder()
+          .type(1)
+          .content("음성 입력")
+          .chatDate(LocalDateTime.now())
+          .mood("voice")
+          .amount(0)
+          .userId(loginUserId)
+          .isAnalysed(true)
+          .build();
+      updateInfo(voice,loginUserId);
       if(!res.isSuccess()){
         newChat = Chatting.builder()
             .type(4)
