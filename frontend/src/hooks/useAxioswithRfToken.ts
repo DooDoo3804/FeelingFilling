@@ -43,7 +43,8 @@ export const useAxiosWithRefreshToken = <T>(
   const fetchData = useCallback(async () => {
     handleProgress(true);
     try {
-      const body = {request_config};
+      const body = {...request_config};
+      // console.log('body', body);
       const res: AxiosResponse<T> = await axios.request<T>({
         url,
         method,

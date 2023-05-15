@@ -122,13 +122,14 @@ const MainTab = (): JSX.Element => {
       <Tab.Screen
         name="MypageStack"
         component={MypageStackNavigation}
-        options={{
+        options={({route}) => ({
+          tabBarStyle: {display: getTabBarVisibility(route)},
           title: 'Mypage',
           headerShown: false,
           tabBarIcon: ({color, size}) => (
             <FontawesomeIcon name="user-circle" color={color} size={size} />
           ),
-        }}
+        })}
       />
     </Tab.Navigator>
   );
