@@ -102,8 +102,6 @@ def analysis_text(request):
             "success" : success
         }
 
-    # 
-
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
     print(f"소요시간 : {due_time}")
@@ -119,7 +117,11 @@ def analysis_text(request):
 def analysis_voice(request):
     start = time.time()
     # 토큰 decode해서 userid 추출
-    token = request.headers.get('Authorization', None)[6::]
+    try:
+        token = request.headers.get('Authorization', None)[6::]
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=401, content='Authentication failed')
     print(token)
     user_id = decode_jwt_token(token)
     if not user_id:
@@ -174,7 +176,11 @@ def analysis_voice(request):
     """
         번역 요청
     """
-    feeling, score, trans = translation_text(resp.json())
+    try :
+        feeling, score, trans = translation_text(text)
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=500, content='Translation failed. Please try again')
 
     """
         적금 금액 계산
@@ -191,16 +197,22 @@ def analysis_voice(request):
     # 뒤에서부터 해당 개수 F로 바꿔주고 0으로 전환
     # chatting에 react도 저장해야함??
     # 토큰 받아야함....?
-    gpt_react = make_react(trans)
+    try : 
+        gpt_react = make_react(trans)
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=500, content='React API failed. Please try again')
 
     """
         billing 요청
     """
-    success, message = req_billing(token, amount, user_id)
+    try :
+        success, message = req_billing(token, amount, user_id)
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=500, content='Req Billing failed. Please try again')
     print(message)
 
-    # billing에 요청한 이후에 진행해야함.....?
-    check_chatting(gpt_react, feeling, amount, success)
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
@@ -226,6 +238,7 @@ def analysis_voice(request):
             "amount" : 0,
             "success" : success
         }
+
     check_chatting(token, gpt_react, feeling, amount, success)
 
     end = time.time()
