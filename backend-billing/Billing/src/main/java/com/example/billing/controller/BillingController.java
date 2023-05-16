@@ -24,7 +24,7 @@ public class BillingController {
         UserDTO userDTO = userService.createUser(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
         KakaoReadyDTO kakaoReadyDTO = kakaoPayService.kakaoPayReady(userDTO);
         Map<String, Object> map = new HashMap<>();
-        map.put("url", kakaoReadyDTO.getNext_redirect_mobile_url());
+        map.put("url", kakaoReadyDTO.getNext_redirect_pc_url());
         return new ResponseEntity<>(map, HttpStatus.FOUND);
     }
 

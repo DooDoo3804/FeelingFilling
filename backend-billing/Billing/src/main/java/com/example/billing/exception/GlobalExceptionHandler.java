@@ -10,7 +10,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchUserException.class)
     public ResponseEntity<String> handleNoSuchUserException(NoSuchUserException e){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존해하지 않는 유저입니다. 먼저 정기 결제 신청을 해 주세요.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 유저입니다. 먼저 정기 결제 신청을 해 주세요.");
     }
 
     @ExceptionHandler(WrongDateFormatException.class)
