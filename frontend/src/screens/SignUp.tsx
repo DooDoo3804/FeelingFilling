@@ -31,7 +31,7 @@ const SignUp = ({navigation, route}: {navigation: any; route: any}) => {
   ]);
 
   const kakaoId = route.params.kakaoId.toString();
-  const deviceHeight = Dimensions.get('window').height;
+  const deviceHeight = Math.ceil(Dimensions.get('window').height);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -57,14 +57,7 @@ const SignUp = ({navigation, route}: {navigation: any; route: any}) => {
       Alert.alert('알림', '결제 범위에 오류가 발생했습니다.', [{text: '확인'}]);
     } else {
       try {
-        console.log('회원가입 시도');
-        console.log({
-          kakaoId: kakaoId,
-          nickname: nickname,
-          minimum: multiSliderValue[0],
-          maximum: multiSliderValue[1],
-        });
-        const userRes: AxiosResponse = await axios.post(
+        const res: AxiosResponse = await axios.post(
           'https://feelingfilling.store/api/user',
           {
             kakaoId: kakaoId,
@@ -73,15 +66,26 @@ const SignUp = ({navigation, route}: {navigation: any; route: any}) => {
             maximum: multiSliderValue[1],
           },
         );
-        console.log(userRes.data);
-        handleLogin(
-          userRes.data.user.nickname,
-          userRes.data.user.userId,
-          userRes.data.user.minimum,
-          userRes.data.user.maximum,
-          userRes.data.accessToken,
-          userRes.data.refreshToken,
+        const userRes: AxiosResponse = await axios.get(
+          'https://feelingfilling.store/api/user',
+          {
+            headers: {
+              Authorization: `Bearer ${res.data['access-token']}`,
+            },
+          },
         );
+        if (userRes.data.user.billed) {
+          handleLogin(
+            userRes.data.user.nickname,
+            userRes.data.user.userId,
+            userRes.data.user.minimum,
+            userRes.data.user.maximum,
+            res.data['access-token'],
+            res.data['refresh-token'],
+          );
+        } else {
+          navigation.navigate('Payment', {kakaoId: kakaoId});
+        }
       } catch (err) {
         console.log(err);
       }
@@ -151,10 +155,8 @@ const SignUp = ({navigation, route}: {navigation: any; route: any}) => {
           </SliderContainer>
         </InfoWrapper>
 
-        <ColorBtn color={Common.colors.emotionColor03}>
-          <BtnText
-            textColor={Common.colors.white01}
-            onPress={() => handleSignup()}>
+        <ColorBtn color={Common.colors.emotionColor03} onPress={handleSignup}>
+          <BtnText textColor={Common.colors.white01}>
             {/* onPress={() => navigation.navigate('Payment')}> */}
             가입하기
           </BtnText>

@@ -123,9 +123,7 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
             },
           },
         );
-        // console.log(userRes.data);
-        // todo : true판정으로 바꾸ㅡㅓㅑ야함
-        if (userRes.data.user.billed === false) {
+        if (userRes.data.user.billed) {
           handleLogin(
             userRes.data.user.nickname,
             userRes.data.user.userId,
@@ -135,7 +133,7 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
             res.data.refreshToken,
           );
         } else {
-          navigation.navigate('Payment');
+          navigation.navigate('Payment', {kakaoId: profile.id});
         }
       }
     } catch (err) {

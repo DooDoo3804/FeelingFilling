@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {WebView} from 'react-native-webview';
 
-const Payment = () => {
+const Payment = ({navigation, route}: {navigation: any; route: any}) => {
   const [data, setData] = useState<JSON | null>(null);
+  const kakaoId = route.params.kakaoId.toString();
 
   useEffect(() => {
     fetch('http://13.124.31.137:8702/billing/subscription/active/', {
