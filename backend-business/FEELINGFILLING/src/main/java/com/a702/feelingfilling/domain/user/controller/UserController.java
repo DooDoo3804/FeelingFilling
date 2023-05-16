@@ -8,6 +8,7 @@ import com.a702.feelingfilling.domain.user.service.UserService;
 import com.a702.feelingfilling.global.jwt.JwtTokenService;
 import com.a702.feelingfilling.global.jwt.JwtTokens;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,17 +32,18 @@ public class UserController {
     private static final String ALREADY_EXIST = "ALREADY EXIST";
 
     private final JwtTokenService jwtTokenService;
-    
+    @ApiOperation(value = "카카오 로그인", notes = "카카오 로그인 API", response = Map.class)
     @PostMapping("/kakao")
-    public ResponseEntity<?> kakaoLogin(@RequestBody UserKakaoRequestDTO userKakaoDTO) {
+    public ResponseEntity<?> kakaoLogin(@ApiParam("로그인하고자하는 카카오 oauth아이디")@RequestBody UserKakaoRequestDTO userKakaoDTO) {
         log.info("카카오 로그인 : " + userKakaoDTO);
         UserKakaoResponseDTO responseDTO = userService.kakaoLogin(userKakaoDTO);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
     //2. 회원가입
+    @ApiOperation(value = "회원 가입", notes = "회원 가입 API", response = Map.class)
     @PostMapping
-    public ResponseEntity<?> join(@RequestBody UserJoinDTO userJoinDTO) {
+    public ResponseEntity<?> join(@ApiParam("회원가입하고자하는 user 정보")@RequestBody UserJoinDTO userJoinDTO) {
         log.info("회원가입 요청 : " + userJoinDTO);
         Map<String, Object> resultMap;
         try {

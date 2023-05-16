@@ -137,8 +137,10 @@ public class UserServiceImpl implements UserService {
     public int deleteUser() {
         int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
     User user = userRepository.findByUserId(userId);
-        if(user==null)
+        if(user==null){
+            log.info("탈퇴요청한 user 존재하지 않음 : "+userId);
             return -1;
+        }
         userRepository.delete(user);
         return userId;
     }
@@ -158,7 +160,8 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public List<UserBriefDTO> getUserListForAdmin() {
-        List<UserBriefDTO> userDTOList = userRepository.findAll().stream().map(UserBriefDTO::toDTO).collect(Collectors.toList());
+        List<UserBriefDTO> userDTOList = userRepository.findAll()
+                .stream().map(UserBriefDTO::toDTO).collect(Collectors.toList());
         return userDTOList;
     }
     
@@ -172,8 +175,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean deleteUserForAdmin(Integer userId) {
         User user = userRepository.findByUserId(userId);
-        if(user==null)
+        if(user==null){
+            log.info("탈퇴시킬 user 존재하지 않음 : "+userId);
             return false;
+        }
         userRepository.delete(user);
         return true;
     }
