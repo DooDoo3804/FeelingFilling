@@ -223,7 +223,9 @@ def analysis_voice(request):
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
     print(message)
 
-    check_chatting(token, gpt_react, feeling, amount, success)
+    # 여기 voice 데이터 받아와야함
+
+    res_voice, res_result = check_chatting(token, gpt_react, feeling, amount, success)
 
     print(gpt_react)
 
@@ -234,26 +236,15 @@ def analysis_voice(request):
                         translation = trans, react = gpt_react, emotion = feeling, intensity = score,
                         amount = amount, success = success)
         request.save()
-        context = {
-            "react" : gpt_react,
-            "type" : 1,
-            "chatDate" : datetime.datetime.now(),
-            "userId" : user_id,
-            "isAnalysed" : success
-        }
+        context = [ res_voice, res_result ]
+
     # 실패한 경우
     else :
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
                 translation = trans, react = gpt_react, emotion = "", intensity = 0,
                 amount = 0, success = success)
         request.save()
-        context = {
-            "react" : gpt_react,
-            "type" : 1,
-            "chatDate" : datetime.datetime.now(),
-            "userId" : user_id,
-            "isAnalysed" : success
-        }
+        context = [ res_voice, res_result ]
 
     end = time.time()
     due_time = str(datetime.timedelta(seconds=(end-start))).split(".")
@@ -273,7 +264,7 @@ def cal_deposit(score, user_id):
 # GPT // ChatBot react 생성 함수
 def make_react(text):
     print(text)
-    prompt = text + ". 위로하거나 맞장구 쳐주는 말을 한국어로 해줘, 짧게 한 두 문장으로 ~요 로 끝나는 문장으로 작성해"
+    prompt = text + ". 위로하거나 맞장구 쳐주는 말을 한국어로 해줘, 짧게 한 두 문장으로 ~요 로 끝나는 문장으로 작성해. 이모지같은 것은 쓰지마. 한국어로 짧게 대답해"
     print(prompt)
     openai.api_key = settings.OPEN_AI_API_KEY
     # 밑에 모델 변경 가능 "text-ada-002"
@@ -321,8 +312,8 @@ def check_chatting(token, gpt_react, feeling, amount, success):
         )
     except Exception as e:
         print(e)
-    print(resp)
-    return 1
+    voice, result = resp.json()['vioce'], resp.json()['result']
+    return voice, result
 
 # 번역 함수
 def translation_text(text):
