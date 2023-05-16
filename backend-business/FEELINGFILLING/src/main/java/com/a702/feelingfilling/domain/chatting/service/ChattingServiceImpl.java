@@ -320,4 +320,19 @@ public class ChattingServiceImpl implements ChattingService {
     update.set("numOfUnAnalysed",0);
     mongoTemplate.updateFirst(query,update,Sender.class);
   }
+
+
+  //6. 분석 존재 여부
+  @Override
+  public boolean exist(){
+    try {
+      int loginUserId = userService.getLoginUserId();
+      Sender senderWithNum = senderRepository.findAnalyNumBySenderId(loginUserId);
+      int numOfAnaly = senderWithNum.getNumOfUnAnalysed();
+      if(numOfAnaly>0) return true;
+      else return false;
+    }catch (Exception e){
+      throw new CustomException("분석 여부 조회 실패");
+    }
+  }
 }//ChattingServiceImpl

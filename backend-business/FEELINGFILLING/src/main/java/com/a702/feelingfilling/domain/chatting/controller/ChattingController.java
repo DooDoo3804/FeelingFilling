@@ -108,4 +108,19 @@ public class ChattingController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultMap);
     }
   }//addChat
+
+  //6. 분석 존재 여부
+  @GetMapping("/exist")
+  public ResponseEntity<?> exist(){
+    log.info("분석여부 조회");
+    Map<String,Object> resultMap = new HashMap<>();
+    try{
+      resultMap.put("message","SUCCESS");
+      resultMap.put("exist",chattingService.exist());
+      return ResponseEntity.ok().body(resultMap);
+    }catch (Exception e){
+      resultMap.put("message",e.getMessage());
+      return ResponseEntity.badRequest().body(resultMap);
+    }
+  }//exist
 }

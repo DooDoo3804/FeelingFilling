@@ -14,4 +14,5 @@ public interface ChattingService {
 
   ChattingDTO voice(AnalyzedResult analyzedResult);
   ChattingDTO voiceInput();
+  boolean exist();
 }
