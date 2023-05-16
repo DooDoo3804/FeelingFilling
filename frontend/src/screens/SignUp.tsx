@@ -64,24 +64,24 @@ const SignUp = ({navigation, route}: {navigation: any; route: any}) => {
           minimum: multiSliderValue[0],
           maximum: multiSliderValue[1],
         });
-        // const userRes: AxiosResponse = await axios.post(
-        //   'https://feelingfilling.store/api/user',
-        //   {
-        //     kakaoId: kakaoId,
-        //     nickname: nickname,
-        //     minimum: multiSliderValue[0],
-        //     maximum: multiSliderValue[1],
-        //   },
-        // );
-        // console.log(userRes);
-        // handleLogin(
-        //   userRes.data.user.nickname,
-        //   userRes.data.user.userId,
-        //   userRes.data.user.minimum,
-        //   userRes.data.user.maximum,
-        //   userRes.data.accessToken,
-        //   userRes.data.refreshToken,
-        // );
+        const userRes: AxiosResponse = await axios.post(
+          'https://feelingfilling.store/api/user',
+          {
+            kakaoId: kakaoId,
+            nickname: nickname,
+            minimum: multiSliderValue[0],
+            maximum: multiSliderValue[1],
+          },
+        );
+        console.log(userRes.data);
+        handleLogin(
+          userRes.data.user.nickname,
+          userRes.data.user.userId,
+          userRes.data.user.minimum,
+          userRes.data.user.maximum,
+          userRes.data.accessToken,
+          userRes.data.refreshToken,
+        );
       } catch (err) {
         console.log(err);
       }
