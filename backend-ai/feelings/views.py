@@ -113,17 +113,6 @@ def analysis_text(request):
 # spring에서 데이터 받아서 voice 확인
 # spring에서 받는김에 날짜 까지 받기
 """
-_id 645defbc04c88c1e41227903
-type    2
-content "음성분석"
-chatDate    2023-05-12T07:50:20.519+00:00
-mood    "joy"
-amount  3413
-userId  37
-isAnalysed  true
-"""
-
-"""
     voice 분석 요청 api
 """
 # 음성 번역 api
@@ -264,7 +253,7 @@ def cal_deposit(score, user_id):
 # GPT // ChatBot react 생성 함수
 def make_react(text):
     print(text)
-    prompt = text + ". 위로하거나 맞장구 쳐주는 말을 한국어로 해줘, 짧게 한 두 문장으로 ~요 로 끝나는 문장으로 작성해. 텍스트로 한국어로 짧게 대답해"
+    prompt = text + ". 위로하거나 맞장구 쳐주는 말 또는 상황에 맞는 말을 두 문장을 존대해서 ~요 로 끝나는 말로 짧게 한국말로 해줘"
     print(prompt)
     openai.api_key = settings.OPEN_AI_API_KEY
     # 밑에 모델 변경 가능 "text-ada-002"
