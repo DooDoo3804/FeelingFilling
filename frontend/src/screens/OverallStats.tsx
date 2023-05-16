@@ -95,7 +95,7 @@ const OverallStats = () => {
   const [totalMoney, setTotalMoney] = useState<totalMoneyType[] | null>(null);
 
   const {data, error} = useAxios<ApiResponse>(
-    'http://k8a702.p.ssafy.io:8080/api/stat/all',
+    'https://feelingfilling.store/api/stat/all',
     'GET',
     null,
   );
@@ -107,7 +107,7 @@ const OverallStats = () => {
   };
 
   useEffect(() => {
-    if (data && data.message === 'success') {
+    if (data && data.message === 'SUCCESS') {
       const totalAmount =
         data.total[0].amount + data.total[1].amount + data.total[2].amount + 1;
 
