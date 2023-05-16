@@ -10,6 +10,7 @@ import com.example.billing.data.loggingDB.repository.DepositLogRepository;
 import com.example.billing.data.loggingDB.repository.InactiveLogRepository;
 import com.example.billing.data.loggingDB.repository.KakaoPayApproveLogRepository;
 import com.example.billing.data.loggingDB.repository.WithdrawalLogRepository;
+import com.example.billing.exception.WrongDateFormatException;
 import com.example.billing.service.LoggingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -59,8 +60,7 @@ public class LoggingServiceImpl implements LoggingService {
             List<KakaoPayApproveLogDocument> logs = kakaoPayApproveLogRepository.findByCreatedDateBetween(from, to);
             return logs;
         }catch (ParseException e){
-            System.out.println(e.getMessage());
-            return null;
+            throw new WrongDateFormatException();
         }
     }
 
@@ -73,8 +73,7 @@ public class LoggingServiceImpl implements LoggingService {
             List<DepositLogDocument> logs = depositLogRepository.findByCreatedDateBetween(from, to);
             return logs;
         }catch (ParseException e){
-            System.out.println(e.getMessage());
-            return null;
+            throw new WrongDateFormatException();
         }
     }
 
@@ -87,8 +86,7 @@ public class LoggingServiceImpl implements LoggingService {
             List<WithdrawalLogDocument> logs = withdrawalLogRepository.findByCreatedDateBetween(from, to);
             return logs;
         }catch (ParseException e){
-            System.out.println(e.getMessage());
-            return null;
+            throw new WrongDateFormatException();
         }
     }
 
@@ -101,7 +99,6 @@ public class LoggingServiceImpl implements LoggingService {
             List<InactiveLogDocumnet> logs = inactiveLogRepository.findByCreatedDateBetween(from, to);
             return logs;
         }catch (ParseException e){
-            System.out.println(e.getMessage());
-            return null;
+            throw new WrongDateFormatException();
         }}
 }

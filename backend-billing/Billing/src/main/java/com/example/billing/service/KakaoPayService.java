@@ -11,6 +11,7 @@ import com.example.billing.data.loggingDB.repository.CancellationLogRepository;
 import com.example.billing.data.loggingDB.repository.DepositLogRepository;
 import com.example.billing.data.loggingDB.repository.InactiveLogRepository;
 import com.example.billing.data.loggingDB.repository.KakaoPayApproveLogRepository;
+import com.example.billing.exception.NoSuchUserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -139,6 +140,8 @@ public class KakaoPayService {
 
     public boolean kakaoPaySubscription(ServiceUserAndAmountDTO serviceUserAndAmountDTO){
         User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserAndAmountDTO.getServiceName(), serviceUserAndAmountDTO.getServiceUserId());
+        if(user == null) throw new NoSuchUserException();
+
         int amount = serviceUserAndAmountDTO.getAmount();
 
         KakaoOrder newOrder = new KakaoOrder();
@@ -209,6 +212,8 @@ public class KakaoPayService {
     public KakaoInactiveDTO kakaoPayInactivate(ServiceUserDTO serviceUserDTO){
         User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
 
+        if(user == null) throw new NoSuchUserException();
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -249,6 +254,9 @@ public class KakaoPayService {
 
     public KakaoCancelDTO kakaoPayCancel(CancelDepositDTO cancelDepositDTO){
         User user = userRepository.findUserByServiceNameAndServiceUserId(cancelDepositDTO.getServiceName(), cancelDepositDTO.getServiceUserId());
+
+        if(user == null) throw new NoSuchUserException();
+
         int amount = cancelDepositDTO.getAmount();
         KakaoOrder kakaoOrder = kakaoOrderRepository.getKakaoOrderByOrderId(cancelDepositDTO.getOrderId());
         // 서버로 요청할 Header
@@ -311,6 +319,8 @@ public class KakaoPayService {
     public KakaoPayCheckDTO kakaoPayCheck(ServiceUserDTO serviceUserDTO){
         User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
 
+        if(user == null) throw new NoSuchUserException();
+        
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "KakaoAK " + KAKAO_ADMIN_KEY);
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
