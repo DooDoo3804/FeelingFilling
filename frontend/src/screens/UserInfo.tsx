@@ -45,7 +45,7 @@ const UserInfo = () => {
   ]);
 
   const dispatch = useDispatch();
-  const deviceHeight = Dimensions.get('window').height;
+  const deviceHeight = Math.ceil(Dimensions.get('window').height);
 
   const axioswithRftoken = useAxiosWithRefreshToken<ApiResponse>(
     'https://feelingfilling.store/api/user',
@@ -106,6 +106,7 @@ const UserInfo = () => {
       );
       Alert.alert('알림', '회원정보가 수정되었습니다.', [{text: '확인'}]);
     } else {
+      console.log(error);
       Alert.alert('알림', '회원정보 수정에 실패했습니다.', [{text: '확인'}]);
     }
   };
