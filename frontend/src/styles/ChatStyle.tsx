@@ -5,12 +5,14 @@ import {Platform} from 'react-native';
 // 전체 컨테이너
 export const Container = styled.View`
   flex: 1;
+  background-color: 'rgba(249, 246, 242, 0.8)';
 `;
 
 // 채팅창 컨테이너
 export const ChatSectionContainer = styled.ScrollView`
   flex: 10;
   background-color: ${Common.colors.backgroundColor01};
+  margin-top: 60px;
 `;
 
 // 오늘 날짜 표시
@@ -24,7 +26,7 @@ export const DateContainer = styled.View`
   padding: 5px 15px 5px 15px;
   border-radius: 20px;
   margin-bottom: 20px;
-  margin-top: 20px;
+  margin-top: 10px;
 `;
 
 export const DateTextSection = styled.Text`
@@ -34,7 +36,11 @@ export const DateTextSection = styled.Text`
   line-height: 24px;
 `;
 
-export const MsgTimeSection = styled.Text`
+export const MsgTimeSection = styled.View`
+  justify-content: flex-end;
+  align-items: flex-end;
+`;
+export const MsgTimeText = styled.Text`
   color: ${Common.colors.selectGrey};
   font-size: 12px;
 `;
@@ -43,9 +49,9 @@ export const MsgTimeSection = styled.Text`
 export const SendingChatContainer = styled.View`
   margin-left: auto;
   margin-right: 20px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  margin-top: 10px;
   flex-direction: row;
-  align-items: center;
 `;
 
 // 받는 메세지
@@ -53,15 +59,14 @@ export const ReceivedChatContainer = styled.View`
   margin-right: auto;
   margin-left: 17px;
   margin-bottom: 10px;
+  margin-top: 10px;
   flex-direction: row;
   align-items: center;
 `;
 
-export const SendMsgSection = styled.Text`
+export const SendMsgSection = styled.TouchableOpacity`
+  max-width: 65%;
   margin-left: 10px;
-  font-size: 14px;
-  line-height: 24px;
-  color: ${Common.colors.black01};
   padding: 5px 13px 5px 13px;
   background-color: ${Common.colors.sendingChatColor01};
   border-radius: 20px;
@@ -72,7 +77,14 @@ export const SendMsgSection = styled.Text`
   })}
 `;
 
+export const SendMsgText = styled.Text`
+  font-size: 14px;
+  line-height: 24px;
+  color: ${Common.colors.black01};
+`;
+
 export const ReceiveMsgSection = styled.Text<{color: string}>`
+  max-width: 65%;
   margin-left: 10px;
   font-size: 14px;
   line-height: 24px;
@@ -273,4 +285,13 @@ export const RecordingDisplayView = styled.View`
 
 export const PlayButton = styled.View`
   margin-left: 20px;
+`;
+
+export const AnalyzingButton = styled.TouchableOpacity`
+  position: absolute;
+  z-index: 999999;
+  top: 10px;
+  right: 0px;
+  width: auto;
+  height: 30px;
 `;
