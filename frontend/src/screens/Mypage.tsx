@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {Alert} from 'react-native';
+import axios, {AxiosResponse, AxiosError} from 'axios';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {logoutAction} from '../redux';
+import {toggleProgress, tokenAction, logoutAction} from '../redux';
 import type {AppState, User} from '../redux';
 
 import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
@@ -35,24 +36,24 @@ interface ApiResponse {
   badges: number[];
 }
 
-interface DelResponse {
-  message: string;
-}
-
 const Mypage = ({navigation}: {navigation: any}) => {
   const dispatch = useDispatch();
   const [badges, setBadges] = useState<number[]>([]);
+  const refreshToken = useSelector<AppState, string>(
+    state => state.loggedUser.refresh_token,
+  );
+  const accessToken = useSelector<AppState, string>(
+    state => state.loggedUser.access_token,
+  );
 
   const user = useSelector<AppState, User | null>(state => state.loggedUser);
 
+  const handleProgress = (progress: boolean) => {
+    dispatch(toggleProgress(progress));
+  };
+
   const {data, error} = useAxiosWithRefreshToken<ApiResponse>(
     'https://feelingfilling.store/api/user/badge',
-    'GET',
-    null,
-  );
-
-  const deleteRequest = useAxiosWithRefreshToken<DelResponse>(
-    'https://feelingfilling.store/api/user',
     'GET',
     null,
   );
@@ -86,10 +87,56 @@ const Mypage = ({navigation}: {navigation: any}) => {
     return result;
   };
 
-  const handleDelete = () => {
-    console.log('dd');
-    const {delData, delError} = deleteRequest;
-    console.log(delData, delError);
+  const handleDelete = async () => {
+    handleProgress(true);
+    try {
+      // console.log('body', body);
+      const res: AxiosResponse = await axios.delete(
+        'https://feelingfilling.store/api/user',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log(res.data);
+      handleLogout();
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        try {
+          const refreshConfig = {
+            data: {refresh_token: refreshToken},
+          };
+          const refreshRes: AxiosResponse<{
+            refresh_token: string;
+            access_token: string;
+          }> = await axios.get<{refresh_token: string; access_token: string}>(
+            `https://feelingfilling.store/api/user/token`,
+            refreshConfig,
+          );
+          const newRes: AxiosResponse = await axios.delete(
+            'https://feelingfilling.store/api/user',
+            {
+              headers: {
+                Authorization: `Bearer ${refreshRes.data.access_token}`,
+              },
+            },
+          );
+          console.log(newRes.data);
+          handleLogout();
+        } catch (refreshErr: any) {
+          console.log(refreshErr);
+          Alert.alert('회원 탈퇴', '회원 탈퇴 도중 문제가 발생했습니다.', [
+            {text: '확인'},
+          ]);
+        }
+      } else {
+        Alert.alert('회원 탈퇴', '회원 탈퇴 도중 문제가 발생했습니다.', [
+          {text: '확인'},
+        ]);
+      }
+    }
+    handleProgress(false);
   };
 
   const deleteUser = () => {
