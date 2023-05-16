@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +26,7 @@ public class LogController {
 
     private final LoggingService loggingService;
     @PostMapping("/user/subscription")
-    public ResponseEntity<Map<String,Object>> getSubscriptionLogsByUser(ServiceUserDTO serviceUserDTO){
+    public ResponseEntity<Map<String,Object>> getSubscriptionLogsByUser(@RequestBody ServiceUserDTO serviceUserDTO){
         List<KakaoPayApproveLogDocument> logs = loggingService.findSubscriptionLogsByUser(serviceUserDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
@@ -33,7 +34,7 @@ public class LogController {
     }
 
     @PostMapping("/user/deposit")
-    public ResponseEntity<Map<String,Object>> getDepositLogsByUser(ServiceUserDTO serviceUserDTO){
+    public ResponseEntity<Map<String,Object>> getDepositLogsByUser(@RequestBody ServiceUserDTO serviceUserDTO){
         List<DepositLogDocument> logs = loggingService.findDepositLogsByUser(serviceUserDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
@@ -41,7 +42,7 @@ public class LogController {
     }
 
     @PostMapping("/user/withdrawal")
-    public ResponseEntity<Map<String,Object>> getWithdrawalLogsByUser(ServiceUserDTO serviceUserDTO){
+    public ResponseEntity<Map<String,Object>> getWithdrawalLogsByUser(@RequestBody ServiceUserDTO serviceUserDTO){
         List<WithdrawalLogDocument> logs = loggingService.findWithdrawalLogsByUser(serviceUserDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
@@ -49,7 +50,7 @@ public class LogController {
     }
 
     @PostMapping("/user/inactive")
-    public ResponseEntity<Map<String,Object>> getInactiveLogsByUser(ServiceUserDTO serviceUserDTO){
+    public ResponseEntity<Map<String,Object>> getInactiveLogsByUser(@RequestBody ServiceUserDTO serviceUserDTO){
         List<InactiveLogDocumnet> logs = loggingService.findInactiveLogsByUser(serviceUserDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
@@ -57,7 +58,7 @@ public class LogController {
     }
 
     @PostMapping("/period/subscription")
-    public ResponseEntity<Map<String,Object>> getSubscriptionLogsByPeriod(TimePeriodDTO timePeriodDTO){
+    public ResponseEntity<Map<String,Object>> getSubscriptionLogsByPeriod(@RequestBody TimePeriodDTO timePeriodDTO){
         List<KakaoPayApproveLogDocument> logs = loggingService.findSubscriptionLogsByPeriod(timePeriodDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
@@ -65,7 +66,7 @@ public class LogController {
     }
 
     @PostMapping("/period/deposit")
-    public ResponseEntity<Map<String,Object>> getDepositLogsByPeriod(TimePeriodDTO timePeriodDTO){
+    public ResponseEntity<Map<String,Object>> getDepositLogsByPeriod(@RequestBody TimePeriodDTO timePeriodDTO){
         List<DepositLogDocument> logs = loggingService.findDepositLogsByPeriod(timePeriodDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
@@ -73,7 +74,7 @@ public class LogController {
     }
 
     @PostMapping("/period/withdrawal")
-    public ResponseEntity<Map<String,Object>> getWithdrawalLogsByPeriod(TimePeriodDTO timePeriodDTO){
+    public ResponseEntity<Map<String,Object>> getWithdrawalLogsByPeriod(@RequestBody TimePeriodDTO timePeriodDTO){
         List<WithdrawalLogDocument> logs = loggingService.findWithdrawalLogsByPeriod(timePeriodDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
@@ -81,7 +82,7 @@ public class LogController {
     }
 
     @PostMapping("/period/inactive")
-    public ResponseEntity<Map<String,Object>> getInactiveLogsByPeriod(TimePeriodDTO timePeriodDTO){
+    public ResponseEntity<Map<String,Object>> getInactiveLogsByPeriod(@RequestBody TimePeriodDTO timePeriodDTO){
         List<InactiveLogDocumnet> logs = loggingService.findInactiveLogsByPeriod(timePeriodDTO);
         Map<String, Object> map = new HashMap<>();
         map.put("log", logs);
