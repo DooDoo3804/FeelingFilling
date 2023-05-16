@@ -17,4 +17,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleWrongDateFormatException(WrongDateFormatException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("시간 형식이 맞지 않습니다. yyyy-MM-dd HH:mm:ss 형식으로 요청해주세요.");
     }
+
+    @ExceptionHandler(AmountInvalidException.class)
+    public ResponseEntity<String> handleAmountInvalidException(AmountInvalidException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청 금액은 최소 1원 이상이어야 합니다.");
+    }
 }

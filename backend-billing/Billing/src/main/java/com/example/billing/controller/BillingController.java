@@ -1,13 +1,16 @@
 package com.example.billing.controller;
 
 import com.example.billing.data.dto.*;
+import com.example.billing.exception.AmountInvalidException;
 import com.example.billing.service.KakaoPayService;
 import com.example.billing.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,15 +34,18 @@ public class BillingController {
     @GetMapping("/subscription/success")
     public ResponseEntity<Map<String, Object>> approveSubscription(int orderId, String pg_token) {
         KakaoApproveDTO kakaoApproveDTO = kakaoPayService.kakaoPayApprove(orderId, pg_token);
-        Map<String, Object> map = new HashMap<>();
 
-        map.put("result", true);
-        map.put("message", "구독 등록이 완료되었습니다.");
-        return new ResponseEntity<>(map, HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("success"));
+        
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
     @PostMapping("/subscription")
     public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO) {
+
+        if(serviceUserAndAmountDTO.getAmount() < 1) throw new AmountInvalidException();
+
         kakaoPayService.kakaoPaySubscription(serviceUserAndAmountDTO);
 
         Map<String, Object> map = new HashMap<>();
@@ -84,7 +90,10 @@ public class BillingController {
 
     @PostMapping("/cancel")
     public ResponseEntity<Map<String, Object>> cancelPayment(@RequestBody CancelDepositDTO cancelDepositDTO){
+        if(cancelDepositDTO.getAmount() < 1) throw new AmountInvalidException();
+
         KakaoCancelDTO kakaoCancelDTO = kakaoPayService.kakaoPayCancel(cancelDepositDTO);
+
 
         Map<String, Object> map = new HashMap<>();
         if (kakaoCancelDTO.getStatus().equals("PART_CANCEL_PAYMENT")||kakaoCancelDTO.getStatus().equals(("CANCEL_PAYMENT"))) {

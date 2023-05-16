@@ -9,6 +9,7 @@ import com.example.billing.data.dto.ServiceUserDTO;
 import com.example.billing.data.dto.WithdrawalDTO;
 import com.example.billing.data.loggingDB.document.WithdrawalLogDocument;
 import com.example.billing.data.loggingDB.repository.WithdrawalLogRepository;
+import com.example.billing.exception.NoSuchUserException;
 import com.example.billing.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class PointServiceImpl implements PointService {
     @Override
     public WithdrawalDTO withdrawPoint(ServiceUserAndAmountDTO serviceUserAndAmountDTO) {
         User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserAndAmountDTO.getServiceName(), serviceUserAndAmountDTO.getServiceUserId());
+
+        if(user == null) throw new NoSuchUserException();
+
         int amount = serviceUserAndAmountDTO.getAmount();
         WithdrawalDTO withdrawalDTO;
         long balanceBefore = user.getPoint();
@@ -61,6 +65,8 @@ public class PointServiceImpl implements PointService {
     @Override
     public long getPoint(ServiceUserDTO serviceUserDTO) {
         User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
+
+        if(user == null) throw new NoSuchUserException();
 
         return user.getPoint();
     }

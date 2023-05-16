@@ -4,6 +4,7 @@ import com.example.billing.data.dto.ProcessResultDTO;
 import com.example.billing.data.dto.ServiceUserAndAmountDTO;
 import com.example.billing.data.dto.ServiceUserDTO;
 import com.example.billing.data.dto.WithdrawalDTO;
+import com.example.billing.exception.AmountInvalidException;
 import com.example.billing.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,8 @@ public class PointController {
     @PostMapping("/withdraw")
     public ResponseEntity<Map<String,Object>> withdrawPoint(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO){
         WithdrawalDTO withdrawalDTO = pointService.withdrawPoint(serviceUserAndAmountDTO);
+
+        if(serviceUserAndAmountDTO.getAmount() < 1) throw new AmountInvalidException();
 
         Map<String, Object> map = new HashMap<>();
 
