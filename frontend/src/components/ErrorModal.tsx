@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal} from 'react-native';
+import {Modal, TouchableWithoutFeedback} from 'react-native';
 import styled from 'styled-components/native';
 import {Common} from './Common';
 import Lottie from 'lottie-react-native';
@@ -60,20 +60,28 @@ const ErrorModal = (props: any) => {
       animationType={'fade'}
       transparent={true}
       visible={props.showErrorModal}>
-      <ErrorModalContainer>
-        <ErrorModalView>
-          <LottieContainer>
-            <Lottie source={require('../assets/error.json')} autoPlay loop />
-          </LottieContainer>
-          <ErrorHeaderText>Error</ErrorHeaderText>
-          <ErrorTextView
-            onTouchStart={() => {
-              modalClose();
-            }}>
-            <CloseText>close</CloseText>
-          </ErrorTextView>
-        </ErrorModalView>
-      </ErrorModalContainer>
+      <TouchableWithoutFeedback onPress={modalClose}>
+        <ErrorModalContainer>
+          <TouchableWithoutFeedback>
+            <ErrorModalView>
+              <LottieContainer>
+                <Lottie
+                  source={require('../assets/error.json')}
+                  autoPlay
+                  loop
+                />
+              </LottieContainer>
+              <ErrorHeaderText>Error</ErrorHeaderText>
+              <ErrorTextView
+                onTouchStart={() => {
+                  modalClose();
+                }}>
+                <CloseText>close</CloseText>
+              </ErrorTextView>
+            </ErrorModalView>
+          </TouchableWithoutFeedback>
+        </ErrorModalContainer>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };

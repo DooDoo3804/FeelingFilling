@@ -52,7 +52,6 @@ const Home = ({navigation}: {navigation: any}) => {
 
   // 로딩중 화면 설정하는 함수
   // const inProgress = useSelector<AppState, boolean>(state => state.inProgress);
-  // const dispatch = useDispatch();
 
   // const handleProgress = () => {
   //   dispatch(toggleProgress(!inProgress));
