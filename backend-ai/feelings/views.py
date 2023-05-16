@@ -312,7 +312,7 @@ def check_chatting(token, gpt_react, feeling, amount, success):
         )
     except Exception as e:
         print(e)
-    voice, result = resp.json()['vioce'], resp.json()['result']
+    voice, result = resp.json()['voice'], resp.json()['result']
     return voice, result
 
 # 번역 함수
