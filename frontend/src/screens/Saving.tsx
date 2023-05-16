@@ -42,8 +42,8 @@ const Saving = () => {
 
   const now = new Date();
   const [year, setYear] = useState(new Date().getFullYear());
-  const [month, setMonth] = useState(new Date().getMonth());
-  const {data, refetch} = useAxiosWithRefreshToken<responseDataType>(
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const {data, error, refetch} = useAxiosWithRefreshToken<responseDataType>(
     `${uri}/${year}/${month}`,
     'GET',
     null,
@@ -60,7 +60,9 @@ const Saving = () => {
   useEffect(() => {
     const savingList = data?.logs as savingListDataType[];
     setSavingListData(savingList);
-  }, [data?.logs]);
+    if (error) {
+    }
+  }, [data?.logs, error]);
 
   const prevMonth = () => {
     if (month === 0) {
