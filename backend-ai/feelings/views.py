@@ -144,7 +144,7 @@ def analysis_voice(request):
             return HttpResponse(status=401, content='Authentication failed')
     
     """
-        STT 요청
+        TTS 요청
     """
     try:
         # 파일 받기
@@ -180,7 +180,7 @@ def analysis_voice(request):
                     # 응답이 오지 않은 경우 1초 후 재요청
                     print(f'Retrying after 1 seconds...')
                     sleep(1)
-            # print(resp.json()['results']['utterances'][0]['msg'])
+            print(resp.json())
             if (resp.json()['results']['utterances'] == []):
                 return HttpResponse(status=400, content='Bad Request. None Audio file')
         else : print("파일 없음!")
