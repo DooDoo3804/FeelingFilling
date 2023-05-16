@@ -2,9 +2,11 @@ package com.a702.feelingfilling.domain.chatting.controller;
 
 import com.a702.feelingfilling.domain.chatting.model.dto.AnalyzedResult;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChatInputDTO;
+import com.a702.feelingfilling.domain.chatting.model.dto.ChattingDTO;
 import com.a702.feelingfilling.domain.chatting.service.ChattingService;
 import io.swagger.annotations.Api;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -95,7 +97,10 @@ public class ChattingController {
     log.info("음성 분석 결과 수신 - " +analyzedResult);
     Map<String,Object> resultMap = new HashMap<>();
     try{
-      chattingService.voice(analyzedResult);
+      ChattingDTO voice = chattingService.voiceInput();
+      ChattingDTO result = chattingService.voice(analyzedResult);
+      resultMap.put("voice", voice);
+      resultMap.put("result", result);
       resultMap.put("message","SUCCESS");
       return ResponseEntity.status(HttpStatus.CREATED).body(resultMap);
     }catch (Exception e){

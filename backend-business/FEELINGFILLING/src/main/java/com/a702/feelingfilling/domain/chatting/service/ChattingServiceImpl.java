@@ -212,13 +212,11 @@ public class ChattingServiceImpl implements ChattingService {
     }
   }
 
-  //음성 분석 결과 반영하기
   @Override
-  public void voice(AnalyzedResult res) {
+  public ChattingDTO voiceInput(){
     try{
       int loginUserId = userService.getLoginUserId();
       addDate(loginUserId);
-      Chatting newChat;
       Chatting voice;
       voice = Chatting.builder()
           .type(1)
@@ -230,6 +228,17 @@ public class ChattingServiceImpl implements ChattingService {
           .isAnalysed(true)
           .build();
       updateInfo(voice,loginUserId);
+      return ChattingDTO.fromEntity(voice);
+    }catch (Exception e){
+      throw new RuntimeException("음성 저장 실패");
+    }
+  }
+  //음성 분석 결과 반영하기
+  @Override
+  public ChattingDTO voice(AnalyzedResult res) {
+    try{
+      int loginUserId = userService.getLoginUserId();
+      Chatting newChat;
       if(!res.isSuccess()){
         newChat = Chatting.builder()
             .type(4)
@@ -254,6 +263,7 @@ public class ChattingServiceImpl implements ChattingService {
       updateInfo(newChat,loginUserId);
       log.info("음성 분석 값 저장 완료");
       resetAnalyze(loginUserId);
+      return ChattingDTO.fromEntity(newChat);
     }catch (Exception e){
       log.info(e.getMessage());
       throw e;
