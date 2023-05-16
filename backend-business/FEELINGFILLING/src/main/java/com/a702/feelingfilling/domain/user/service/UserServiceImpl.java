@@ -89,7 +89,13 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUser(){
 		    UserLoginDTO loginUser = (UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		    User userEntity = userRepository.findByUserId(loginUser.getId());
-        boolean isBilled = getBillStatus(loginUser.getId());
+        boolean isBilled;
+        try{
+            isBilled = getBillStatus(loginUser.getId());
+        }
+        catch(Exception e){
+            isBilled = false;
+        }
         return UserDTO.toDTO(userEntity, isBilled);
     }
 
