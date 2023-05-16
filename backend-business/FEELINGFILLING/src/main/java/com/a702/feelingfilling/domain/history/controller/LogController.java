@@ -25,11 +25,8 @@ import java.util.Map;
 @Api(tags = {"거래내역 API"})
 @Slf4j
 public class LogController {
-	
-	public static final Logger logger = LoggerFactory.getLogger(LogController.class);
 	private static final String SUCCESS = "SUCCESS";
 	private static final String FAIL = "FAIL";
-	private static final String ALREADY_EXIST = "ALREADY EXIST";
 	
 	@Autowired
 	private LogService logService;
@@ -39,16 +36,19 @@ public class LogController {
 	@GetMapping("/{year}/{month}")
 	public ResponseEntity<?> getUserMonthLog(@ApiParam("년도")  @PathVariable int year
 			,@ApiParam("월")  @PathVariable int month){
+		log.info("월별 거래내역 조회 ");
 		HttpStatus status = HttpStatus.OK;
 		Map<String, Object> resultMap = new HashMap<>();
 		
 		try{
 			//이번 달 저금
 			int userId = ((UserLoginDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-			
+			log.info("회원번호 : "+userId + " /"+year+"년 "+month+"월");
+
 			List<LogDTO> logs = logService.getUserMonthLog(userId,year,month);
+
 			resultMap.put("logs",logs);
-			logger.debug("% 회원의 %d월 거래내역 : ", userId, month, logs);
+			log.debug("% 회원의 %d월 거래내역 : ", userId, month, logs);
 			
 			resultMap.put("message", SUCCESS);
 			
@@ -56,7 +56,7 @@ public class LogController {
 		catch (Exception e){
 			status = HttpStatus.BAD_REQUEST;
 			resultMap.put("message", FAIL);
-			logger.error("회원 월별 거래내역 조회 에러 : {} ",e);
+			log.error("회원 월별 거래내역 조회 에러 : {} ",e);
 		}
 		
 		return new ResponseEntity<>(resultMap,status);
