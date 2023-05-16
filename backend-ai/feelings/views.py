@@ -5,9 +5,7 @@ import datetime
 import logging
 import jwt
 import openai
-from bson import ObjectId
 from FEELINGFILLING_DJANGO import settings
-from pymongo import MongoClient
 from time import sleep
 from transformers import pipeline
 from googletrans import Translator
@@ -109,9 +107,6 @@ def analysis_text(request):
     print(f"소요시간 : {due_time}")
     return JsonResponse(context, status = 201, content_type=u"application/json; charset=utf-8")
 
-# or 잘라서 앞에만 v
-# spring에서 데이터 받아서 voice 확인
-# spring에서 받는김에 날짜 까지 받기
 """
     voice 분석 요청 api
 """
