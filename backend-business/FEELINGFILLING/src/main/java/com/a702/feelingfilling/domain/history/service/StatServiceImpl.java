@@ -2,12 +2,14 @@ package com.a702.feelingfilling.domain.history.service;
 
 import com.a702.feelingfilling.domain.history.model.dto.*;
 import com.a702.feelingfilling.domain.history.model.repository.StatCustomRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 public class StatServiceImpl implements StatService {
 
@@ -19,7 +21,7 @@ public class StatServiceImpl implements StatService {
 	
 	@Override
 	public UserStat[] getUserThisMonth(Integer userId) {
-
+		log.info("이번 달 저금량 조회 : "+userId);
 		List<UserStat> stats = statCustomRepository.getUserThisMonth(userId);
 		
 		UserStat[] thisMonth = new UserStat[3];
@@ -27,7 +29,6 @@ public class StatServiceImpl implements StatService {
 		
 		for(int j = 0;j<3;j++){
 			if(i< stats.size() && stats.get(i).getEmotion().equals(emotion[j])){
-				System.out.println(stats.get(i));
 				thisMonth[j] = stats.get(i);
 				i++;
 			}
@@ -44,7 +45,7 @@ public class StatServiceImpl implements StatService {
 	}
 	@Override
 	public Month[][] getUserMonths(Integer userId) {
-
+		log.info("최근 6개월 저금 추이 조회 : "+userId);
 		List<Month> monthInterfaces = statCustomRepository.getUserMonths(userId);
 
 		int now = LocalDateTime.now().getMonthValue();
@@ -79,7 +80,7 @@ public class StatServiceImpl implements StatService {
 	
 	@Override
 	public EmotionHigh getEmotionHigh(Integer userId) {
-
+		log.info("이번 달 감정 최고조 조회 : "+userId);
 		Integer date = statCustomRepository.getHighDateWithUserId(userId);
 		Integer hour = statCustomRepository.getHighHourWithUserId(userId);
 		Integer day = statCustomRepository.getHighDayWithUserId(userId);
@@ -104,7 +105,7 @@ public class StatServiceImpl implements StatService {
 	
 	@Override
 	public Stat[] getThisMonth() {
-
+		log.info("전체 회원의 이번 달 저금량 조회");
 		List<Stat> stats = statCustomRepository.getThisMonth();
 		
 		Stat[] thisMonth = new Stat[3];
@@ -126,7 +127,7 @@ public class StatServiceImpl implements StatService {
 	
 	@Override
 	public Yesterday[][] getYesterday() {
-
+		log.info("전체 회원의 전날 저금 추이");
 		List<Yesterday> yesterdayInterfaces = statCustomRepository.getYesterday();
 		
 		Yesterday[][] yesterday = new Yesterday[3][24];
@@ -151,6 +152,7 @@ public class StatServiceImpl implements StatService {
 	
 	@Override
 	public EmotionKing getEmotionKing() {
+		log.info("이번 달 감정왕 조회");
 		EmotionKing emotionKing = statCustomRepository.getEmotionKing();
 		
 		return emotionKing == null ? EmotionKing.builder().amount(0).count(0).build() : emotionKing;
@@ -158,7 +160,7 @@ public class StatServiceImpl implements StatService {
 	
 	@Override
 	public Stat[] getTotal() {
-
+		log.info("전체 회원의 저금량 조회");
 		List<Stat> stats = statCustomRepository.getTotal();
 		
 		Stat[] total = new Stat[3];
