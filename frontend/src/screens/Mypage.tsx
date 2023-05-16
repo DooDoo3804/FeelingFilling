@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {Alert} from 'react-native';
-import axios, {AxiosResponse, AxiosError} from 'axios';
+import axios, {AxiosResponse} from 'axios';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {toggleProgress, tokenAction, logoutAction} from '../redux';
+import {toggleProgress, logoutAction} from '../redux';
 import type {AppState, User} from '../redux';
 
 import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
@@ -99,7 +99,7 @@ const Mypage = ({navigation}: {navigation: any}) => {
           },
         },
       );
-      console.log(res.data);
+      // console.log(res.data);
       handleLogout();
     } catch (err: any) {
       if (err.response?.status === 401) {
@@ -122,7 +122,7 @@ const Mypage = ({navigation}: {navigation: any}) => {
               },
             },
           );
-          console.log(newRes.data);
+          // console.log(newRes.data);
           handleLogout();
         } catch (refreshErr: any) {
           console.log(refreshErr);
