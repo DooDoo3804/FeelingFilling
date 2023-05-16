@@ -98,19 +98,7 @@ DATABASES = {
         "PASSWORD": "mammoth77",
         "HOST": "3.38.191.128",
         "PORT": '3306'
-    },
-    # 'mongodb': {
-    #     'ENGINE': 'django_mongodb_engine',
-    #     'NAME': 'mydatabase',
-    #     'USER': '',
-    #     'PASSWORD': '',
-    #     'HOST': '3.38.191.128',
-    #     'PORT': '27017',
-    #     'OPTIONS': {
-    #         'tz_aware': True,
-    #         'connect': False,
-    #     },
-    # },
+    }
 }
 # DATABASE_ROUTERS = ['django_mongodb_engine.router.MongoDBRouter']
 
