@@ -79,6 +79,8 @@ def analysis_text(request):
         print(e)
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
     
+    if (success == -1):
+        return HttpResponse(status=404, content='존해하지 않는 유저입니다. 먼저 정기 결제 신청을 해 주세요.')
 
     print(message)
     # success = req_billing(token, amount, user_id)
@@ -209,6 +211,9 @@ def analysis_voice(request):
     except Exception as e:
         print(e)
         return HttpResponse(status=500, content='Req Billing failed. Please try again')
+    
+    if (success == -1):
+        return HttpResponse(status=404, content='존해하지 않는 유저입니다. 먼저 정기 결제 신청을 해 주세요.')
     print(message)
 
     # 여기 voice 데이터 받아와야함
@@ -388,8 +393,13 @@ def req_billing(token, amount, user_id):
                 'serviceName': "Feelingfilling",
             }
         )
-        success = resp.json()['result']
-        message = resp.json()['message']
+        if (resp.status_code == 404) : 
+            success = -1
+            message = resp.text
+        else :
+            success = resp.json()['result']
+            message = resp.json()['message']
+        print(success, message)
     except Exception as e:
         print(e)
     return success, message
