@@ -175,7 +175,11 @@ def analysis_voice(request):
         else : print("파일 없음!")
     except Exception as e:
         print(e)
-    text = resp.json()['results']['utterances'][0]['msg']
+    
+    try :
+        text = resp.json()['results']['utterances'][0]['msg']
+    except Exception as e: 
+        print(e)
 
     user = User.objects.get(user_id = user_id)
 
