@@ -112,9 +112,9 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
       );
       // console.log(res.data);
       if (res.data.newJoin) {
-        navigation.navigate('SignUp');
+        navigation.navigate('SignUp', {kakaoId: profile.id});
       } else {
-        handleAccessToken(res.data.accessToken, res.data.refreshToken);
+        handleAccessToken(res.data.refreshToken, res.data.accessToken);
         const userRes: AxiosResponse = await axios.get(
           'https://feelingfilling.store/api/user',
           {
@@ -123,14 +123,20 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
             },
           },
         );
-        handleLogin(
-          userRes.data.user.nickname,
-          userRes.data.user.userId,
-          userRes.data.user.minimum,
-          userRes.data.user.maximum,
-          res.data.accessToken,
-          res.data.refreshToken,
-        );
+        // console.log(userRes.data);
+        // todo : true판정으로 바꾸ㅡㅓㅑ야함
+        if (userRes.data.user.billed === false) {
+          handleLogin(
+            userRes.data.user.nickname,
+            userRes.data.user.userId,
+            userRes.data.user.minimum,
+            userRes.data.user.maximum,
+            res.data.accessToken,
+            res.data.refreshToken,
+          );
+        } else {
+          navigation.navigate('Payment');
+        }
       }
     } catch (err) {
       console.log(err);
