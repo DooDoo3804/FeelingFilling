@@ -232,7 +232,7 @@ def analysis_voice(request):
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
-        request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
+        request = Request(user = user, content = text, request_time = datetime.datetime.now(),
                         translation = trans, react = gpt_react, emotion = feeling, intensity = score,
                         amount = amount, success = success)
         request.save()
@@ -240,7 +240,7 @@ def analysis_voice(request):
 
     # 실패한 경우
     else :
-        request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
+        request = Request(user = user, content = text, request_time = datetime.datetime.now(),
                 translation = trans, react = gpt_react, emotion = "", intensity = 0,
                 amount = 0, success = success)
         request.save()
