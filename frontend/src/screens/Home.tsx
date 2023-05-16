@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
-
+import Swiper from 'react-native-swiper';
 import {useSelector} from 'react-redux';
 import type {AppState, User} from '../redux';
-// import {toggleProgress} from '../redux';
 
-import Swiper from 'react-native-swiper';
+import {useAxios} from '../hooks/useAxios';
 
 import {Common} from '../components/Common';
 import {
@@ -17,20 +16,40 @@ import {
   BalanceBtn,
   BalanceText,
   BtnText,
+  AdImage,
+  AdContainer,
 } from '../styles/HomeStyle';
+import {SwiperConatiner, SwiperView} from '../styles/LoginStyle';
 
-import {
-  SwiperConatiner,
-  SwiperView,
-  SwiperText,
-  LottieContainer,
-} from '../styles/LoginStyle';
+import ad1 from '../assets/ad_1.png';
+import ad2 from '../assets/ad_2.png';
+import ad3 from '../assets/ad_3.png';
+
+interface responseDataType {
+  message: string;
+  logs: savingListDataType[];
+}
+
+interface savingListDataType {
+  logTime: string;
+  emotion: string;
+  amount: number;
+  total: number;
+}
 
 const Home = ({navigation}: {navigation: any}) => {
   const [balanceView, setBalanceView] = useState(true);
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth());
 
   const user = useSelector<AppState, User | null>(state => state.loggedUser);
-  console.log(user?.access_token);
+
+  const {data, refetch} = useAxios<responseDataType>(
+    `http://3.38.191.128:8080/api/log/${user?.id}/${year}/${month}`,
+    'GET',
+    null,
+  );
+
   // 로딩중 화면 설정하는 함수
   // const inProgress = useSelector<AppState, boolean>(state => state.inProgress);
 
@@ -38,13 +57,28 @@ const Home = ({navigation}: {navigation: any}) => {
   //   dispatch(toggleProgress(!inProgress));
   // };
 
+  // console.log(data.logs);
+  // console.log(data);
+  // console.log(text, error);
+
+  const priceConverter = (price: string) => {
+    return price.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   return (
     <Container>
       <Heading>나의 감정 적금</Heading>
       <MoneyWrapper>
-        <BalanceHeading>{user && user.name}님의 4월 적금</BalanceHeading>
+        <BalanceHeading>
+          {user && user.name}님의 {month + 1}월 적금
+        </BalanceHeading>
         {balanceView ? (
-          <BalanceText>181,818 원</BalanceText>
+          <BalanceText>
+            {data && data.logs.length > 0
+              ? priceConverter(data.logs[0].total + '')
+              : '0'}
+            원
+          </BalanceText>
         ) : (
           <HideText>잔액 숨김 중</HideText>
         )}
@@ -69,18 +103,19 @@ const Home = ({navigation}: {navigation: any}) => {
           autoplayTimeout={3}
           activeDotColor={Common.colors.selectGrey}>
           <SwiperView>
-            <LottieContainer></LottieContainer>
-            <SwiperText>감정을 다스리고, 돈도 모아보세요.</SwiperText>
+            <AdContainer>
+              <AdImage source={ad1} />
+            </AdContainer>
           </SwiperView>
           <SwiperView>
-            <LottieContainer></LottieContainer>
-            <SwiperText>나의 감정 점수와 통계를 확인해요.</SwiperText>
+            <AdContainer>
+              <AdImage source={ad2} />
+            </AdContainer>
           </SwiperView>
           <SwiperView>
-            <LottieContainer></LottieContainer>
-            <SwiperText>
-              한 달이 지나면 모은 돈을 돌려받을 수 있어요.
-            </SwiperText>
+            <AdContainer>
+              <AdImage source={ad3} />
+            </AdContainer>
           </SwiperView>
         </Swiper>
       </SwiperConatiner>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useAxios} from '../hooks/useAxios';
+import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
 
 import {
   BadgeDescription,
@@ -33,7 +33,7 @@ interface ApiResponse {
   badges: number[];
 }
 
-const badgeList = [
+export const badgeList = [
   {
     src: meet01,
     name: '감정 적금 초심자',
@@ -116,9 +116,8 @@ const badgeList = [
 const Badges = () => {
   const [badges, setBadges] = useState<number[]>([]);
 
-  // 로그인 기능 생기고 API 요청 주소 변경되면 주소 바꿔주기
-  const {data, error} = useAxios<ApiResponse>(
-    'http://k8a702.p.ssafy.io:8080/api/user/badge/1',
+  const {data, error} = useAxiosWithRefreshToken<ApiResponse>(
+    'https://feelingfilling.store/api/user/badge',
     'GET',
     null,
   );
