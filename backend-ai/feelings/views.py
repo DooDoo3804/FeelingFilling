@@ -75,16 +75,6 @@ def analysis_text(request):
         0 // 1
     """
 
-    new_text = ""
-    for gr in gpt_react:
-        if gr in ["\'", "\""]:
-            continue
-        else :
-            new_text += gr
-    
-    print(new_text)
-    
-    
     try :
         success, message = req_billing(token, amount, user_id)
     except Exception as e:
@@ -97,11 +87,11 @@ def analysis_text(request):
     if success:
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = text, request_time = datetime.datetime.now(),
-                        translation = trans, react = new_text, emotion = feeling, intensity = score,
+                        translation = trans, react = gpt_react, emotion = feeling, intensity = score,
                         amount = amount, success = success)
         request.save()
         context = {
-            "react" : new_text,
+            "react" : gpt_react,
             "emotion" : feeling,
             "amount" : amount,
             "success" : success
@@ -119,6 +109,19 @@ def analysis_text(request):
     print(f"소요시간 : {due_time}")
     return JsonResponse(context, status = 201, content_type=u"application/json; charset=utf-8")
 
+# or 잘라서 앞에만 v
+# spring에서 데이터 받아서 voice 확인
+# spring에서 받는김에 날짜 까지 받기
+"""
+_id 645defbc04c88c1e41227903
+type    2
+content "음성분석"
+chatDate    2023-05-12T07:50:20.519+00:00
+mood    "joy"
+amount  3413
+userId  37
+isAnalysed  true
+"""
 
 """
     voice 분석 요청 api
@@ -222,24 +225,17 @@ def analysis_voice(request):
 
     check_chatting(token, gpt_react, feeling, amount, success)
 
-    new_text = ""
-    for gr in gpt_react:
-        if gr in ["\'", "\""]:
-            continue
-        else :
-            new_text += gr
-    
-    print(new_text)
+    print(gpt_react)
 
     # 성공한 경우
     if (success) :
         # request 데이터 저장 (success 받아와야 함)
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                        translation = trans, react = new_text, emotion = feeling, intensity = score,
+                        translation = trans, react = gpt_react, emotion = feeling, intensity = score,
                         amount = amount, success = success)
         request.save()
         context = {
-            "react" : new_text,
+            "react" : gpt_react,
             "type" : 1,
             "chatDate" : datetime.datetime.now(),
             "userId" : user_id,
@@ -248,11 +244,11 @@ def analysis_voice(request):
     # 실패한 경우
     else :
         request = Request(user = user, content = resp.json(), request_time = datetime.datetime.now(),
-                translation = trans, react = new_text, emotion = "", intensity = 0,
+                translation = trans, react = gpt_react, emotion = "", intensity = 0,
                 amount = 0, success = success)
         request.save()
         context = {
-            "react" : new_text,
+            "react" : gpt_react,
             "type" : 1,
             "chatDate" : datetime.datetime.now(),
             "userId" : user_id,
@@ -291,8 +287,20 @@ def make_react(text):
         temperature=0.7,
     )
     message = completions.choices[0].message.content
-    print(message)
-    return message
+    
+    new_text = ""
+    for gr in message:
+        if gr in ["\'", "\""]:
+            continue
+        else :
+            new_text += gr
+    check_string = [" or ", " Or ", " OR "]
+    for i in range(4, len(new_text)):
+        if new_text[i-4:i] in check_string:
+            new_text = new_text[0:i-4]
+
+    print(new_text)
+    return new_text
 
 
 # chatting에 insert 함수
