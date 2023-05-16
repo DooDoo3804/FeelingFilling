@@ -12,6 +12,6 @@ public interface ChattingService {
   List<ChattingDTO> getChatList(int page);
   ChattingDTO analyze(String accessToken);
 
-  void voice(AnalyzedResult analyzedResult);
-
+  ChattingDTO voice(AnalyzedResult analyzedResult);
+  ChattingDTO voiceInput();
 }
