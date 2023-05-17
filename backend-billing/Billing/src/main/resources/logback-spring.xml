@@ -1,0 +1,15 @@
+<configuration>
+    <appender name="MONGO" class="ch.qos.logback.ext.mongo.MongoDBAppender">
+        <uri>mongodb://${spring.data.mongodb.host}:${spring.data.mongodb.port}</uri>
+        <databaseName>${spring.data.mongodb.database}</databaseName>
+        <collectionName>spring_logs</collectionName>
+        <writeConcern>ACKNOWLEDGED</writeConcern>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="MONGO"/>
+    </root>
+</configuration>

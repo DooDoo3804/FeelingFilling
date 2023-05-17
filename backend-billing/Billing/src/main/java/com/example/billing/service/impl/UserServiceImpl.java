@@ -39,14 +39,4 @@ public class UserServiceImpl implements UserService {
             return null;
         }
     }
-
-    @Override
-    public UserDTO getUserByUserId(int userId) {
-        return null;
-    }
-
-    @Override
-    public void updateUser(UserDTO user) {
-
-    }
 }
