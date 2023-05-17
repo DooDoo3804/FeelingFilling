@@ -97,7 +97,7 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
       // console.log(token);
       const profile = await NativeKakaoLogins.getProfile();
       // console.log('User profile:', profile);
-      console.log(profile.id);
+      // console.log(profile.id);
 
       const res: AxiosResponse = await axios.post(
         'https://feelingfilling.store/api/user/kakao',
@@ -123,6 +123,7 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
             },
           },
         );
+        // console.log('userdata', userRes.data.user);
         if (userRes.data.user.billed) {
           handleLogin(
             userRes.data.user.nickname,

@@ -46,6 +46,13 @@ const SignUp = ({navigation, route}: {navigation: any; route: any}) => {
     setMultiSliderValue(range);
   };
 
+  const handleAccessToken = (
+    new_refreshtoken: string,
+    new_accesstoken: string,
+  ) => {
+    dispatch(tokenAction(new_refreshtoken, new_accesstoken));
+  };
+
   const handleSignup = async (): Promise<void> => {
     if (nameError) {
       Alert.alert('알림', '닉네임은 20자까지 설정 가능합니다.', [
@@ -84,6 +91,10 @@ const SignUp = ({navigation, route}: {navigation: any; route: any}) => {
             res.data['refresh-token'],
           );
         } else {
+          handleAccessToken(
+            res.data['refresh-token'],
+            res.data['access-token'],
+          );
           navigation.navigate('Payment', {kakaoId: kakaoId});
         }
       } catch (err) {
