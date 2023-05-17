@@ -30,8 +30,6 @@ import java.util.List;
 public class KakaoPayService {
     @Value("${CID}")
     private String cid; // 가맹점 테스트 코드
-    private KakaoReadyDTO kakaoReadyDTO;
-    private KakaoApproveDTO kakaoApproveDTO;
     @Value("${KAKAO_ADMIN_KEY}")
     private String KAKAO_ADMIN_KEY;
 
@@ -74,9 +72,9 @@ public class KakaoPayService {
         parameters.add("total_amount", "0");
         parameters.add("vat_amount", "0");
         parameters.add("tax_free_amount", "0");
-        parameters.add("approval_url", "http://3.34.190.244:8702/billing/subscription/success?orderId="+newOrder.getOrderId()); // 성공 시 redirect url
-        parameters.add("cancel_url", "http://3.34.190.244:8702/payment/cancel"); // 취소 시 redirect url
-        parameters.add("fail_url", "http://3.34.190.244:8702/payment/fail"); // 실패 시 redirect url
+        parameters.add("approval_url", "http://13.125.237.195:8702/billing/subscription/success?orderId="+newOrder.getOrderId()); // 성공 시 redirect url
+        parameters.add("cancel_url", "http://13.125.237.195:8702/billing/subscription/cancel?orderId="+newOrder.getOrderId()); // 취소 시 redirect url
+        parameters.add("fail_url", "http://13.125.237.195:8702/billing/subscription/fail?orderId="+newOrder.getOrderId()); // 실패 시 redirect url
 
         // 파라미터, 헤더
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(parameters, headers);
@@ -84,7 +82,7 @@ public class KakaoPayService {
         // 외부에 보낼 url
         RestTemplate restTemplate = new RestTemplate();
 
-        kakaoReadyDTO = restTemplate.postForObject(
+        KakaoReadyDTO kakaoReadyDTO = restTemplate.postForObject(
                 "https://kapi.kakao.com/v1/payment/ready",
                 requestEntity,
                 KakaoReadyDTO.class);
@@ -114,7 +112,7 @@ public class KakaoPayService {
         // 외부에 보낼 url
         RestTemplate restTemplate = new RestTemplate();
 
-        kakaoApproveDTO = restTemplate.postForObject(
+        KakaoApproveDTO kakaoApproveDTO = restTemplate.postForObject(
                 "https://kapi.kakao.com/v1/payment/approve",
                 requestEntity,
                 KakaoApproveDTO.class);
@@ -137,6 +135,39 @@ public class KakaoPayService {
         kakaoPayApproveLogRepository.save(kakaoPayApproveDocument);
         return kakaoApproveDTO;
     }
+    public void subscriptionCancel(int orderId) {
+
+        KakaoOrder kakaoOrder = kakaoOrderRepository.getKakaoOrderByOrderId(orderId);
+
+        KakaoPayApproveLogDocument kakaoPayApproveDocument = KakaoPayApproveLogDocument.builder()
+                .tid(kakaoOrder.getTid())
+                .sid(kakaoOrder.getUser().getSid())
+                .orderId(kakaoOrder.getOrderId())
+                .status("cancel")
+                .userId(kakaoOrder.getUser().getUserId())
+                .serviceName(kakaoOrder.getUser().getServiceName())
+                .serviceUserId(kakaoOrder.getUser().getServiceUserId())
+                .build();
+        kakaoPayApproveLogRepository.save(kakaoPayApproveDocument);
+    }
+
+    public void subscriptionFail(int orderId) {
+
+        KakaoOrder kakaoOrder = kakaoOrderRepository.getKakaoOrderByOrderId(orderId);
+
+        KakaoPayApproveLogDocument kakaoPayApproveDocument = KakaoPayApproveLogDocument.builder()
+                .tid(kakaoOrder.getTid())
+                .sid(kakaoOrder.getUser().getSid())
+                .orderId(kakaoOrder.getOrderId())
+                .status("fail")
+                .userId(kakaoOrder.getUser().getUserId())
+                .serviceName(kakaoOrder.getUser().getServiceName())
+                .serviceUserId(kakaoOrder.getUser().getServiceUserId())
+                .build();
+        kakaoPayApproveLogRepository.save(kakaoPayApproveDocument);
+    }
+
+
 
     public boolean kakaoPaySubscription(ServiceUserAndAmountDTO serviceUserAndAmountDTO){
         User user = userRepository.findUserByServiceNameAndServiceUserId(serviceUserAndAmountDTO.getServiceName(), serviceUserAndAmountDTO.getServiceUserId());
@@ -170,7 +201,7 @@ public class KakaoPayService {
         // 외부에 보낼 url
         RestTemplate restTemplate = new RestTemplate();
 
-        kakaoApproveDTO = restTemplate.postForObject(
+        KakaoApproveDTO kakaoApproveDTO = restTemplate.postForObject(
                 "https://kapi.kakao.com/v1/payment/subscription",
                 requestEntity,
                 KakaoApproveDTO.class);
