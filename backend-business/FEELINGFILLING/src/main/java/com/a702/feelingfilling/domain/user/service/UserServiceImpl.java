@@ -100,8 +100,9 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean getBillStatus(int loginUserId){
+        log.info("결제등록 여부 조회");
         RestTemplate template = new RestTemplate();
-        String uri = UriComponentsBuilder.fromHttpUrl("http://3.34.190.244:8702/billing/subscription/status").toUriString();
+        String uri = UriComponentsBuilder.fromHttpUrl("http://13.125.237.195/billing/subscription/status").toUriString();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 //        headers.set("Authorization", accessToken);
@@ -183,7 +184,7 @@ public class UserServiceImpl implements UserService {
         try{
             int loginUserId = getLoginUserId();
             RestTemplate template = new RestTemplate();
-            String uri = UriComponentsBuilder.fromHttpUrl("http://3.34.190.244:8702/billing/subscription/active").toUriString();
+            String uri = UriComponentsBuilder.fromHttpUrl("http://13.125.237.195/billing/subscription/active").toUriString();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 //        headers.set("Authorization", accessToken);
