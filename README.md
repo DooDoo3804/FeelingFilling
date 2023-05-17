@@ -118,9 +118,12 @@
 ## 7. ERD
 
 - ERD (Main server)
-  <img src="./docs/img/erd.png"  width="700" height="370">
+
+<img src="./docs/img/erd.png"  width="700" height="370">
+
 - ERD (결제 server)
-  <img src="./docs/img/erd-billing.png"  width="700" height="370">
+
+<img src="./docs/img/erd-billing.png"  width="700" height="370">
 
 ---
 
