@@ -36,11 +36,30 @@ public class BillingController {
         KakaoApproveDTO kakaoApproveDTO = kakaoPayService.kakaoPayApprove(orderId, pg_token);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("success"));
-        
+        headers.setLocation(URI.create("http://success"));
+
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
+    @GetMapping("/subscription/fail")
+    public ResponseEntity<Map<String, Object>> failSubscription(int orderId) {
+        kakaoPayService.subscriptionFail(orderId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("http://fail"));
+
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+
+    @GetMapping("/subscription/cancel")
+    public ResponseEntity<Map<String, Object>> cancelSubscription(int orderId) {
+        kakaoPayService.subscriptionCancel(orderId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("http://cancel"));
+
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
     @PostMapping("/subscription")
     public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO) {
 
