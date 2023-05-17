@@ -180,9 +180,6 @@ const Mypage = ({navigation}: {navigation: any}) => {
         )}
       </BadgeContainer>
       <MenuList>
-        <SingleMenu>
-          <PlainText>환급 정보 등록하기</PlainText>
-        </SingleMenu>
         <SingleMenu onPress={() => handleLogout()}>
           <PlainText>로그아웃</PlainText>
         </SingleMenu>
