@@ -21,7 +21,6 @@ public class KakaoPayApproveLogDocument {
     private String serviceName;
     private int serviceUserId;
     private String status;
-    private String msg;
     private int orderId;
     private String tid;
     private String sid;
