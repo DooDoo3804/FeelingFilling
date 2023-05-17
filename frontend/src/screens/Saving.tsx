@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import Lottie from 'lottie-react-native';
 import {Common} from '../components/Common';
 import {
   SavingWrapper,
@@ -18,6 +19,8 @@ import {
   WithdrawMoneyText,
   SavingMoneySumText,
   EmotionPngContainer,
+  NoSavingContainer,
+  NoSavingText,
 } from '../styles/SavingStyle';
 import FontawesomeIcon5 from 'react-native-vector-icons/FontAwesome5';
 /////// png ///////
@@ -138,6 +141,7 @@ const Saving = () => {
         </SavingItemContainer>,
       );
     });
+
     return result;
   };
 
@@ -175,7 +179,20 @@ const Saving = () => {
         </BalanceText>
       </BalanceWrapper>
       <SavingListContainer>
-        {savingListData ? SavingListRander() : ''}
+        {savingListData && savingListData.length > 0 ? (
+          SavingListRander()
+        ) : (
+          <>
+            <NoSavingContainer>
+              <Lottie
+                source={require('../assets/piggy_bank.json')}
+                autoPlay
+                loop
+              />
+            </NoSavingContainer>
+            <NoSavingText>해당 월의 적금 내역이 없어요.</NoSavingText>
+          </>
+        )}
       </SavingListContainer>
     </SavingWrapper>
   );
