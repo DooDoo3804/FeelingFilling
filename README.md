@@ -102,7 +102,7 @@
 
 ## 5. 개발 환경
 
-<img src="./docs/img/기술스택.png"  width="700" height="700">
+<img src="./docs/img/skill.png"  width="700" height="700">
 
 ---
 
@@ -110,7 +110,7 @@
 
 - ### 6-1. 컴포넌트 구성도
 - ### 6-2. Figma
-  <img src="./docs/img/피그마.png"  width="700" height="370">
+  <img src="./docs/img/figma.png"  width="700" height="370">
 
 ---
 
