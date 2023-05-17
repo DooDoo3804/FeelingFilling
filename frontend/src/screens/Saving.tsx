@@ -42,7 +42,7 @@ const Saving = () => {
 
   const now = new Date();
   const [year, setYear] = useState(new Date().getFullYear());
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [month, setMonth] = useState(new Date().getMonth());
   const {data, error, refetch} = useAxiosWithRefreshToken<responseDataType>(
     `${uri}/${year}/${month}`,
     'GET',
