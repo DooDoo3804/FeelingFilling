@@ -45,7 +45,7 @@ const Home = ({navigation}: {navigation: any}) => {
   const user = useSelector<AppState, User | null>(state => state.loggedUser);
 
   const {data, refetch} = useAxios<responseDataType>(
-    `http://3.38.191.128:8080/api/log/${user?.id}/${year}/${month}`,
+    `http://3.38.191.128:8080/api/log/${user?.id}/${year}/${month + 1}`,
     'GET',
     null,
   );
