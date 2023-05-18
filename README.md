@@ -135,9 +135,10 @@
     <td align="center"><a href="https://github.com/DooDoo3804"><img src="https://avatars.githubusercontent.com/u/109324603?v=4?s=100" width="100px;" alt=""/><br /><sub><b>김도윤</b></sub></a><br /></td>     
     <td align="center"><a href="https://github.com/e-bing"><img src="https://avatars.githubusercontent.com/u/91499112?v=4?s=100" width="100px;" alt=""/><br /><sub><b>성예빈</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/m0jinaa"><img src="https://avatars.githubusercontent.com/u/96249562?v=4" width="100px;" alt=""/><br /><sub><b>고명진</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/GoldenRetriever-93"><img src="https://avatars.githubusercontent.com/u/109256192?v=4" width="100px;" alt=""/><br /><sub><b>이상훈</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/GoldenRetriever-93"><img src="https://avatars.githubusercontent.com/u/109256192?v=4?s=100" width="100px;" alt=""/><br /><sub><b>이상훈</b></sub></a><br /></td>
+	<td align="center"><a href="https://github.com/fanngineer"><img src="https://avatars.githubusercontent.com/u/109322241?v=4?s=100" width="100px;" alt=""/><br /><sub><b>김성환</b></sub></a><br /></td>
   </tr>
-</table>
+
 
 ### ✔ 곽민주
 
@@ -184,3 +185,10 @@
 - MySQL billing database 구축
 - MongoDB를 활용한 logging 구현
 - Kakao 정기결제 api를 활용한 결제 기능 구현
+
+### ✔ 김성환
+
+- Springboot를 활용한 REST API 서버 구현
+-  MongoDB Chatting Database 구축
+-  Chatting 기능 관련 로직 구현
+-  JWT, Spring Security를 통한 인증/인가
