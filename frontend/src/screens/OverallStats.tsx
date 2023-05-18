@@ -25,7 +25,6 @@ import {
   EmoKingText,
   ErrorText,
   TitleWrapper,
-  LottieWrapper,
 } from '../styles/OverallStatsStyle';
 
 interface monthTotalType {
@@ -38,6 +37,7 @@ interface monthTotalType {
 interface prevTotalType {
   emotion: string;
   amount: number;
+  hour: string;
 }
 
 interface emotionKingType {
@@ -58,7 +58,7 @@ interface ApiResponse {
   emotionKing: emotionKingType;
   total: totalMoneyType[];
   totalThisMonth: monthTotalType[];
-  yesterday: [prevTotalType[], prevTotalType[], prevTotalType[]];
+  yesterday: prevTotalType[][];
 }
 
 const AngerGradient = () => (
@@ -247,7 +247,7 @@ const OverallStats = () => {
               background: {fill: '#F9F9F9'},
             }}
             domainPadding={{x: 5, y: 5}}
-            minDomain={{y: -40}}
+            // minDomain={{y: -40}}
             // maxDomain={{y: 26000}}
             padding={{top: 20, bottom: 50, left: 60, right: 50}}>
             <VictoryAxis
