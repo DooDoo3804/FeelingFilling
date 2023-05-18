@@ -140,9 +140,9 @@
 2. 적금이라는 목적에 부합하는 깔끔한 UI/UX
 3. 자동 결제를 위한 카카오 소셜 로그인
 4. 민감한 정보인 Billing을 따로 서버를 두고 구현
-5. Transformer 기반 학습된 NLP 모델 사용
+5. Transformer 기반 학습된 DistilRoBERTa-base NLP 모델 사용
 6. Openai 의 ChatGPT 3.5 모델 사용
-7. 주기적인 작업을 위해 Batch 구현
+7. Django 서버 주기적인 작업을 위해 Batch 구현
 8. 감정에 따라 분류되어 적금된 금액 확인 가능
 9. 사용자당 일별, 월별, 감정별 통계 제공
 
