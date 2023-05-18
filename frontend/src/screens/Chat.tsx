@@ -436,11 +436,12 @@ const Chat = () => {
         },
       })
       .then(response => {
-        console.log(response.data);
         const chats: ChatDataType[] = [];
         chats.push(response.data.chatting as ChatDataType);
         setChattings(chattings => [...chattings, ...chats]);
         setAnalyzingModalView(false);
+        setIsCanAnalyzing(false);
+        scrollViewRef.current.scrollToEnd({animated: false});
       })
       // eslint-disable-next-line @typescript-eslint/no-shadow
       .catch(error => {
