@@ -101,13 +101,13 @@
 
 ## 4. 시스템 아키텍쳐
 
-
+<img src="./docs/img/architecture.jpg"  width="700">
 
 ---
 
 ## 5. 개발 환경
 
-<img src="./docs/img/skill.PNG"  width="700" height="700">
+<img src="./docs/img/skill.png"  width="700">
 
 ---
 
