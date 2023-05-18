@@ -95,6 +95,7 @@ const Chat = () => {
   );
 
   const [chattings, setChattings] = useState<ChatDataType[]>([]);
+  const [isCanAnalyzing, setIsCanAnalyzing] = useState<boolean>(false);
 
   // modal control
   const [errorModalView, setErrorModalView] = useState<boolean>(false);
@@ -140,20 +141,8 @@ const Chat = () => {
     duration: '00:00:00',
   });
 
-  // 처음 페이지 마운팅시 scroll은 가장 최근 대화로
-  // 첫 페이지 채팅 data setting
-  useEffect(() => {
-    scrollViewRef.current.scrollToEnd({animated: true});
-    const chatData = data?.chattings as ChatDataType[];
-    setChattings(chatData);
-  }, [data]);
-
-  // 처음 페이지 마운팅시 recorder 객체를 생성
-  useEffect(() => {
-    audioRecorder.current = new AudioRecorderPlayer();
-    if (error) {
-      setErrorModalView(true);
-    }
+  // 아직 분석 안된 채팅이 있는지 여부 조회
+  const isExistNotAnalzingChat = useCallback(() => {
     axios
       .get(backendChatUri + 'chatting/exist', {
         headers: {
@@ -162,11 +151,34 @@ const Chat = () => {
         },
       })
       .then((res: any) => {
-        console.log(res.data);
+        if (res.data.exist === false) {
+          setIsCanAnalyzing(false);
+          console.log(false);
+        } else {
+          setIsCanAnalyzing(true);
+          console.log(true);
+        }
       })
       .catch((err: any) => {
         console.log(err);
       });
+  }, [user?.access_token]);
+
+  // 처음 페이지 마운팅시 scroll은 가장 최근 대화로
+  // 첫 페이지 채팅 data setting
+  useEffect(() => {
+    scrollViewRef.current.scrollToEnd({animated: true});
+    const chatData = data?.chattings as ChatDataType[];
+    setChattings(chatData);
+    isExistNotAnalzingChat();
+  }, [data, isExistNotAnalzingChat]);
+
+  // 처음 페이지 마운팅시 recorder 객체를 생성
+  useEffect(() => {
+    audioRecorder.current = new AudioRecorderPlayer();
+    if (error) {
+      setErrorModalView(true);
+    }
   }, [error, user?.access_token]);
 
   // 채팅 data get Func
@@ -399,12 +411,13 @@ const Chat = () => {
           },
         )
         .then(response => {
-          const chat: ChatDataType[] = [];
-          chat.push(response.data.chatting);
+          const chats: ChatDataType[] = [];
+          chats.push(response.data.chatting);
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          setChattings(chattings => [...chattings, ...chat]);
+          setChattings(chattings => [...chattings, ...chats]);
           setText('');
           scrollViewRef.current.scrollToEnd({animated: true});
+          isExistNotAnalzingChat();
         })
         // eslint-disable-next-line @typescript-eslint/no-shadow
         .catch(error => {
@@ -416,6 +429,7 @@ const Chat = () => {
 
   // 채팅 분석 요청 함수
   const textAnalyzingReq = () => {
+    setAnalyzingModalView(true);
     axios
       .get('https://feelingfilling.store/api/chatting/analyze', {
         headers: {
@@ -425,9 +439,14 @@ const Chat = () => {
       })
       .then(response => {
         console.log(response.data);
+        const chats: ChatDataType[] = [];
+        chats.push(response.data.chatting as ChatDataType);
+        setChattings(chattings => [...chattings, ...chats]);
+        setAnalyzingModalView(false);
       })
       // eslint-disable-next-line @typescript-eslint/no-shadow
       .catch(error => {
+        setAnalyzingModalView(false);
         setErrorModalView(true);
         console.log(error);
       });
@@ -605,9 +624,9 @@ const Chat = () => {
           <View ref={chatContentRef}>{renderOfChat()}</View>
         </ChatSectionContainer>
       </TouchableWithoutFeedback>
-      {/* text 채팅 분석 버튼ㄹ */}
+      {/* text 채팅 분석 버튼 */}
       <AnalyzingButton>
-        <SaveBtn clickFunc={textAnalyzingReq} />
+        {isCanAnalyzing ? <SaveBtn clickFunc={textAnalyzingReq} /> : ''}
       </AnalyzingButton>
       <SendingSectionContainer>
         <TextInputSection

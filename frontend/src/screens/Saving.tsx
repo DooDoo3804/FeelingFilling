@@ -62,7 +62,6 @@ const Saving = () => {
 
   useEffect(() => {
     const savingList = data?.logs as savingListDataType[];
-    console.log(data?.logs);
     setSavingListData(savingList);
     if (error) {
       console.log(error);

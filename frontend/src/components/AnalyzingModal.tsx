@@ -54,7 +54,7 @@ const AnalyzingModal = (props: any) => {
                   loop
                 />
               </LottieContainer>
-              <AnalyzingHeaderText>음성을 분석중입니다..</AnalyzingHeaderText>
+              <AnalyzingHeaderText>분석중입니다..</AnalyzingHeaderText>
             </AnalyzingModalView>
           </TouchableWithoutFeedback>
         </AnalyzingModalContainer>
