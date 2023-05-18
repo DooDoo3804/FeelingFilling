@@ -167,7 +167,7 @@ const Chat = () => {
       .catch((err: any) => {
         console.log(err);
       });
-  }, []);
+  }, [error, user?.access_token]);
 
   // 채팅 data get Func
   const nextChatdataRend = () => {
