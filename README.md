@@ -55,6 +55,8 @@
 
 - ✔ 개발인원: 곽민주 성예빈 김도윤 고명진 김성환 이상훈 (6인)
 
+- ✔ 사용 기술스택: Springboot Django ReactNative Docker AWS +
+
 ---
 
 ## 2. 서비스 및 기능소개
@@ -69,7 +71,8 @@
         가장 높은 감정의 세기에 따라 미리 등록한 범위의 금액 내에서 저금액이 계산되어 저금됩니다.
         사용자는 분석이 완료되면 저금액과 함께 가장 높게 나온 감정의 종류와 AI의 적절한 응답을 받아볼 수 있습니다.
 - ### 2-3. 나의 달별 저금 기록 조회 및, 월별 추이 조회
-        홈화면에서 저금 내역을 누르면 달 별 상세 저금 내역을 모두 조회할 수 있습니다. 하단바의 왼쪽 두번째에 위치한 개인 통계 조회창에 들어가면, 나의 월별 저금 추이를 알아볼 수 있습니다.
+        홈화면에서 저금 내역을 누르면 달 별 상세 저금 내역을 모두 조회할 수 있습니다. 하단바의 왼쪽 두번째에 위치한 개인 통계 조회창에 들어가면,
+        나의 월별 저금 추이를 알아볼 수 있습니다.
         추가로 내가 지금까지 아낀 감정비용으로 몇잔의 커피를 마실 수 있었는지 확인할 수 있으니 재미있게 이용해주세요.
 - ### 2-4. 전체 사용자의 시간 별 저금 추이 조회
         하단바의 오른쪽 두번째에 위치한 전체 통계 조회창에 들어가면, 이번달 모든 사용자들의 감정 별 누적 저금 합계를 살펴볼 수 있습니다.
@@ -111,6 +114,9 @@
 ## 6. 컴포넌트 구성도 및 Figma
 
 - ### 6-1. 컴포넌트 구성도
+
+<img src="./docs/img/component.png"  width="700" height="370">
+
 - ### 6-2. Figma
   <img src="./docs/img/figma.png"  width="700" height="370">
 
@@ -119,13 +125,26 @@
 ## 7. ERD
 
 - ERD (Main server)
-  <img src="./docs/img/erd.png"  width="700" height="370">
+
+<img src="./docs/img/erd.png"  width="700" height="370">
+
 - ERD (결제 server)
-  <img src="./docs/img/erd-billing.png"  width="700" height="370">
+
+<img src="./docs/img/erd-billing.png"  width="700" height="370">
 
 ---
 
 ## 8. 서비스 및 기술 특징점
+
+1. 감정을 통해 적금한다는 의미에 맞는 직관적인 이름 Feelingfilling
+2. 적금이라는 목적에 부합하는 깔끔한 UI/UX
+3. 자동 결제를 위한 카카오 소셜 로그인
+4. 민감한 정보인 Billing을 따로 서버를 두고 구현
+5. Transformer 기반 학습된 DistilRoBERTa-base NLP 모델 사용
+6. Openai 의 ChatGPT 3.5 모델 사용
+7. Django 서버 주기적인 작업을 위해 Batch 구현
+8. 감정에 따라 분류되어 적금된 금액 확인 가능
+9. 사용자당 일별, 월별, 감정별 통계 제공
 
 ---
 
@@ -137,9 +156,12 @@
     <td align="center"><a href="https://github.com/DooDoo3804"><img src="https://avatars.githubusercontent.com/u/109324603?v=4?s=100" width="100px;" alt=""/><br /><sub><b>김도윤</b></sub></a><br /></td>     
     <td align="center"><a href="https://github.com/e-bing"><img src="https://avatars.githubusercontent.com/u/91499112?v=4?s=100" width="100px;" alt=""/><br /><sub><b>성예빈</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/m0jinaa"><img src="https://avatars.githubusercontent.com/u/96249562?v=4" width="100px;" alt=""/><br /><sub><b>고명진</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/GoldenRetriever-93"><img src="https://avatars.githubusercontent.com/u/109256192?v=4" width="100px;" alt=""/><br /><sub><b>이상훈</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/GoldenRetriever-93"><img src="https://avatars.githubusercontent.com/u/109256192?v=4?s=100" width="100px;" alt=""/><br /><sub><b>이상훈</b></sub></a><br /></td>
+	<td align="center"><a href="https://github.com/fanngineer"><img src="https://avatars.githubusercontent.com/u/109322241?v=4?s=100" width="100px;" alt=""/><br /><sub><b>김성환</b></sub></a><br /></td>
   </tr>
 </table>
+
+
 
 ### ✔ 곽민주
 
@@ -186,3 +208,10 @@
 - MySQL billing database 구축
 - MongoDB를 활용한 logging 구현
 - Kakao 정기결제 api를 활용한 결제 기능 구현
+
+### ✔ 김성환
+
+- Springboot를 활용한 REST API 서버 구현
+-  MongoDB Chatting Database 구축
+-  Chatting 기능 관련 로직 구현
+-  JWT, Spring Security를 통한 인증/인가
