@@ -142,6 +142,8 @@
     <td align="center"><a href="https://github.com/GoldenRetriever-93"><img src="https://avatars.githubusercontent.com/u/109256192?v=4?s=100" width="100px;" alt=""/><br /><sub><b>이상훈</b></sub></a><br /></td>
 	<td align="center"><a href="https://github.com/fanngineer"><img src="https://avatars.githubusercontent.com/u/109322241?v=4?s=100" width="100px;" alt=""/><br /><sub><b>김성환</b></sub></a><br /></td>
   </tr>
+</table>
+
 
 
 ### ✔ 곽민주
