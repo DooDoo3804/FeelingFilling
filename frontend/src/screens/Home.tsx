@@ -3,7 +3,7 @@ import Swiper from 'react-native-swiper';
 import {useSelector} from 'react-redux';
 import type {AppState, User} from '../redux';
 
-import {useAxios} from '../hooks/useAxios';
+import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
 
 import {Common} from '../components/Common';
 import {
@@ -44,8 +44,8 @@ const Home = ({navigation}: {navigation: any}) => {
 
   const user = useSelector<AppState, User | null>(state => state.loggedUser);
 
-  const {data, refetch} = useAxios<responseDataType>(
-    `http://3.38.191.128:8080/api/log/${user?.id}/${year}/${month + 1}`,
+  const {data, error, refetch} = useAxiosWithRefreshToken<responseDataType>(
+    `https://feelingfilling.store/api/log/${year}/${month + 1}`,
     'GET',
     null,
   );
