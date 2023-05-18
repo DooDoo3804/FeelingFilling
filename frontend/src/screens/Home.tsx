@@ -18,6 +18,9 @@ import {
   BtnText,
   AdImage,
   AdContainer,
+  EventList,
+  SingleEventContainer,
+  EventText,
 } from '../styles/HomeStyle';
 import {SwiperConatiner, SwiperView} from '../styles/LoginStyle';
 
@@ -95,6 +98,15 @@ const Home = ({navigation}: {navigation: any}) => {
           </BalanceBtn>
         </BtnWrapper>
       </MoneyWrapper>
+      <Heading>진행 중 이벤트</Heading>
+      <EventList>
+        <SingleEventContainer>
+          <EventText>5월 감정왕 이벤트 안내</EventText>
+        </SingleEventContainer>
+        <SingleEventContainer>
+          <EventText>적금 환급 관련 안내</EventText>
+        </SingleEventContainer>
+      </EventList>
       <SwiperConatiner>
         <Swiper
           showsButtons={false}
