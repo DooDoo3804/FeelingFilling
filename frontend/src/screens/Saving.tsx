@@ -109,15 +109,16 @@ const Saving = () => {
     const result: any[] = [];
     let idx = 0;
     savingListData.forEach(e => {
+      console.log(e);
       result.push(
         <SavingItemContainer key={idx++}>
           <SavingItemFront>
             <SavingDateText>{e.logTime.substring(0, 16)}</SavingDateText>
-            {e.emotion === 'angry' ? (
+            {e.emotion === 'anger' ? (
               <EmotionPngContainer source={EmoAngry} />
-            ) : e.emotion === 'happy' ? (
+            ) : e.emotion === 'joy' ? (
               <EmotionPngContainer source={EmoHappy} />
-            ) : e.emotion === 'sad' ? (
+            ) : e.emotion === 'sadness' ? (
               <EmotionPngContainer source={EmoSad} />
             ) : (
               <FontawesomeIcon5
