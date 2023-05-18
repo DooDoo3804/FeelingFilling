@@ -234,6 +234,7 @@
 - MySQL billing database 구축
 - MongoDB를 활용한 logging 구현
 - Kakao 정기결제 api를 활용한 결제 기능 구현
+- cloudwatch를 이용한 통합 로그 분석 
 
 ### ✔ 김성환
 
