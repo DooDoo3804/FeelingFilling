@@ -300,7 +300,7 @@ public class KakaoPayService {
         parameters.add("cid", cid);
         parameters.add("tid", kakaoOrder.getTid());
         parameters.add("cancel_amount", String.valueOf(amount));
-        parameters.add("cancel_tax_free_amount", String.valueOf(amount));
+        parameters.add("cancel_tax_free_amount", "0");
 
 
         // 파라미터, 헤더
