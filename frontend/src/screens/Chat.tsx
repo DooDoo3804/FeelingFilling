@@ -153,10 +153,8 @@ const Chat = () => {
       .then((res: any) => {
         if (res.data.exist === false) {
           setIsCanAnalyzing(false);
-          console.log(false);
         } else {
           setIsCanAnalyzing(true);
-          console.log(true);
         }
       })
       .catch((err: any) => {
