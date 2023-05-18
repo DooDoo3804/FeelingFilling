@@ -7,9 +7,14 @@ import com.example.billing.data.dto.WithdrawalDTO;
 import com.example.billing.exception.AmountInvalidException;
 import com.example.billing.service.PointService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +25,11 @@ import java.util.Map;
 public class PointController {
 
     private final PointService pointService;
+
+    private final Logger log = LoggerFactory.getLogger(PointController.class);
     @PostMapping("/")
     public ResponseEntity<Map<String,Object>> getPoint(@RequestBody ServiceUserDTO serviceUserDTO){
+        log.info("[getPoint]"+serviceUserDTO.toString());
         long amount = pointService.getPoint(serviceUserDTO);
 
         Map<String, Object> map = new HashMap<>();
@@ -33,6 +41,7 @@ public class PointController {
 
     @PostMapping("/withdraw")
     public ResponseEntity<Map<String,Object>> withdrawPoint(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO){
+        log.info("[withdrawPoint]"+serviceUserAndAmountDTO.toString());
         WithdrawalDTO withdrawalDTO = pointService.withdrawPoint(serviceUserAndAmountDTO);
 
         if(serviceUserAndAmountDTO.getAmount() < 1) throw new AmountInvalidException();

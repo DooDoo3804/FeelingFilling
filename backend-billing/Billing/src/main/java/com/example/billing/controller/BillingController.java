@@ -5,6 +5,8 @@ import com.example.billing.exception.AmountInvalidException;
 import com.example.billing.service.KakaoPayService;
 import com.example.billing.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,11 @@ public class BillingController {
 
     private final UserService userService;
 
+    private final Logger log = LoggerFactory.getLogger(BillingController.class);
+
     @PostMapping("/subscription/active")
     public ResponseEntity<Map<String, Object>> startSubscription(@RequestBody ServiceUserDTO serviceUserDTO) {
+        log.info("[startSubscription]"+serviceUserDTO.toString());
         UserDTO userDTO = userService.createUser(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
         KakaoReadyDTO kakaoReadyDTO = kakaoPayService.kakaoPayReady(userDTO);
         Map<String, Object> map = new HashMap<>();
@@ -33,6 +38,7 @@ public class BillingController {
 
     @GetMapping("/subscription/success")
     public ResponseEntity<Map<String, Object>> approveSubscription(int orderId, String pg_token) {
+        log.info("[approveSubscription] orderId = "+orderId +pg_token.toString());
         KakaoApproveDTO kakaoApproveDTO = kakaoPayService.kakaoPayApprove(orderId, pg_token);
 
         HttpHeaders headers = new HttpHeaders();
@@ -43,6 +49,7 @@ public class BillingController {
 
     @GetMapping("/subscription/fail")
     public ResponseEntity<Map<String, Object>> failSubscription(int orderId) {
+        log.info("[failSubscription] orderId = "+orderId);
         kakaoPayService.subscriptionFail(orderId);
 
         HttpHeaders headers = new HttpHeaders();
@@ -53,6 +60,7 @@ public class BillingController {
 
     @GetMapping("/subscription/cancel")
     public ResponseEntity<Map<String, Object>> cancelSubscription(int orderId) {
+        log.info("[cancelSubscription] orderId = "+orderId);
         kakaoPayService.subscriptionCancel(orderId);
 
         HttpHeaders headers = new HttpHeaders();
@@ -64,7 +72,7 @@ public class BillingController {
 
     @PostMapping("/subscription")
     public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO) {
-
+        log.info("[paySubscription]"+serviceUserAndAmountDTO.toString());
         if(serviceUserAndAmountDTO.getAmount() < 1) throw new AmountInvalidException();
 
         kakaoPayService.kakaoPaySubscription(serviceUserAndAmountDTO);
@@ -78,6 +86,7 @@ public class BillingController {
 
     @PostMapping("/subscription/inactive")
     public ResponseEntity<Map<String, Object>> subscriptionInactivate(@RequestBody ServiceUserDTO serviceUserDTO) {
+        log.info("[subscriptionInactivate]"+serviceUserDTO.toString());
         KakaoInactiveDTO kakaoInactiveDTO = kakaoPayService.kakaoPayInactivate(serviceUserDTO);
 
         Map<String, Object> map = new HashMap<>();
@@ -97,6 +106,7 @@ public class BillingController {
 
     @PostMapping("/subscription/status")
     public ResponseEntity<Map<String, Object>> subscriptionStatus(@RequestBody ServiceUserDTO serviceUserDTO) {
+        log.info("[subscriptionStatus]"+serviceUserDTO.toString());
         KakaoPayCheckDTO kakaoPayCheckDTO = kakaoPayService.kakaoPayCheck(serviceUserDTO);
 
         Map<String, Object> map = new HashMap<>();
@@ -111,6 +121,7 @@ public class BillingController {
 
     @PostMapping("/cancel")
     public ResponseEntity<Map<String, Object>> cancelPayment(@RequestBody CancelDepositDTO cancelDepositDTO){
+        log.info("[cancelPayment]"+cancelDepositDTO.toString());
         if(cancelDepositDTO.getAmount() < 1) throw new AmountInvalidException();
 
         KakaoCancelDTO kakaoCancelDTO = kakaoPayService.kakaoPayCancel(cancelDepositDTO);
