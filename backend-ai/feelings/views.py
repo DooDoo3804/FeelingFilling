@@ -257,7 +257,7 @@ def cal_deposit(score, user_id):
 # GPT // ChatBot react 생성 함수
 def make_react(text):
     print(text)
-    prompt = text + ". 앞의 상황에 어울리는 말을 해줘. 만약 앞의 상황에서 위로나 맞장구가 필요하다면 그에 해당하는 말을 해줘. 반말하지 말고 짧게 두 문장을 해요체로 작성하는데 말 많이 하지 마라 경고했다.."
+    prompt = text + ". 앞의 상황에 적절하게 공감하는 말을 해줘. 만약 필요하다면 그에 해당하는 말을 해줘. 반말하지 말고 짧게 두 문장을 해요체로 작성하는데 말 많이 하지 마라 경고했다.."
     print(prompt)
     openai.api_key = settings.OPEN_AI_API_KEY
     # 밑에 모델 변경 가능 "text-ada-002"
