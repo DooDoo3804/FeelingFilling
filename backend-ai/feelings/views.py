@@ -249,7 +249,7 @@ def analysis_voice(request):
 def cal_deposit(score, user_id):
     user= User.objects.get(user_id = user_id)
     min, max = user.minimum, user.maximum
-    amount = round((max - min + 1) * (score-0.333) * 1.5 + min)
+    amount = round((max - min + 1) * (score-0.3) * 1.5 + min)
     print(amount)
     return amount
 
