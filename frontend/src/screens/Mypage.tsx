@@ -61,6 +61,7 @@ const Mypage = ({navigation}: {navigation: any}) => {
   useEffect(() => {
     if (data) {
       setBadges(data.badges);
+      // console.log(data.badges);
     } else {
       console.log('error : ', error);
     }
@@ -78,8 +79,8 @@ const Mypage = ({navigation}: {navigation: any}) => {
     }
     for (let i = 0; i < len; i++) {
       result.push(
-        <SingleBadgeWrapper>
-          <EmotionImage source={badgeList[i].src} />
+        <SingleBadgeWrapper key={i}>
+          <EmotionImage source={badgeList[badges[i]].src} />
         </SingleBadgeWrapper>,
       );
     }
