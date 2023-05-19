@@ -76,8 +76,8 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
     id: number,
     min_money: number,
     max_money: number,
-    refresh_token: string,
     access_token: string,
+    refresh_token: string,
   ) => {
     dispatch(
       loginAction({
@@ -85,8 +85,8 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
         id,
         min_money,
         max_money,
-        refresh_token,
         access_token,
+        refresh_token,
       }),
     );
   };
@@ -112,9 +112,9 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
       );
       // console.log(res.data);
       if (res.data.newJoin) {
-        navigation.navigate('SignUp');
+        navigation.navigate('SignUp', {kakaoId: profile.id});
       } else {
-        handleAccessToken(res.data.accessToken, res.data.refreshToken);
+        handleAccessToken(res.data.refreshToken, res.data.accessToken);
         const userRes: AxiosResponse = await axios.get(
           'https://feelingfilling.store/api/user',
           {
@@ -123,14 +123,19 @@ const KakaoLoginButton = ({navigation}: {navigation: any}) => {
             },
           },
         );
-        handleLogin(
-          userRes.data.user.nickname,
-          userRes.data.user.userId,
-          userRes.data.user.minimum,
-          userRes.data.user.maximum,
-          res.data.accessToken,
-          res.data.refreshToken,
-        );
+        // console.log('userdata', userRes.data.user);
+        if (userRes.data.user.billed) {
+          handleLogin(
+            userRes.data.user.nickname,
+            userRes.data.user.userId,
+            userRes.data.user.minimum,
+            userRes.data.user.maximum,
+            res.data.accessToken,
+            res.data.refreshToken,
+          );
+        } else {
+          navigation.navigate('Payment', {kakaoId: profile.id});
+        }
       }
     } catch (err) {
       console.log(err);

@@ -25,7 +25,6 @@ import {
   EmoKingText,
   ErrorText,
   TitleWrapper,
-  LottieWrapper,
 } from '../styles/OverallStatsStyle';
 
 interface monthTotalType {
@@ -38,6 +37,7 @@ interface monthTotalType {
 interface prevTotalType {
   emotion: string;
   amount: number;
+  hour: string;
 }
 
 interface emotionKingType {
@@ -58,7 +58,7 @@ interface ApiResponse {
   emotionKing: emotionKingType;
   total: totalMoneyType[];
   totalThisMonth: monthTotalType[];
-  yesterday: [prevTotalType[], prevTotalType[], prevTotalType[]];
+  yesterday: prevTotalType[][];
 }
 
 const AngerGradient = () => (
@@ -95,7 +95,7 @@ const OverallStats = () => {
   const [totalMoney, setTotalMoney] = useState<totalMoneyType[] | null>(null);
 
   const {data, error} = useAxios<ApiResponse>(
-    'http://k8a702.p.ssafy.io:8080/api/stat/all',
+    'https://feelingfilling.store/api/stat/all',
     'GET',
     null,
   );
@@ -107,7 +107,7 @@ const OverallStats = () => {
   };
 
   useEffect(() => {
-    if (data && data.message === 'success') {
+    if (data && data.message === 'SUCCESS') {
       const totalAmount =
         data.total[0].amount + data.total[1].amount + data.total[2].amount + 1;
 
@@ -247,7 +247,7 @@ const OverallStats = () => {
               background: {fill: '#F9F9F9'},
             }}
             domainPadding={{x: 5, y: 5}}
-            minDomain={{y: -40}}
+            // minDomain={{y: -40}}
             // maxDomain={{y: 26000}}
             padding={{top: 20, bottom: 50, left: 60, right: 50}}>
             <VictoryAxis

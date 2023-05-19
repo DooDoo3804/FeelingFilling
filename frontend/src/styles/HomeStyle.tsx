@@ -18,6 +18,7 @@ export const MoneyWrapper = styled.View`
   background-color: ${Common.colors.subColor02};
   border-radius: 20px;
   padding: 15px;
+  margin-bottom: 20px;
 `;
 
 export const BalanceHeading = styled.Text`
@@ -62,4 +63,36 @@ export const BalanceBtn = styled.TouchableOpacity`
 export const BtnText = styled.Text`
   font-family: 'NotoSansKR-Bold';
   color: ${Common.colors.white01};
+`;
+
+export const AdContainer = styled.View`
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
+  padding: 70px 0px;
+  overflow: hidden;
+`;
+
+export const AdImage = styled.Image`
+  width: 350px;
+  height: 200px;
+  border-radius: 20px;
+  object-fit: cover;
+`;
+
+export const EventList = styled.View`
+  border-radius: 20px;
+  margin: 10px;
+  border: 1px solid ${Common.colors.basicGrey};
+`;
+
+export const SingleEventContainer = styled.TouchableOpacity`
+  padding: 20px;
+  padding-left: 30px;
+  border-bottom: 1px solid ${Common.colors.basicGrey};
+`;
+
+export const EventText = styled.Text`
+  color: ${Common.colors.deepGrey};
 `;

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {useAxios} from '../hooks/useAxios';
+import {useAxiosWithRefreshToken} from '../hooks/useAxioswithRfToken';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import Lottie from 'lottie-react-native';
 import {Common} from '../components/Common';
 import {
   SavingWrapper,
@@ -18,6 +19,8 @@ import {
   WithdrawMoneyText,
   SavingMoneySumText,
   EmotionPngContainer,
+  NoSavingContainer,
+  NoSavingText,
 } from '../styles/SavingStyle';
 import FontawesomeIcon5 from 'react-native-vector-icons/FontAwesome5';
 /////// png ///////
@@ -38,11 +41,13 @@ interface savingListDataType {
 }
 
 const Saving = () => {
+  const uri = 'https://feelingfilling.store/api/log';
+
   const now = new Date();
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth());
-  const {data, refetch} = useAxios<responseDataType>(
-    `http://3.38.191.128:8080/api/log/${1}/${year}/${month}`,
+  const {data, error, refetch} = useAxiosWithRefreshToken<responseDataType>(
+    `${uri}/${year}/${month + 1}`,
     'GET',
     null,
   );
@@ -58,15 +63,18 @@ const Saving = () => {
   useEffect(() => {
     const savingList = data?.logs as savingListDataType[];
     setSavingListData(savingList);
-  }, [data?.logs]);
+    if (error) {
+      console.log(error);
+    }
+  }, [data?.logs, error]);
 
   const prevMonth = () => {
     if (month === 0) {
-      refetch(`http://3.38.191.128:8080/api/log/${1}/${year - 1}/${11}`);
+      refetch(`${uri}/${year - 1}/${11}`);
       setYear(year - 1);
       setMonth(11);
     } else {
-      refetch(`http://3.38.191.128:8080/api/log/${1}/${year}/${month}`);
+      refetch(`${uri}/${year}/${month}`);
       setMonth(month - 1);
     }
     const savingList = data?.logs as savingListDataType[];
@@ -76,22 +84,20 @@ const Saving = () => {
   const nextMonth = () => {
     if (year < now.getFullYear()) {
       if (month === 11) {
-        refetch(`http://3.38.191.128:8080/api/log/${1}/${year + 1}/${1}`);
+        refetch(`${uri}/${year + 1}/${1}`);
         setYear(year + 1);
         setMonth(0);
       } else {
-        refetch(
-          `http://3.38.191.128:8080/api/log/${1}/${year - 1}/${month + 2}`,
-        );
+        refetch(`${uri}/${year - 1}/${month + 2}`);
         setMonth(month + 1);
       }
     } else if (year === now.getFullYear() && month < now.getMonth()) {
       if (month === 12) {
-        refetch(`http://3.38.191.128:8080/api/log/${1}/${year + 1}/${1}`);
+        refetch(`${uri}/${year + 1}/${1}`);
         setYear(year + 1);
         setMonth(0);
       } else {
-        refetch(`http://3.38.191.128:8080/api/log/${1}/${year}/${month + 2}`);
+        refetch(`${uri}/${year}/${month + 2}`);
         setMonth(month + 1);
       }
     }
@@ -103,15 +109,16 @@ const Saving = () => {
     const result: any[] = [];
     let idx = 0;
     savingListData.forEach(e => {
+      console.log(e);
       result.push(
         <SavingItemContainer key={idx++}>
           <SavingItemFront>
             <SavingDateText>{e.logTime.substring(0, 16)}</SavingDateText>
-            {e.emotion === 'angry' ? (
+            {e.emotion === 'anger' ? (
               <EmotionPngContainer source={EmoAngry} />
-            ) : e.emotion === 'happy' ? (
+            ) : e.emotion === 'joy' ? (
               <EmotionPngContainer source={EmoHappy} />
-            ) : e.emotion === 'sad' ? (
+            ) : e.emotion === 'sadness' ? (
               <EmotionPngContainer source={EmoSad} />
             ) : (
               <FontawesomeIcon5
@@ -135,8 +142,8 @@ const Saving = () => {
           </SavingItemTail>
         </SavingItemContainer>,
       );
-      console.log(e);
     });
+
     return result;
   };
 
@@ -174,7 +181,20 @@ const Saving = () => {
         </BalanceText>
       </BalanceWrapper>
       <SavingListContainer>
-        {savingListData ? SavingListRander() : ''}
+        {savingListData && savingListData.length > 0 ? (
+          SavingListRander()
+        ) : (
+          <>
+            <NoSavingContainer>
+              <Lottie
+                source={require('../assets/piggy_bank.json')}
+                autoPlay
+                loop
+              />
+            </NoSavingContainer>
+            <NoSavingText>해당 월의 적금 내역이 없어요.</NoSavingText>
+          </>
+        )}
       </SavingListContainer>
     </SavingWrapper>
   );

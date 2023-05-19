@@ -1,17 +1,19 @@
 import React, {useEffect, useState} from 'react';
-import {Dimensions} from 'react-native';
+import {Dimensions, Alert} from 'react-native';
+import axios, {AxiosResponse} from 'axios';
 import {ScrollView} from 'react-native-gesture-handler';
 import {RangeSlider} from '@sharcoux/slider';
 
+import {useSelector, useDispatch} from 'react-redux';
+import {tokenAction, loginAction} from '../redux';
+
 import {Common} from '../components/Common';
 import font_logo from '../assets/font_logo.png';
-import kakao_logo from '../assets/kakao_logo.png';
 
 import {
   SignupWrapper,
   SignupContainer,
   FontLogo,
-  KakaoLogo,
   BtnText,
   ColorBtn,
   InfoWrapper,
@@ -21,14 +23,16 @@ import {
   TitleContainer,
 } from '../styles/LoginStyle';
 
-const SignUp = ({navigation}: {navigation: any}) => {
+const SignUp = ({navigation, route}: {navigation: any; route: any}) => {
   const [nickname, setNickname] = useState<string>('');
   const [nameError, setNameError] = useState<boolean>(false);
   const [multiSliderValue, setMultiSliderValue] = useState<number[]>([
     0, 10000,
   ]);
 
-  const deviceHeight = Dimensions.get('window').height;
+  const kakaoId = route.params.kakaoId.toString();
+  const deviceHeight = Math.ceil(Dimensions.get('window').height);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (nickname.length > 20) {
@@ -40,6 +44,83 @@ const SignUp = ({navigation}: {navigation: any}) => {
 
   const onChange = (range: [number, number]) => {
     setMultiSliderValue(range);
+  };
+
+  const handleAccessToken = (
+    new_refreshtoken: string,
+    new_accesstoken: string,
+  ) => {
+    dispatch(tokenAction(new_refreshtoken, new_accesstoken));
+  };
+
+  const handleSignup = async (): Promise<void> => {
+    if (nameError) {
+      Alert.alert('알림', '닉네임은 20자까지 설정 가능합니다.', [
+        {text: '확인'},
+      ]);
+    } else if (nickname.length < 1) {
+      Alert.alert('알림', '닉네임은 필수 입력 정보입니다.', [{text: '확인'}]);
+    } else if (multiSliderValue[0] < 0 || multiSliderValue[1] > 10000) {
+      Alert.alert('알림', '결제 범위에 오류가 발생했습니다.', [{text: '확인'}]);
+    } else {
+      try {
+        const res: AxiosResponse = await axios.post(
+          'https://feelingfilling.store/api/user',
+          {
+            kakaoId: kakaoId,
+            nickname: nickname,
+            minimum: multiSliderValue[0],
+            maximum: multiSliderValue[1],
+          },
+        );
+        const userRes: AxiosResponse = await axios.get(
+          'https://feelingfilling.store/api/user',
+          {
+            headers: {
+              Authorization: `Bearer ${res.data['access-token']}`,
+            },
+          },
+        );
+        if (userRes.data.user.billed) {
+          handleLogin(
+            userRes.data.user.nickname,
+            userRes.data.user.userId,
+            userRes.data.user.minimum,
+            userRes.data.user.maximum,
+            res.data['access-token'],
+            res.data['refresh-token'],
+          );
+        } else {
+          handleAccessToken(
+            res.data['refresh-token'],
+            res.data['access-token'],
+          );
+          navigation.navigate('Payment', {kakaoId: kakaoId});
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  const handleLogin = (
+    name: string,
+    id: number,
+    min_money: number,
+    max_money: number,
+    access_token: string,
+    refresh_token: string,
+  ) => {
+    dispatch(
+      loginAction({
+        name,
+        id,
+        min_money,
+        max_money,
+        access_token,
+        refresh_token,
+      }),
+    );
   };
 
   return (
@@ -85,12 +166,10 @@ const SignUp = ({navigation}: {navigation: any}) => {
           </SliderContainer>
         </InfoWrapper>
 
-        <ColorBtn color={Common.colors.kakao}>
-          <KakaoLogo source={kakao_logo} />
-          <BtnText
-            textColor={Common.colors.deepGrey}
-            onPress={() => navigation.navigate('Payment')}>
-            결제 등록하기
+        <ColorBtn color={Common.colors.emotionColor03} onPress={handleSignup}>
+          <BtnText textColor={Common.colors.white01}>
+            {/* onPress={() => navigation.navigate('Payment')}> */}
+            가입하기
           </BtnText>
         </ColorBtn>
       </SignupWrapper>
