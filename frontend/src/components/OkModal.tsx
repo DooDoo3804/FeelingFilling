@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal} from 'react-native';
+import {Modal, TouchableWithoutFeedback} from 'react-native';
 import styled from 'styled-components/native';
 import {Common} from './Common';
 import Lottie from 'lottie-react-native';
@@ -60,20 +60,24 @@ const OkModal = (props: any) => {
       animationType={'fade'}
       transparent={true}
       visible={props.showOkModal}>
-      <OkModalContainer>
-        <OkModalView>
-          <LottieContainer>
-            <Lottie source={require('../assets/ok.json')} autoPlay loop />
-          </LottieContainer>
-          <OkHeaderText>{props.msg}</OkHeaderText>
-          <OkTextView
-            onTouchStart={() => {
-              modalClose();
-            }}>
-            <CloseText>close</CloseText>
-          </OkTextView>
-        </OkModalView>
-      </OkModalContainer>
+      <TouchableWithoutFeedback onPress={modalClose}>
+        <OkModalContainer>
+          <TouchableWithoutFeedback>
+            <OkModalView>
+              <LottieContainer>
+                <Lottie source={require('../assets/ok.json')} autoPlay loop />
+              </LottieContainer>
+              <OkHeaderText>{props.msg}</OkHeaderText>
+              <OkTextView
+                onTouchStart={() => {
+                  modalClose();
+                }}>
+                <CloseText>close</CloseText>
+              </OkTextView>
+            </OkModalView>
+          </TouchableWithoutFeedback>
+        </OkModalContainer>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };

@@ -21,9 +21,6 @@ import MypageStackNavigation from './MyPageStack';
 import Chat from '../screens/Chat';
 import {Common} from '../components/Common';
 
-import SaveBtn from '../components/SaveBtn';
-import {clickSave} from '../screens/Chat';
-
 const Stack = createStackNavigator();
 
 const Tab = createBottomTabNavigator();
@@ -122,17 +119,19 @@ const MainTab = (): JSX.Element => {
       <Tab.Screen
         name="MypageStack"
         component={MypageStackNavigation}
-        options={{
+        options={({route}) => ({
+          tabBarStyle: {display: getTabBarVisibility(route)},
           title: 'Mypage',
           headerShown: false,
           tabBarIcon: ({color, size}) => (
             <FontawesomeIcon name="user-circle" color={color} size={size} />
           ),
-        }}
+        })}
       />
     </Tab.Navigator>
   );
 };
+
 const Main = (): JSX.Element => {
   return (
     <Stack.Navigator initialRouteName="Home">
@@ -145,12 +144,8 @@ const Main = (): JSX.Element => {
         name="Chat"
         component={Chat}
         options={{
+          headerTransparent: true,
           title: '',
-          headerStyle: {
-            backgroundColor: 'rgba(249, 246, 242, 0.8)',
-            height: 60,
-          },
-          headerRight: () => <SaveBtn clickFunc={clickSave} />,
         }}
       />
     </Stack.Navigator>

@@ -15,7 +15,7 @@ export const rootReducer = (
 ) => {
   switch (action.type) {
     case 'login':
-      return {...state, loggedIn: true, loggedUser: state.loggedUser};
+      return {...state, loggedIn: true, loggedUser: action.loggedUser};
     case 'logout':
       return {...state, loggedIn: false, loggedUser: null};
     case 'set_progress':

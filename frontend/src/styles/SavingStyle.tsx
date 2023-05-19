@@ -75,3 +75,13 @@ export const EmotionPngContainer = styled.Image`
   width: 50px;
   height: 50px;
 `;
+
+export const NoSavingContainer = styled.View`
+  width: 100%;
+  margin-top: 70px;
+  height: 200px;
+`;
+
+export const NoSavingText = styled.Text`
+  text-align: center;
+`;
