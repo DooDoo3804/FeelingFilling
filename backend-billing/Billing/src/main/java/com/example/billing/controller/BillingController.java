@@ -1,17 +1,18 @@
 package com.example.billing.controller;
 
-import com.example.billing.data.dto.KakaoApproveDTO;
-import com.example.billing.data.dto.KakaoReadyDTO;
-import com.example.billing.data.dto.ServiceUserDTO;
-import com.example.billing.data.dto.UserDTO;
+import com.example.billing.data.dto.*;
+import com.example.billing.exception.AmountInvalidException;
 import com.example.billing.service.KakaoPayService;
 import com.example.billing.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,30 +24,122 @@ public class BillingController {
 
     private final UserService userService;
 
+    private final Logger log = LoggerFactory.getLogger(BillingController.class);
+
     @PostMapping("/subscription/active")
-    public ResponseEntity<Map<String,Object>> startSubscription(@RequestBody ServiceUserDTO serviceUserDTO){
+    public ResponseEntity<Map<String, Object>> startSubscription(@RequestBody ServiceUserDTO serviceUserDTO) {
+        log.info("[startSubscription]"+serviceUserDTO.toString());
         UserDTO userDTO = userService.createUser(serviceUserDTO.getServiceName(), serviceUserDTO.getServiceUserId());
-        KakaoReadyDTO kakaoReadyDTO= kakaoPayService.kakaoPayReady(userDTO);
+        KakaoReadyDTO kakaoReadyDTO = kakaoPayService.kakaoPayReady(userDTO);
         Map<String, Object> map = new HashMap<>();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", kakaoReadyDTO.getNext_redirect_pc_url());
-        System.out.println(kakaoReadyDTO);
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        map.put("url", kakaoReadyDTO.getNext_redirect_pc_url());
+        return new ResponseEntity<>(map, HttpStatus.FOUND);
     }
 
     @GetMapping("/subscription/success")
-    public ResponseEntity<Map<String,Object>> approveSubscription(int orderId,String pg_token){
-        KakaoApproveDTO kakaoApproveDTO= kakaoPayService.kakaoPayApprove(orderId, pg_token);
-        Map<String, Object> map = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> approveSubscription(int orderId, String pg_token) {
+        log.info("[approveSubscription] orderId = "+orderId +pg_token.toString());
+        KakaoApproveDTO kakaoApproveDTO = kakaoPayService.kakaoPayApprove(orderId, pg_token);
 
-        map.put("kakao", kakaoApproveDTO);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("http://success"));
+
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+
+    @GetMapping("/subscription/fail")
+    public ResponseEntity<Map<String, Object>> failSubscription(int orderId) {
+        log.info("[failSubscription] orderId = "+orderId);
+        kakaoPayService.subscriptionFail(orderId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("http://fail"));
+
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+
+    @GetMapping("/subscription/cancel")
+    public ResponseEntity<Map<String, Object>> cancelSubscription(int orderId) {
+        log.info("[cancelSubscription] orderId = "+orderId);
+        kakaoPayService.subscriptionCancel(orderId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("http://cancel"));
+
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+
+
+    @PostMapping("/subscription")
+    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserAndAmountDTO serviceUserAndAmountDTO) {
+        log.info("[paySubscription]"+serviceUserAndAmountDTO.toString());
+        if(serviceUserAndAmountDTO.getAmount() < 1) throw new AmountInvalidException();
+
+        kakaoPayService.kakaoPaySubscription(serviceUserAndAmountDTO);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("result", true);
+        map.put("message", "입금에 성공하였습니다.");
+        map.put("amount", serviceUserAndAmountDTO.getAmount());
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
-    @PostMapping("/subscription")
-    public ResponseEntity<Map<String, Object>> paySubscription(@RequestBody ServiceUserDTO serviceUserDTO, @RequestParam int amount){
-       kakaoPayService.kakaoPaySubscription(serviceUserDTO, amount);
+    @PostMapping("/subscription/inactive")
+    public ResponseEntity<Map<String, Object>> subscriptionInactivate(@RequestBody ServiceUserDTO serviceUserDTO) {
+        log.info("[subscriptionInactivate]"+serviceUserDTO.toString());
+        KakaoInactiveDTO kakaoInactiveDTO = kakaoPayService.kakaoPayInactivate(serviceUserDTO);
 
-       return new ResponseEntity<>(HttpStatus.OK);
+        Map<String, Object> map = new HashMap<>();
+        if (kakaoInactiveDTO.getStatus().equals("INACTIVE")) {
+            map.put("result", true);
+            map.put("message", "정기 결제가 취소되었습니다.");
+        } else {
+            map.put("result", false);
+            map.put("message", "정기 결제 취소 실패");
+        }
+        map.put("createdAt", kakaoInactiveDTO.getCreated_at());
+        map.put("inactivatedAt", kakaoInactiveDTO.getInactivated_at());
+        map.put("lastApprovedAt", kakaoInactiveDTO.getLast_approved_at());
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @PostMapping("/subscription/status")
+    public ResponseEntity<Map<String, Object>> subscriptionStatus(@RequestBody ServiceUserDTO serviceUserDTO) {
+        log.info("[subscriptionStatus]"+serviceUserDTO.toString());
+        KakaoPayCheckDTO kakaoPayCheckDTO = kakaoPayService.kakaoPayCheck(serviceUserDTO);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("available", kakaoPayCheckDTO.isAvailable());
+        map.put("status", kakaoPayCheckDTO.getStatus());
+        map.put("createdAt", kakaoPayCheckDTO.getCreated_at());
+        map.put("inactivatedAt", kakaoPayCheckDTO.getInactivated_at());
+        map.put("lastApprovedAt", kakaoPayCheckDTO.getLast_approved_at());
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<Map<String, Object>> cancelPayment(@RequestBody CancelDepositDTO cancelDepositDTO){
+        log.info("[cancelPayment]"+cancelDepositDTO.toString());
+        if(cancelDepositDTO.getAmount() < 1) throw new AmountInvalidException();
+
+        KakaoCancelDTO kakaoCancelDTO = kakaoPayService.kakaoPayCancel(cancelDepositDTO);
+
+
+        Map<String, Object> map = new HashMap<>();
+        if (kakaoCancelDTO.getStatus().equals("PART_CANCEL_PAYMENT")||kakaoCancelDTO.getStatus().equals(("CANCEL_PAYMENT"))) {
+            map.put("result", true);
+            map.put("message", "결제가 취소되었습니다.");
+        } else {
+            map.put("result", false);
+            map.put("message", "결제 취소 실패");
+        }
+        map.put("approvedCancelAmount", kakaoCancelDTO.getApproved_cancel_amount().getTotal());
+        map.put("createdAt", kakaoCancelDTO.getCanceled_at());
+        map.put("approvedAt", kakaoCancelDTO.getApproved_at());
+        map.put("canceledAt", kakaoCancelDTO.getCanceled_at());
+
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }

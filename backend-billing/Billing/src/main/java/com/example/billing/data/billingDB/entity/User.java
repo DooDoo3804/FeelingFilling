@@ -27,9 +27,13 @@ public class User extends BaseEntity {
 
     @OneToMany
     @JoinColumn(name = "userId")
-    private List<Deposit> deposit = new LinkedList<>();
+    private List<Deposit> deposit;
 
     @OneToMany
     @JoinColumn(name = "userId")
-    private List<Withdrawal> withdrawals = new LinkedList<>();
+    private List<Withdrawal> withdrawals;
+
+    @OneToMany
+    @JoinColumn(name = "userId")
+    private List<Cancellation> cancellations;
 }

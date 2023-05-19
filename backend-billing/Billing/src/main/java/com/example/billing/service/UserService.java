@@ -6,8 +6,4 @@ public interface UserService {
     public UserDTO createUser(String serviceName, int serviceUserId);
 
     public UserDTO getUserByServiceUserId(String serviceName, int serviceUserId);
-
-    public UserDTO getUserByUserId(int userId);
-
-    public void updateUser(UserDTO user);
 }
