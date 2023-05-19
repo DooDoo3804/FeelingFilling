@@ -106,7 +106,7 @@ public class ChattingServiceImpl implements ChattingService {
     Sender senderWithNum = senderRepository.findChatNumBySenderId(loginUserId);
     int totalNum = senderWithNum.getNumOfChat(); //총 채팅 개수
     log.info("채팅 Total Num : " + totalNum);
-    if((page-1)*PAGE_SIZE>=totalNum) throw new RuntimeException("채팅이 없습니다.");
+    if((page-1)*PAGE_SIZE>=totalNum) throw new CustomException("채팅이 없습니다.");
     int start = PAGE_SIZE*page;
     int targetNum = PAGE_SIZE;
     if((page-1)*PAGE_SIZE<totalNum&&page*PAGE_SIZE>totalNum) {

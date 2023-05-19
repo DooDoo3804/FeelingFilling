@@ -1,10 +1,12 @@
 package com.a702.feelingfilling.domain.chatting.controller;
 
+import com.a702.feelingfilling.domain.chatting.exception.CustomException;
 import com.a702.feelingfilling.domain.chatting.model.dto.AnalyzedResult;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChatInputDTO;
 import com.a702.feelingfilling.domain.chatting.model.dto.ChattingDTO;
 import com.a702.feelingfilling.domain.chatting.service.ChattingService;
 import io.swagger.annotations.Api;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +71,13 @@ public class ChattingController {
       resultMap.put("message","SUCCESS");
       resultMap.put("chattings",chattingService.getChatList(page));
       return ResponseEntity.ok().body(resultMap);
-    }catch (Exception e){
+    }
+    catch (CustomException e){
+      resultMap.put("message","SUCCESS");
+      resultMap.put("chattings",new ArrayList<ChattingDTO>());
+      return ResponseEntity.ok().body(resultMap);
+    }
+    catch (Exception e){
       resultMap.put("message",e.getMessage());
       return ResponseEntity.badRequest().body(resultMap);
     }
