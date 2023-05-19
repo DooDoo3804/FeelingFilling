@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: django
+    environment:
+      SERVER_MODE: prod
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      OPEN_AI_API_KEY: ${OPEN_AI_API_KEY}
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+    # command: python manage.py runserver 0.0.0.0:8000 --noreload
+    ports:
+      - "8000:8000"
