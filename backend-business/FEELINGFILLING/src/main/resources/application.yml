@@ -1,0 +1,47 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  profiles:
+    include: oauth
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://k8a702.p.ssafy.io:3306/feelingfilling?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: mammoth77
+  #    url: jdbc:mysql://localhost:3306/feelingfilling
+  #    password: 1234
+  #    username: root
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: com.a702.feelingfilling.global.strategy.CustomPhysicalNamingStrategy
+    show-sql: true
+  data:
+    mongodb:
+#     uri: mongodb://localhost:27017/feelingfilling
+#      authentication-database: admin
+      uri: mongodb://root:mammoth77@k8a702.p.ssafy.io:27017/feelingfilling?authMechanism=SCRAM-SHA-1&authSource=admin
+#      username: root
+#      password: mammoth77
+  # redis
+  redis:
+    lettuce:
+      pool:
+        max:
+          active: 5
+          idle: 5
+        min:
+          idle: 2
+    host: redis
+    port: 6379
+    password: mammoth77
+
+jwt:
+  secret: makemoneyfromyouremotionandfeelbetter
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
